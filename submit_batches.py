@@ -113,17 +113,34 @@ def get_target_files() -> list[str]:
     return files[:MAX_FILES]
 
 
-def load_sample(file_path: str) -> pd.DataFrame:
-    df = pd.read_excel(file_path, dtype={"ean13": str})
-    missing = [c for c in REQUIRED_COLUMNS if c not in df.columns]
+def resolve_columns(df: pd.DataFrame, required: list[str]) -> dict[str, str]:
+    """Mapea nombres canónicos (minúsculas) a los nombres reales de columna,
+    sin importar mayúsculas/minúsculas ni espacios extremos (p. ej. la
+    columna real puede llamarse "EAN13" o "Nombre")."""
+    lower_map: dict[str, str] = {}
+    for col in df.columns:
+        key = str(col).strip().lower()
+        if key not in lower_map:
+            lower_map[key] = col
+    missing = [r for r in required if r not in lower_map]
     if missing:
-        raise ValueError(f"Faltan columnas requeridas {missing} en {file_path}")
+        raise ValueError(
+            f"Faltan columnas requeridas {missing}. Columnas disponibles: {list(df.columns)}"
+        )
+    return {r: lower_map[r] for r in required}
+
+
+def load_sample(file_path: str) -> tuple[pd.DataFrame, dict[str, str]]:
+    df = pd.read_excel(file_path)
+    cols = resolve_columns(df, REQUIRED_COLUMNS)
+    ean_col, nombre_col, marca_col = cols["ean13"], cols["nombre"], cols["marca"]
 
     sample = df.head(MAX_ROWS).copy()
-    sample = sample.drop_duplicates(subset=["nombre", "marca"])
-    sample["ean13"] = sample["ean13"].astype(str).str.strip()
-    sample = sample[sample["ean13"].notna() & (sample["ean13"] != "") & (sample["ean13"] != "nan")]
-    return sample
+    sample = sample.drop_duplicates(subset=[nombre_col, marca_col])
+    sample = sample[sample[ean_col].notna()]
+    sample[ean_col] = sample[ean_col].astype(str).str.strip()
+    sample = sample[sample[ean_col] != ""]
+    return sample, cols
 
 
 def build_user_content(marca, nombre) -> str:
@@ -132,13 +149,14 @@ def build_user_content(marca, nombre) -> str:
     return f"Marca: {marca_str} | Descripción: {nombre_str}"
 
 
-def build_request_dicts(sample: pd.DataFrame) -> list[dict]:
+def build_request_dicts(sample: pd.DataFrame, cols: dict[str, str]) -> list[dict]:
     """Construye los dicts de request (forma serializable a JSONL)."""
+    ean_col, nombre_col, marca_col = cols["ean13"], cols["nombre"], cols["marca"]
     request_dicts = []
     seen_ids: set[str] = set()
 
     for idx, row in sample.iterrows():
-        custom_id = row["ean13"]
+        custom_id = row[ean_col]
         if custom_id in seen_ids:
             custom_id = f"{custom_id}_{idx}"
         seen_ids.add(custom_id)
@@ -153,7 +171,7 @@ def build_request_dicts(sample: pd.DataFrame) -> list[dict]:
                     "messages": [
                         {
                             "role": "user",
-                            "content": build_user_content(row.get("marca"), row.get("nombre")),
+                            "content": build_user_content(row.get(marca_col), row.get(nombre_col)),
                         }
                     ],
                     "output_config": {
@@ -232,7 +250,7 @@ def submit_batch_for_file(client: anthropic.Anthropic, file_path: str, tracker: 
 
     logger.info(f"Leyendo {file_name}")
     try:
-        sample = load_sample(file_path)
+        sample, cols = load_sample(file_path)
     except Exception as e:
         logger.error(f"{file_name}: error al leer/preparar el archivo: {e}")
         return
@@ -241,7 +259,7 @@ def submit_batch_for_file(client: anthropic.Anthropic, file_path: str, tracker: 
         logger.warning(f"{file_name}: la muestra quedó vacía tras deduplicar/limpiar, se omite")
         return
 
-    request_dicts = build_request_dicts(sample)
+    request_dicts = build_request_dicts(sample, cols)
     logger.info(f"{file_name}: {len(request_dicts)} solicitudes preparadas")
 
     jsonl_path = write_jsonl_temp(request_dicts)

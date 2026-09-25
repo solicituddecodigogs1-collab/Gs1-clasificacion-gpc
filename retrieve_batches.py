@@ -136,27 +136,37 @@ def fetch_results(client: anthropic.Anthropic, batch_id: str) -> tuple[dict[str,
     return results_by_id, num_errors
 
 
+def resolve_ean_column(df: pd.DataFrame) -> str:
+    """Encuentra la columna ean13 sin importar mayúsculas/minúsculas (p. ej.
+    la columna real puede llamarse "EAN13")."""
+    for col in df.columns:
+        if str(col).strip().lower() == "ean13":
+            return col
+    raise ValueError(f"No se encontró una columna 'ean13'. Columnas disponibles: {list(df.columns)}")
+
+
 def merge_and_export(source_path: Path, results_by_id: dict[str, dict], file_name: str) -> Path:
     if not source_path.exists():
         raise FileNotFoundError(f"No se encuentra el archivo original: {source_path}")
 
-    df = pd.read_excel(source_path, dtype={"ean13": str})
+    df = pd.read_excel(source_path)
+    ean_col = resolve_ean_column(df)
     sample = df.head(MAX_ROWS).copy()
-    sample["ean13"] = sample["ean13"].astype(str).str.strip()
+    sample[ean_col] = sample[ean_col].astype(str).str.strip()
 
     results_df = (
         pd.DataFrame.from_dict(results_by_id, orient="index")
         .reset_index()
-        .rename(columns={"index": "ean13"})
+        .rename(columns={"index": ean_col})
     )
     if results_df.empty:
-        results_df = pd.DataFrame(columns=["ean13"] + RESULT_COLUMNS)
+        results_df = pd.DataFrame(columns=[ean_col] + RESULT_COLUMNS)
 
     # Nota: la deduplicación en submit_batches.py se hizo por (nombre, marca),
     # no por ean13. Las filas cuyo (nombre, marca) era duplicado no se
     # enviaron a la API y, al unir solo por ean13, quedarán con las columnas
     # de clasificación en NaN (comportamiento esperado del merge left pedido).
-    merged = sample.merge(results_df, how="left", on="ean13")
+    merged = sample.merge(results_df, how="left", on=ean_col)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     output_path = OUTPUT_DIR / f"clasificado_{file_name}"
