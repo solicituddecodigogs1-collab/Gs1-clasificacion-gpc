@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Envía una muestra de trabajo de clasificación GPC a la Batch API de Anthropic.
 
-Toma los primeros 5 archivos .xlsx de "./Nueva Carga/" (orden alfabético),
-extrae las primeras 2000 filas de cada uno, deduplica por (nombre, marca) y
-envía un lote de clasificación GPC por archivo. Los batch_id resultantes se
-guardan en batch_tracker.json para que retrieve_batches.py los recupere.
+Toma los primeros 5 archivos .xlsx de la raíz del repositorio ("./", orden
+alfabético), extrae las primeras 2000 filas de cada uno, deduplica por
+(nombre, marca) y envía un lote de clasificación GPC por archivo. Los
+batch_id resultantes se guardan en batch_tracker.json para que
+retrieve_batches.py los recupere.
 """
 
 import glob
@@ -27,7 +28,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("submit_batches")
 
-INPUT_DIR = Path("./Nueva Carga")
+INPUT_DIR = Path(".")
 TRACKER_FILE = Path("batch_tracker.json")
 MAX_FILES = 5
 MAX_ROWS = 2000

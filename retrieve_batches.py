@@ -28,7 +28,7 @@ logging.basicConfig(
 logger = logging.getLogger("retrieve_batches")
 
 TRACKER_FILE = Path("batch_tracker.json")
-INPUT_DIR = Path("./Nueva Carga")
+INPUT_DIR = Path(".")
 OUTPUT_DIR = Path("./Output_Clasificado")
 MAX_ROWS = 2000
 
