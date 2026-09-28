@@ -2,9 +2,12 @@
 """Envía una muestra de trabajo de clasificación GPC (formato "Listado
 General 2024") a la Batch API de Anthropic.
 
-Toma archivos "Listado_General_2024_*.xlsx" de "input_2024/" (por ahora
-solo el primero, Parte_1 — ver MAX_FILES), deduplica por (marca,
-descripción) normalizado — ignorando sufijos de empaque como "X 12 UND" —
+Toma archivos "Listado_General_2024_*.xlsx" de "input_2024/" (ver
+TARGET_FILES/MAX_FILES para restringir a archivos específicos — p. ej.
+la prueba A/B de Parte_2 con Haiku 4.5 fija TARGET_FILES a ese único
+archivo para no tocar Parte_1, ya enviado con Sonnet 5), deduplica por
+(marca, descripción) normalizado — ignorando sufijos de empaque como
+"X 12 UND" —
 y, para cada par único, hace un pre-filtrado LOCAL (sin costo de API)
 contra el catálogo oficial GPC ("catalogo/gpc_catalogo_oficial.csv",
 generado por build_catalog.py) usando similitud léxica TF-IDF (n-gramas de
@@ -62,17 +65,26 @@ CATALOG_FILE = Path("catalogo/gpc_catalogo_oficial.csv")
 # Por instrucción explícita: por ahora se procesa SOLO Parte_1. Subir este
 # número (hasta 5) cuando se confirme que la calidad de Parte_1 es buena.
 MAX_FILES = 1
+# PRUEBA A/B (Haiku 4.5 vs. Sonnet 5 en Parte_1): fuerza el procesamiento a
+# exactamente estos archivos, ignorando INPUT_GLOB_PATTERN/MAX_FILES, para
+# no tocar Parte_1 (ya enviado con Sonnet) ni Parte_3-5 por accidente.
+# Poner en None/[] para volver al comportamiento normal (glob + MAX_FILES).
+TARGET_FILES: list[str] | None = ["Listado_General_2024_Parte_2.xlsx"]
 TOP_K_BRICKS = 25
 
-# Claude 3.5 Sonnet fue retirado de la API (28-oct-2025). Se usa su sucesor
-# vigente en el mismo nivel de precio/rendimiento.
-MODEL = "claude-sonnet-5"
+# PRUEBA A/B: Parte_1 se envió con "claude-sonnet-5" (ver batch_tracker.json).
+# Esta corrida usa Haiku 4.5 sobre Parte_2 para comparar precisión/velocidad/
+# costo real, manteniendo intacto todo lo demás (pre-filtro, dedup, esquema).
+MODEL = "claude-haiku-4-5"
 MAX_TOKENS = 45  # recorte radical de salida: solo {"gpc_code","confidence_score"}
 
 # Precios Batch API (50% del precio estándar) usados solo para la
 # estimación de costos del --dry-run, en USD por millón de tokens.
-BATCH_PRICE_INPUT_PER_MTOK = 1.00
-BATCH_PRICE_OUTPUT_PER_MTOK = 5.00
+# NOTA: estas son las tarifas de Haiku 4.5 ($0.50/$2.50 por MTok estándar,
+# la mitad en batch) — para Sonnet 5 eran $1.00/$5.00. Ajustar si MODEL
+# cambia de nuevo.
+BATCH_PRICE_INPUT_PER_MTOK = 0.50
+BATCH_PRICE_OUTPUT_PER_MTOK = 2.50
 
 REQUIRED_COLUMNS = ["gtin", "descripcion", "marca"]
 # Columnas auxiliares de categoría interna (Col. I y Col. N del Excel 2024)
@@ -296,6 +308,14 @@ def format_candidates(candidates: dict[str, dict[str, str]]) -> str:
 def get_target_files() -> list[str]:
     if not INPUT_DIR.is_dir():
         raise FileNotFoundError(f"No existe el directorio de entrada: {INPUT_DIR}")
+
+    if TARGET_FILES:
+        files = [str(INPUT_DIR / f) for f in TARGET_FILES]
+        missing = [f for f in files if not Path(f).exists()]
+        if missing:
+            raise FileNotFoundError(f"TARGET_FILES no encontrados: {missing}")
+        return files
+
     files = sorted(glob.glob(str(INPUT_DIR / INPUT_GLOB_PATTERN)))
     if not files:
         raise FileNotFoundError(f"No se encontraron archivos {INPUT_GLOB_PATTERN} en {INPUT_DIR}")
@@ -513,6 +533,7 @@ def submit_batch_for_file(client, file_path: str, tracker: list[dict], catalog: 
             "batch_id": batch.id,
             "source_file": file_name,
             "source_path": str(Path(file_path).resolve()),
+            "model": MODEL,
             "status": batch.processing_status,
             "num_requests": len(requests),
             "created_at": datetime.now(timezone.utc).isoformat(),
