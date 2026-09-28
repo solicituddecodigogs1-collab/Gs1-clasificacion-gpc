@@ -108,7 +108,10 @@ GPC_JSON_SCHEMA = {
     "type": "object",
     "properties": {
         "gpc_code": {"type": "string"},
-        "confidence_score": {"type": "integer", "minimum": 0, "maximum": 100},
+        # Nota: output_config.format.schema NO soporta "minimum"/"maximum"
+        # en propiedades "integer" (la API rechaza el request con 400 si se
+        # incluyen) — el rango 0-100 se exige solo vía el system prompt.
+        "confidence_score": {"type": "integer"},
     },
     "required": ["gpc_code", "confidence_score"],
     "additionalProperties": False,
