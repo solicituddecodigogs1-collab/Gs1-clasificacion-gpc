@@ -17,9 +17,12 @@
     "source_file": "Listado_General_2024_Parte_2.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_2024/Listado_General_2024_Parte_2.xlsx",
     "model": "claude-haiku-4-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 7131,
     "created_at": "2026-09-28T20:19:10.071117+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "output_2024/clasificado_Listado_General_2024_Parte_2.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 2
   }
 ]
