@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Genera el diccionario oficial ligero de códigos GPC.
 
-Lee la pestaña "Schema" de "GPC as of May 2026 v20260520 MX.xlsx" y extrae
-los 4 niveles jerárquicos (Segment, Family, Class, Brick), desduplicados,
-con sus códigos padre, en "gpc_catalogo_oficial.csv". Este CSV es la única
-fuente de verdad usada por submit_batches.py (para armar candidatos) y
-retrieve_batches.py (para validar que un gpc_code devuelto por la API
-exista realmente antes de aceptarlo).
+Lee la pestaña "Schema" de "catalogo/GPC as of May 2026 v20260520 MX.xlsx"
+y extrae los 4 niveles jerárquicos (Segment, Family, Class, Brick),
+desduplicados, con sus códigos padre, en "catalogo/gpc_catalogo_oficial.csv".
+Este CSV es la única fuente de verdad usada por submit_batches.py (para
+armar candidatos) y retrieve_batches.py (para validar que un gpc_code
+devuelto por la API exista realmente antes de aceptarlo).
 """
 
 import logging
@@ -18,9 +18,10 @@ import pandas as pd
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("build_catalog")
 
-SOURCE_FILE = Path("GPC as of May 2026 v20260520 MX.xlsx")
+CATALOG_DIR = Path("catalogo")
+SOURCE_FILE = CATALOG_DIR / "GPC as of May 2026 v20260520 MX.xlsx"
 SHEET_NAME = "Schema"
-OUTPUT_FILE = Path("gpc_catalogo_oficial.csv")
+OUTPUT_FILE = CATALOG_DIR / "gpc_catalogo_oficial.csv"
 
 REQUIRED_COLUMNS = [
     "SegmentCode",

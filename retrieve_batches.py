@@ -1,26 +1,26 @@
 #!/usr/bin/env python3
-"""Recupera los resultados de los lotes de clasificación GPC enviados por
-submit_batches.py.
+"""Recupera los resultados de los lotes de clasificación GPC (formato
+"Listado General 2024") enviados por submit_batches.py.
 
 Lee batch_tracker.json, consulta el estado de cada batch en la Batch API de
 Anthropic y, para los que ya terminaron ("ended"), descarga los resultados
-(que ahora solo traen {"gpc_code","confidence_score"} — ver submit_batches.py).
+(que solo traen {"gpc_code","confidence_score"} — ver submit_batches.py).
 
 Candado ground-truth: cada gpc_code devuelto se valida contra
-"gpc_catalogo_oficial.csv" (build_catalog.py). Si el código existe
+"catalogo/gpc_catalogo_oficial.csv" (build_catalog.py). Si el código existe
 literalmente en el catálogo, se autocompletan nivel_asignado y
 gpc_description con los valores oficiales; si no existe, es nulo, o el
 modelo no lo devolvió, se fuerza gpc_code="NO_MATCH",
 nivel_asignado="NO_MATCH", gpc_description="Sin coincidencia válida" — sin
 excepción y sin construir códigos por defecto.
 
-El merge hacia los Excel originales se hace por (nombre, marca)
-normalizado (el mismo hash que submit_batches.py usa como custom_id), no
-por ean13, para que las filas con nombre+marca repetidos pero distinto
-ean13 también reciban su clasificación.
+El merge hacia los Excel originales se hace por (marca, descripción)
+normalizado —ignorando sufijos de empaque como "X 12 UND"— usando el mismo
+hash que submit_batches.py usa como custom_id, así el 100% de las filas
+(incluyendo la unidad GTIN-13 y su caja GTIN-14) reciben su clasificación.
 
-Exporta a "./Output_Clasificado/", conservando todas las columnas
-originales y agregando únicamente las columnas nuevas al final.
+Exporta a "./output_2024/", conservando todas las columnas originales y
+agregando únicamente las columnas nuevas al final.
 """
 
 import json
@@ -45,22 +45,24 @@ logging.basicConfig(
 logger = logging.getLogger("retrieve_batches")
 
 TRACKER_FILE = Path("batch_tracker.json")
-INPUT_DIR = Path(".")
-OUTPUT_DIR = Path("./Output_Clasificado")
-CATALOG_FILE = Path("gpc_catalogo_oficial.csv")
-MAX_ROWS = 2000
+INPUT_DIR = Path("input_2024")
+OUTPUT_DIR = Path("output_2024")
+CATALOG_FILE = Path("catalogo/gpc_catalogo_oficial.csv")
 
 RESULT_COLUMNS = ["gpc_code", "nivel_asignado", "gpc_description", "confidence_score"]
 
 CODE_PATTERN = re.compile(r"^\d{8}$")
 NO_MATCH_DESCRIPTION = "Sin coincidencia válida"
 
+# Debe coincidir EXACTAMENTE con submit_batches.py.
+PACKAGING_SUFFIX_RE = re.compile(r"\bx\s*\d+\s*(und|unid|unidades)\b")
+
 T = TypeVar("T")
 
 
 # --------------------------------------------------------------------------
-# Normalización de texto / claves — debe ser IDÉNTICA a submit_batches.py
-# para que el hash de (marca, nombre) coincida en ambos scripts.
+# Normalización de texto / claves — IDÉNTICA a submit_batches.py para que el
+# hash de (marca, descripción) coincida en ambos scripts.
 # --------------------------------------------------------------------------
 
 def strip_accents(text: str) -> str:
@@ -77,12 +79,21 @@ def normalize_text(value) -> str:
     return text
 
 
-def normalize_key(marca, nombre) -> str:
-    return f"{normalize_text(marca)}|{normalize_text(nombre)}"
+def strip_packaging_suffix(text: str) -> str:
+    text = PACKAGING_SUFFIX_RE.sub(" ", text)
+    return re.sub(r"\s+", " ", text).strip()
 
 
-def make_custom_id(marca, nombre) -> str:
-    key = normalize_key(marca, nombre)
+def normalize_descripcion(descripcion) -> str:
+    return strip_packaging_suffix(normalize_text(descripcion))
+
+
+def normalize_key(marca, descripcion) -> str:
+    return f"{normalize_text(marca)}|{normalize_descripcion(descripcion)}"
+
+
+def make_custom_id(marca, descripcion) -> str:
+    key = normalize_key(marca, descripcion)
     return hashlib.sha1(key.encode("utf-8")).hexdigest()[:24]
 
 
@@ -117,9 +128,6 @@ def validate_gpc_code(raw_code: Any, catalog_lookup: dict[str, dict[str, str]]) 
         info = catalog_lookup[code]
         return code, info["nivel"], info["titulo"], False
 
-    # El modelo devolvió algo que no es un código real del catálogo: se
-    # bloquea (nunca se acepta a ciegas) y se cuenta como intento de
-    # código inventado, salvo que ya viniera vacío/nulo.
     was_invented_attempt = code is not None
     return "NO_MATCH", "NO_MATCH", NO_MATCH_DESCRIPTION, was_invented_attempt
 
@@ -237,20 +245,20 @@ def fetch_results(
     return results_by_id, num_errors, num_blocked
 
 
-def resolve_nombre_marca_columns(df: pd.DataFrame) -> tuple[str, str]:
-    """Encuentra las columnas nombre/marca sin importar mayúsculas/minúsculas
-    (p. ej. la columna real puede llamarse "Nombre")."""
+def resolve_descripcion_marca_columns(df: pd.DataFrame) -> tuple[str, str]:
+    """Encuentra las columnas descripcion/marca sin importar mayúsculas/
+    minúsculas (p. ej. la columna real puede llamarse "DESCRIPCION")."""
     lower_map: dict[str, str] = {}
     for col in df.columns:
         key = str(col).strip().lower()
         if key not in lower_map:
             lower_map[key] = col
-    missing = [r for r in ("nombre", "marca") if r not in lower_map]
+    missing = [r for r in ("descripcion", "marca") if r not in lower_map]
     if missing:
         raise ValueError(
             f"Faltan columnas requeridas {missing} para el merge. Columnas disponibles: {list(df.columns)}"
         )
-    return lower_map["nombre"], lower_map["marca"]
+    return lower_map["descripcion"], lower_map["marca"]
 
 
 def merge_and_export(source_path: Path, results_by_id: dict[str, dict], file_name: str) -> Path:
@@ -258,11 +266,10 @@ def merge_and_export(source_path: Path, results_by_id: dict[str, dict], file_nam
         raise FileNotFoundError(f"No se encuentra el archivo original: {source_path}")
 
     df = pd.read_excel(source_path)
-    nombre_col, marca_col = resolve_nombre_marca_columns(df)
-    sample = df.head(MAX_ROWS).copy()
+    descripcion_col, marca_col = resolve_descripcion_marca_columns(df)
 
     join_col = "_gpc_join_key"
-    sample[join_col] = sample.apply(lambda r: make_custom_id(r[marca_col], r[nombre_col]), axis=1)
+    df[join_col] = df.apply(lambda r: make_custom_id(r[marca_col], r[descripcion_col]), axis=1)
 
     results_df = (
         pd.DataFrame.from_dict(results_by_id, orient="index")
@@ -272,10 +279,10 @@ def merge_and_export(source_path: Path, results_by_id: dict[str, dict], file_nam
     if results_df.empty:
         results_df = pd.DataFrame(columns=[join_col] + RESULT_COLUMNS)
 
-    # Merge por (nombre, marca) normalizado: a diferencia de un merge por
-    # ean13, las filas con nombre+marca repetidos y distinto ean13 sí
-    # reciben la clasificación (comparten la misma _gpc_join_key).
-    merged = sample.merge(results_df, how="left", on=join_col)
+    # Merge por (marca, descripción) normalizado (sin sufijos de empaque):
+    # todas las filas —incluida la unidad GTIN-13 y su caja GTIN-14—
+    # comparten la misma _gpc_join_key y reciben la misma clasificación.
+    merged = df.merge(results_df, how="left", on=join_col)
     merged = merged.drop(columns=[join_col])
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

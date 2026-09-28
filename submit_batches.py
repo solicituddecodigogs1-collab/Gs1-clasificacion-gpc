@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
-"""Envía una muestra de trabajo de clasificación GPC a la Batch API de Anthropic.
+"""Envía una muestra de trabajo de clasificación GPC (formato "Listado
+General 2024") a la Batch API de Anthropic.
 
-Toma los primeros 5 archivos "Productos*.xlsx" de la raíz del repositorio
-(orden alfabético), extrae las primeras 2000 filas de cada uno, deduplica
-por (nombre, marca) normalizado y, para cada par único, hace un
-pre-filtrado LOCAL (sin costo de API) contra el catálogo oficial GPC
-("gpc_catalogo_oficial.csv", generado por build_catalog.py) usando
-similitud léxica TF-IDF (n-gramas de palabra + de carácter, con un mapeo
-básico de sinónimos venezolanos). Los ~25 Bricks más parecidos, más sus
-Class/Family/Segment padres, se incluyen como lista de candidatos dentro
-del mensaje enviado a Claude — el modelo solo puede elegir un código de
-esa lista o "NO_MATCH", nunca inventar uno.
+Toma archivos "Listado_General_2024_*.xlsx" de "input_2024/" (por ahora
+solo el primero, Parte_1 — ver MAX_FILES), deduplica por (marca,
+descripción) normalizado — ignorando sufijos de empaque como "X 12 UND" —
+y, para cada par único, hace un pre-filtrado LOCAL (sin costo de API)
+contra el catálogo oficial GPC ("catalogo/gpc_catalogo_oficial.csv",
+generado por build_catalog.py) usando similitud léxica TF-IDF (n-gramas de
+palabra + de carácter, con sinónimos venezolanos), enriquecida con las
+columnas de categoría internas del Excel (CLASIFICACION, Clasificacion
+Macro). Los ~25 Bricks más parecidos, más sus Class/Family/Segment padres,
+se incluyen como lista de candidatos dentro del mensaje enviado a Claude —
+el modelo solo puede elegir un código de esa lista o "NO_MATCH", nunca
+inventar uno.
 
 Para minimizar tokens de salida, el modelo responde únicamente
 {"gpc_code": ..., "confidence_score": ...} (sin razonamiento ni
@@ -26,7 +29,7 @@ Uso:
     python3 submit_batches.py            # envía los batches reales
     python3 submit_batches.py --dry-run  # sin llamar a la API: muestra
                                           # candidatos y estima tokens/costo
-                                          # para 5 productos de Productos1.xlsx
+                                          # para Listado_General_2024_Parte_1.xlsx
 """
 
 import glob
@@ -52,16 +55,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger("submit_batches")
 
-INPUT_DIR = Path(".")
-# "Productos*.xlsx" en vez de "*.xlsx": la raíz también contiene el
-# catálogo oficial GPC ("GPC as of ... .xlsx"), que alfabéticamente
-# ordena ANTES de "Productos1.xlsx" y rompería la selección de los 5
-# archivos de trabajo si se usara un patrón genérico.
-INPUT_GLOB_PATTERN = "Productos*.xlsx"
+INPUT_DIR = Path("input_2024")
+INPUT_GLOB_PATTERN = "Listado_General_2024_*.xlsx"
 TRACKER_FILE = Path("batch_tracker.json")
-CATALOG_FILE = Path("gpc_catalogo_oficial.csv")
-MAX_FILES = 5
-MAX_ROWS = 2000
+CATALOG_FILE = Path("catalogo/gpc_catalogo_oficial.csv")
+# Por instrucción explícita: por ahora se procesa SOLO Parte_1. Subir este
+# número (hasta 5) cuando se confirme que la calidad de Parte_1 es buena.
+MAX_FILES = 1
 TOP_K_BRICKS = 25
 
 # Claude 3.5 Sonnet fue retirado de la API (28-oct-2025). Se usa su sucesor
@@ -74,14 +74,18 @@ MAX_TOKENS = 45  # recorte radical de salida: solo {"gpc_code","confidence_score
 BATCH_PRICE_INPUT_PER_MTOK = 1.00
 BATCH_PRICE_OUTPUT_PER_MTOK = 5.00
 
-REQUIRED_COLUMNS = ["ean13", "nombre", "marca"]
+REQUIRED_COLUMNS = ["gtin", "descripcion", "marca"]
+# Columnas auxiliares de categoría interna (Col. I y Col. N del Excel 2024)
+# usadas SOLO para enriquecer la búsqueda léxica local — nunca se envían a
+# Claude ni se citan como fuente GPC. Si el archivo no las trae, se ignoran.
+OPTIONAL_COLUMNS = ["clasificacion", "clasificacion macro"]
 
 # Nota importante: Claude Sonnet 5 RECHAZA (HTTP 400) los parámetros de
 # muestreo (temperature/top_p/top_k) — no existe forma de fijar
-# temperature=0 en este modelo, a diferencia de lo pedido originalmente.
-# En su lugar se desactiva explícitamente el "thinking" (sí soportado en
-# Sonnet 5) para que los 45 tokens de max_tokens no se gasten en
-# razonamiento interno invisible antes de emitir el JSON.
+# temperature=0 en este modelo, a diferencia de lo pedido. En su lugar se
+# desactiva explícitamente el "thinking" (sí soportado en Sonnet 5) para
+# que los 45 tokens de max_tokens no se gasten en razonamiento interno
+# invisible antes de emitir el JSON.
 THINKING_CONFIG = {"type": "disabled"}
 
 # Mapeo básico de venezolanismos a términos en español neutro/MX, para
@@ -94,6 +98,11 @@ SYNONYMS_VE = {
     "chucheria": "snack confiteria dulce",
     "chucherias": "snack confiteria dulce",
 }
+
+# Sufijos de empaque a ignorar al construir la llave de deduplicación
+# (p. ej. "X 12 UND", "X 24 UND", "X 48 UND") para no pagar dos veces por
+# la unidad individual (GTIN-13) y su caja/display (GTIN-14).
+PACKAGING_SUFFIX_RE = re.compile(r"\bx\s*\d+\s*(und|unid|unidades)\b")
 
 GPC_JSON_SCHEMA = {
     "type": "object",
@@ -130,9 +139,8 @@ Responde ÚNICAMENTE con este JSON, sin texto adicional:
 
 
 # --------------------------------------------------------------------------
-# Normalización de texto / claves (compartida conceptualmente con
-# retrieve_batches.py, que recalcula el mismo hash para poder unir por
-# (nombre, marca) normalizado en vez de por ean13).
+# Normalización de texto / claves — retrieve_batches.py recalcula EXACTAMENTE
+# las mismas funciones para poder unir por (marca, descripción) normalizado.
 # --------------------------------------------------------------------------
 
 def strip_accents(text: str) -> str:
@@ -149,6 +157,18 @@ def normalize_text(value) -> str:
     return text
 
 
+def strip_packaging_suffix(text: str) -> str:
+    """Quita sufijos de empaque tipo "x 12 und" del texto ya normalizado,
+    para que la unidad y su caja (GTIN-13/GTIN-14) compartan la misma
+    llave de deduplicación."""
+    text = PACKAGING_SUFFIX_RE.sub(" ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def normalize_descripcion(descripcion) -> str:
+    return strip_packaging_suffix(normalize_text(descripcion))
+
+
 def apply_synonyms(text: str) -> str:
     expanded = []
     for word in text.split():
@@ -158,20 +178,49 @@ def apply_synonyms(text: str) -> str:
     return " ".join(expanded)
 
 
-def normalize_key(marca, nombre) -> str:
-    return f"{normalize_text(marca)}|{normalize_text(nombre)}"
+def normalize_key(marca, descripcion) -> str:
+    return f"{normalize_text(marca)}|{normalize_descripcion(descripcion)}"
 
 
-def make_custom_id(marca, nombre) -> str:
-    """ID determinista derivado de (marca, nombre) normalizados. Reemplaza
-    a ean13 como custom_id porque el merge final ahora se hace por esta
-    misma clave normalizada (Regla 4), no por ean13."""
-    key = normalize_key(marca, nombre)
+def make_custom_id(marca, descripcion) -> str:
+    """ID determinista derivado de (marca, descripción_limpia). Es tanto la
+    llave de deduplicación como el custom_id de la Batch API y, en
+    retrieve_batches.py, la llave de merge — así una unidad y su caja
+    (mismo producto, distinto GTIN) comparten clasificación."""
+    key = normalize_key(marca, descripcion)
     return hashlib.sha1(key.encode("utf-8")).hexdigest()[:24]
 
 
-def query_text(marca, nombre) -> str:
-    return apply_synonyms(f"{normalize_text(marca)} {normalize_text(nombre)}".strip())
+def query_text(marca, descripcion, clasificacion=None, clasificacion_macro=None) -> str:
+    """Texto de búsqueda para el pre-filtro léxico: enriquece la
+    descripción con las columnas de categoría interna del Excel (si
+    existen) para mejorar la precisión del TF-IDF."""
+    parts = [normalize_text(marca), normalize_descripcion(descripcion)]
+    if clasificacion:
+        parts.append(normalize_text(clasificacion))
+    if clasificacion_macro:
+        parts.append(normalize_text(clasificacion_macro))
+    return apply_synonyms(" ".join(p for p in parts if p))
+
+
+def clean_gtin(value) -> str:
+    """Convierte un GTIN a string entero exacto, sin importar si pandas lo
+    leyó como int, float (incl. notación científica) o texto ("1.23E+12",
+    "7593394001720.0", etc.). Nunca deja ".0" ni "nan"."""
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return ""
+    if isinstance(value, int):
+        return str(value)
+    if isinstance(value, float):
+        return str(int(round(value)))
+    text = str(value).strip()
+    if not text or text.lower() == "nan":
+        return ""
+    try:
+        return str(int(float(text)))
+    except ValueError:
+        digits = re.sub(r"\D", "", text)
+        return digits
 
 
 # --------------------------------------------------------------------------
@@ -238,7 +287,7 @@ def format_candidates(candidates: dict[str, dict[str, str]]) -> str:
 
 
 # --------------------------------------------------------------------------
-# Lectura y preparación de los archivos de productos
+# Lectura y preparación de los archivos "Listado General 2024"
 # --------------------------------------------------------------------------
 
 def get_target_files() -> list[str]:
@@ -250,10 +299,11 @@ def get_target_files() -> list[str]:
     return files[:MAX_FILES]
 
 
-def resolve_columns(df: pd.DataFrame, required: list[str]) -> dict[str, str]:
+def resolve_columns(df: pd.DataFrame, required: list[str], optional: list[str] | None = None) -> dict[str, str | None]:
     """Mapea nombres canónicos (minúsculas) a los nombres reales de columna,
     sin importar mayúsculas/minúsculas ni espacios extremos (p. ej. la
-    columna real puede llamarse "EAN13" o "Nombre")."""
+    columna real puede llamarse "GTIN" o "DESCRIPCION"). Las columnas
+    `optional` que no existan quedan en None en vez de fallar."""
     lower_map: dict[str, str] = {}
     for col in df.columns:
         key = str(col).strip().lower()
@@ -264,46 +314,57 @@ def resolve_columns(df: pd.DataFrame, required: list[str]) -> dict[str, str]:
         raise ValueError(
             f"Faltan columnas requeridas {missing}. Columnas disponibles: {list(df.columns)}"
         )
-    return {r: lower_map[r] for r in required}
+    result: dict[str, str | None] = {r: lower_map[r] for r in required}
+    for opt in optional or []:
+        result[opt] = lower_map.get(opt)
+    return result
 
 
-def load_sample(file_path: str) -> tuple[pd.DataFrame, dict[str, str]]:
+def load_sample(file_path: str) -> tuple[pd.DataFrame, dict[str, str | None]]:
     df = pd.read_excel(file_path)
-    cols = resolve_columns(df, REQUIRED_COLUMNS)
-    ean_col, nombre_col, marca_col = cols["ean13"], cols["nombre"], cols["marca"]
+    cols = resolve_columns(df, REQUIRED_COLUMNS, OPTIONAL_COLUMNS)
+    gtin_col, descripcion_col, marca_col = cols["gtin"], cols["descripcion"], cols["marca"]
 
-    sample = df.head(MAX_ROWS).copy()
-    sample = sample.drop_duplicates(subset=[nombre_col, marca_col])
-    sample = sample[sample[ean_col].notna()]
-    sample[ean_col] = sample[ean_col].astype(str).str.strip()
-    sample = sample[sample[ean_col] != ""]
+    df[gtin_col] = df[gtin_col].apply(clean_gtin)
+    df = df[df[gtin_col] != ""]
+
+    # Deduplicación inteligente: misma llave que make_custom_id (marca +
+    # descripción sin sufijos de empaque), así una unidad (GTIN-13) y su
+    # caja/display (GTIN-14) del mismo producto no se pagan dos veces.
+    df["_dedup_key"] = df.apply(lambda r: make_custom_id(r[marca_col], r[descripcion_col]), axis=1)
+    sample = df.drop_duplicates(subset=["_dedup_key"]).drop(columns=["_dedup_key"]).copy()
     return sample, cols
 
 
-def build_user_content(marca, nombre, candidates: dict[str, dict[str, str]]) -> str:
+def build_user_content(marca, descripcion, candidates: dict[str, dict[str, str]]) -> str:
     marca_str = str(marca).strip() if pd.notna(marca) else "N/D"
-    nombre_str = str(nombre).strip() if pd.notna(nombre) else "N/D"
+    descripcion_str = str(descripcion).strip() if pd.notna(descripcion) else "N/D"
     candidate_block = format_candidates(candidates)
     return (
         f"CANDIDATOS:\n{candidate_block}\n\n"
-        f"Marca: {marca_str} | Descripción: {nombre_str}"
+        f"Marca: {marca_str} | Descripción: {descripcion_str}"
     )
 
 
-def build_request_dicts(sample: pd.DataFrame, cols: dict[str, str], catalog: GpcCatalog) -> list[dict]:
+def build_request_dicts(sample: pd.DataFrame, cols: dict[str, str | None], catalog: GpcCatalog) -> list[dict]:
     """Construye los dicts de request (forma serializable a JSONL)."""
-    nombre_col, marca_col = cols["nombre"], cols["marca"]
+    descripcion_col, marca_col = cols["descripcion"], cols["marca"]
+    clasificacion_col, clasificacion_macro_col = cols.get("clasificacion"), cols.get("clasificacion macro")
     request_dicts = []
     seen_ids: set[str] = set()
 
     for _, row in sample.iterrows():
-        marca_val, nombre_val = row.get(marca_col), row.get(nombre_col)
-        custom_id = make_custom_id(marca_val, nombre_val)
+        marca_val, descripcion_val = row.get(marca_col), row.get(descripcion_col)
+        clasificacion_val = row.get(clasificacion_col) if clasificacion_col else None
+        clasificacion_macro_val = row.get(clasificacion_macro_col) if clasificacion_macro_col else None
+
+        custom_id = make_custom_id(marca_val, descripcion_val)
         if custom_id in seen_ids:
-            continue  # (marca, nombre) normalizado ya cubierto por otra fila
+            continue  # (marca, descripción) normalizado ya cubierto por otra fila
         seen_ids.add(custom_id)
 
-        candidates = catalog.build_candidates(query_text(marca_val, nombre_val))
+        q = query_text(marca_val, descripcion_val, clasificacion_val, clasificacion_macro_val)
+        candidates = catalog.build_candidates(q)
 
         request_dicts.append(
             {
@@ -322,7 +383,7 @@ def build_request_dicts(sample: pd.DataFrame, cols: dict[str, str], catalog: Gpc
                     "messages": [
                         {
                             "role": "user",
-                            "content": build_user_content(marca_val, nombre_val, candidates),
+                            "content": build_user_content(marca_val, descripcion_val, candidates),
                         }
                     ],
                     "output_config": {
@@ -476,32 +537,46 @@ def run_dry_run(num_products: int = 5) -> int:
         logger.error(str(e))
         return 1
 
-    demo_file = "Productos1.xlsx"
-    if not Path(demo_file).exists():
-        logger.error(f"No se encuentra {demo_file} para el dry-run")
+    try:
+        files = get_target_files()
+    except FileNotFoundError as e:
+        logger.error(str(e))
         return 1
+
+    demo_file = files[0]
+    demo_file_name = Path(demo_file).name
 
     try:
+        raw_df = pd.read_excel(demo_file)
         sample, cols = load_sample(demo_file)
     except Exception as e:
-        logger.error(f"Error preparando {demo_file}: {e}")
+        logger.error(f"Error preparando {demo_file_name}: {e}")
         return 1
 
-    nombre_col, marca_col = cols["nombre"], cols["marca"]
-    demo_rows = sample.head(num_products)
+    descripcion_col, marca_col = cols["descripcion"], cols["marca"]
+    clasificacion_col = cols.get("clasificacion")
+    clasificacion_macro_col = cols.get("clasificacion macro")
 
     print("=" * 78)
-    print(f"DRY RUN — {num_products} productos reales de {demo_file} (SIN llamar a la API)")
+    print(f"DRY RUN — {demo_file_name} (SIN llamar a la API)")
     print("=" * 78)
+    print(f"Filas totales en el archivo:                {len(raw_df)}")
+    print(f"Productos únicos tras deduplicación inteligente (marca+descripción, sin sufijos de empaque): {len(sample)}")
+
+    demo_rows = sample.head(num_products)
 
     per_row_input_tokens = []
     example_output_json = '{"gpc_code": "10002091", "confidence_score": 95}'
     output_tokens_estimate = min(MAX_TOKENS, estimate_tokens(example_output_json))
 
     for i, (_, row) in enumerate(demo_rows.iterrows(), start=1):
-        marca_val, nombre_val = row.get(marca_col), row.get(nombre_col)
-        candidates = catalog.build_candidates(query_text(marca_val, nombre_val))
-        user_content = build_user_content(marca_val, nombre_val, candidates)
+        marca_val, descripcion_val = row.get(marca_col), row.get(descripcion_col)
+        clasificacion_val = row.get(clasificacion_col) if clasificacion_col else None
+        clasificacion_macro_val = row.get(clasificacion_macro_col) if clasificacion_macro_col else None
+
+        q = query_text(marca_val, descripcion_val, clasificacion_val, clasificacion_macro_val)
+        candidates = catalog.build_candidates(q)
+        user_content = build_user_content(marca_val, descripcion_val, candidates)
 
         input_text = SYSTEM_PROMPT + user_content
         input_tokens = estimate_tokens(input_text)
@@ -510,31 +585,15 @@ def run_dry_run(num_products: int = 5) -> int:
         n_bricks = sum(1 for v in candidates.values() if v["nivel"] == "Brick")
         n_others = len(candidates) - n_bricks
 
-        print(f"\n--- Producto {i}: Marca={marca_val!r} | Descripción={nombre_val!r} ---")
+        print(f"\n--- Producto {i}: Marca={marca_val!r} | Descripción={descripcion_val!r} ---")
+        if clasificacion_val or clasificacion_macro_val:
+            print(f"    (categoría interna usada solo para la búsqueda: {clasificacion_val!r} / {clasificacion_macro_val!r})")
         print(f"Candidatos seleccionados: {n_bricks} Bricks + {n_others} Class/Family/Segment padres")
         print(format_candidates(candidates))
         print(f"[Estimado LOCAL, ~4 chars/token] input≈{input_tokens} tok | output≈{output_tokens_estimate} tok (máx {MAX_TOKENS})")
 
     avg_input_tokens = sum(per_row_input_tokens) / len(per_row_input_tokens)
-
-    print("\n" + "=" * 78)
-    print("PROYECCIÓN PARA LOS 5 ARCHIVOS COMPLETOS")
-    print("=" * 78)
-    print("(Estimación LOCAL con heurística ~4 caracteres/token — NO es el conteo")
-    print(" exacto del tokenizador de Anthropic, porque esta prueba no llama a la API.")
-    print(" El system prompt usa cache_control, así que el costo real debería ser")
-    print(" MENOR a esta cifra a partir de la 2ª solicitud de cada archivo.)")
-
-    try:
-        total_unique_requests = 0
-        for file_path in get_target_files():
-            s, c = load_sample(file_path)
-            total_unique_requests += len(
-                {make_custom_id(r.get(c["marca"]), r.get(c["nombre"])) for _, r in s.iterrows()}
-            )
-    except Exception as e:
-        logger.warning(f"No se pudo contar solicitudes reales de los 5 archivos ({e}); se usa el promedio observado x5")
-        total_unique_requests = round(avg_input_tokens and len(demo_rows) * 5)
+    total_unique_requests = len(sample)
 
     total_input_tokens = avg_input_tokens * total_unique_requests
     total_output_tokens = output_tokens_estimate * total_unique_requests
@@ -543,12 +602,19 @@ def run_dry_run(num_products: int = 5) -> int:
     output_cost = total_output_tokens / 1_000_000 * BATCH_PRICE_OUTPUT_PER_MTOK
     total_cost = input_cost + output_cost
 
-    print(f"Solicitudes únicas estimadas (5 archivos, tras dedup por nombre+marca): {total_unique_requests}")
+    print("\n" + "=" * 78)
+    print(f"PROYECCIÓN PARA {demo_file_name}")
+    print("=" * 78)
+    print("(Estimación LOCAL con heurística ~4 caracteres/token — NO es el conteo")
+    print(" exacto del tokenizador de Anthropic, porque esta prueba no llama a la API.")
+    print(" El system prompt usa cache_control, así que el costo real debería ser")
+    print(" MENOR a esta cifra a partir de la 2ª solicitud.)")
+    print(f"Solicitudes únicas (tras dedup marca+descripción, sin sufijos de empaque): {total_unique_requests}")
     print(f"Input promedio/fila≈{avg_input_tokens:.0f} tok | Output/fila≈{output_tokens_estimate} tok (tope duro: {MAX_TOKENS})")
     print(f"Total input≈{total_input_tokens:,.0f} tok | Total output≈{total_output_tokens:,.0f} tok")
     print(
         f"Costo proyectado (Batch API, sin contar el descuento de cache_control): "
-        f"${input_cost:.2f} (input) + ${output_cost:.2f} (output) = ${total_cost:.2f} USD"
+        f"${input_cost:.4f} (input) + ${output_cost:.4f} (output) = ${total_cost:.4f} USD"
     )
     print("=" * 78)
     return 0
