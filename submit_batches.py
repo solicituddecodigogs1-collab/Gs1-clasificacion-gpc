@@ -29,12 +29,19 @@ Los batch_id resultantes se guardan en batch_tracker.json para que
 retrieve_batches.py los recupere.
 
 Uso:
-    python3 submit_batches.py            # envía los batches reales
-    python3 submit_batches.py --dry-run  # sin llamar a la API: muestra
-                                          # candidatos y estima tokens/costo
-                                          # para Listado_General_2024_Parte_1.xlsx
+    python3 submit_batches.py                        # usa TARGET_FILES/MAX_FILES (ver más abajo)
+    python3 submit_batches.py archivo1.xlsx archivo2.xlsx
+                                                       # procesa exactamente estos archivos de
+                                                       # INPUT_DIR, indicados en la ejecución —
+                                                       # ignora TARGET_FILES/MAX_FILES
+    python3 submit_batches.py --input-dir "Nueva Carga" archivo1.xlsx
+                                                       # igual, pero leyendo de otra carpeta
+    python3 submit_batches.py --dry-run [archivo.xlsx]
+                                                       # sin llamar a la API: muestra candidatos
+                                                       # y estima tokens/costo
 """
 
+import argparse
 import glob
 import hashlib
 import json
@@ -312,21 +319,61 @@ def format_candidates(candidates: dict[str, dict[str, str]]) -> str:
 # Lectura y preparación de los archivos "Listado General 2024"
 # --------------------------------------------------------------------------
 
-def get_target_files() -> list[str]:
-    if not INPUT_DIR.is_dir():
-        raise FileNotFoundError(f"No existe el directorio de entrada: {INPUT_DIR}")
+def get_target_files(cli_files: list[str] | None = None, input_dir: Path | None = None) -> list[str]:
+    """Resuelve qué archivos procesar. Prioridad:
+    1. `cli_files` — archivos indicados explícitamente en la línea de
+       comandos al ejecutar el script (lo que pide el flujo de "Nueva
+       Carga": decidir el archivo en el momento de correr, no en el código).
+    2. `TARGET_FILES` — lista fija en este módulo (usada en despachos
+       puntuales, p. ej. reenviar solo Parte_3/4/5).
+    3. `INPUT_GLOB_PATTERN` + `MAX_FILES` — comportamiento por defecto.
+    """
+    base_dir = input_dir if input_dir is not None else INPUT_DIR
+    if not base_dir.is_dir():
+        raise FileNotFoundError(f"No existe el directorio de entrada: {base_dir}")
+
+    if cli_files:
+        files = [str(base_dir / f) for f in cli_files]
+        missing = [f for f in files if not Path(f).exists()]
+        if missing:
+            raise FileNotFoundError(f"Archivo(s) indicados no encontrados: {missing}")
+        return files
 
     if TARGET_FILES:
-        files = [str(INPUT_DIR / f) for f in TARGET_FILES]
+        files = [str(base_dir / f) for f in TARGET_FILES]
         missing = [f for f in files if not Path(f).exists()]
         if missing:
             raise FileNotFoundError(f"TARGET_FILES no encontrados: {missing}")
         return files
 
-    files = sorted(glob.glob(str(INPUT_DIR / INPUT_GLOB_PATTERN)))
+    files = sorted(glob.glob(str(base_dir / INPUT_GLOB_PATTERN)))
     if not files:
-        raise FileNotFoundError(f"No se encontraron archivos {INPUT_GLOB_PATTERN} en {INPUT_DIR}")
+        raise FileNotFoundError(f"No se encontraron archivos {INPUT_GLOB_PATTERN} en {base_dir}")
     return files[:MAX_FILES]
+
+
+def parse_args(argv: list[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Envía productos a clasificar a la Batch API de Anthropic."
+    )
+    parser.add_argument(
+        "files",
+        nargs="*",
+        help="Nombres de archivo .xlsx (dentro de --input-dir) a procesar explícitamente. "
+        "Si se omite, se usa TARGET_FILES/MAX_FILES definidos en el script.",
+    )
+    parser.add_argument(
+        "--input-dir",
+        default=None,
+        help=f"Directorio donde buscar los .xlsx (por defecto: {INPUT_DIR}). "
+        'Ej.: --input-dir "Nueva Carga"',
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="No llama a la API: solo muestra candidatos y estima tokens/costo.",
+    )
+    return parser.parse_args(argv)
 
 
 def resolve_columns(df: pd.DataFrame, required: list[str], optional: list[str] | None = None) -> dict[str, str | None]:
@@ -561,7 +608,7 @@ def estimate_tokens(text: str) -> int:
     return max(1, round(len(text) / 4))
 
 
-def run_dry_run(num_products: int = 5) -> int:
+def run_dry_run(cli_files: list[str] | None = None, input_dir: Path | None = None, num_products: int = 5) -> int:
     try:
         catalog = GpcCatalog(CATALOG_FILE)
     except (FileNotFoundError, ValueError) as e:
@@ -569,7 +616,7 @@ def run_dry_run(num_products: int = 5) -> int:
         return 1
 
     try:
-        files = get_target_files()
+        files = get_target_files(cli_files, input_dir)
     except FileNotFoundError as e:
         logger.error(str(e))
         return 1
@@ -656,8 +703,12 @@ def run_dry_run(num_products: int = 5) -> int:
 # --------------------------------------------------------------------------
 
 def main() -> int:
-    if "--dry-run" in sys.argv:
-        return run_dry_run()
+    args = parse_args(sys.argv[1:])
+    input_dir = Path(args.input_dir) if args.input_dir else None
+    cli_files = args.files or None
+
+    if args.dry_run:
+        return run_dry_run(cli_files, input_dir)
 
     import anthropic
 
@@ -674,7 +725,7 @@ def main() -> int:
         return 1
 
     try:
-        files = get_target_files()
+        files = get_target_files(cli_files, input_dir)
     except FileNotFoundError as e:
         logger.error(str(e))
         return 1
