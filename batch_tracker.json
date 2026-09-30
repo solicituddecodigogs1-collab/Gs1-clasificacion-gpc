@@ -44,5 +44,15 @@
     "num_requests": 7793,
     "created_at": "2026-09-30T16:24:28.565938+00:00",
     "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_017L1vNN8qAfwUjQFQLcdsUL",
+    "source_file": "Listado_General_2024_Parte_5.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2024/Listado_General_2024_Parte_5.xlsx",
+    "model": "claude-haiku-4-5",
+    "status": "in_progress",
+    "num_requests": 7969,
+    "created_at": "2026-09-30T16:27:04.591626+00:00",
+    "retrieved": false
   }
 ]
