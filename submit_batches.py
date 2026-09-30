@@ -4,8 +4,8 @@ General 2024") a la Batch API de Anthropic.
 
 Toma archivos "Listado_General_2024_*.xlsx" de "input_2024/" (ver
 TARGET_FILES/MAX_FILES para restringir a archivos específicos — p. ej.
-la prueba A/B de Parte_2 con Haiku 4.5 fija TARGET_FILES a ese único
-archivo para no tocar Parte_1, ya enviado con Sonnet 5), deduplica por
+esta corrida fija TARGET_FILES a Parte_3/4/5 para no retocar Parte_1
+(Sonnet 5) ni Parte_2 (Haiku 4.5), ya recuperados), deduplica por
 (marca, descripción) normalizado — ignorando sufijos de empaque como
 "X 12 UND" —
 y, para cada par único, hace un pre-filtrado LOCAL (sin costo de API)
@@ -65,16 +65,23 @@ CATALOG_FILE = Path("catalogo/gpc_catalogo_oficial.csv")
 # Por instrucción explícita: por ahora se procesa SOLO Parte_1. Subir este
 # número (hasta 5) cuando se confirme que la calidad de Parte_1 es buena.
 MAX_FILES = 1
-# PRUEBA A/B (Haiku 4.5 vs. Sonnet 5 en Parte_1): fuerza el procesamiento a
+# Despacho del resto del catálogo 2024: fuerza el procesamiento a
 # exactamente estos archivos, ignorando INPUT_GLOB_PATTERN/MAX_FILES, para
-# no tocar Parte_1 (ya enviado con Sonnet) ni Parte_3-5 por accidente.
+# no reenviar Parte_1/Parte_2 (ya recuperados) por accidente.
 # Poner en None/[] para volver al comportamiento normal (glob + MAX_FILES).
-TARGET_FILES: list[str] | None = ["Listado_General_2024_Parte_2.xlsx"]
-TOP_K_BRICKS = 25
+TARGET_FILES: list[str] | None = [
+    "Listado_General_2024_Parte_3.xlsx",
+    "Listado_General_2024_Parte_4.xlsx",
+    "Listado_General_2024_Parte_5.xlsx",
+]
+# Bajado de 25 (Parte_1/Parte_2) a 8 por instrucción explícita para este
+# bloque: menos candidatos = menos tokens de entrada por solicitud, a
+# costa de algo de recall si el Brick correcto no cae en el top-8.
+TOP_K_BRICKS = 8
 
-# PRUEBA A/B: Parte_1 se envió con "claude-sonnet-5" (ver batch_tracker.json).
-# Esta corrida usa Haiku 4.5 sobre Parte_2 para comparar precisión/velocidad/
-# costo real, manteniendo intacto todo lo demás (pre-filtro, dedup, esquema).
+# Parte_1 se envió con "claude-sonnet-5" y Parte_2 con "claude-haiku-4-5"
+# (ver batch_tracker.json). El resto del catálogo (Parte_3-5) continúa con
+# Haiku 4.5, manteniendo igual el resto del pipeline (dedup, esquema JSON).
 MODEL = "claude-haiku-4-5"
 MAX_TOKENS = 45  # recorte radical de salida: solo {"gpc_code","confidence_score"}
 
