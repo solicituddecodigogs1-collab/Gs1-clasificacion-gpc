@@ -19,7 +19,8 @@ normalizado —ignorando sufijos de empaque como "X 12 UND"— usando el mismo
 hash que submit_batches.py usa como custom_id, así el 100% de las filas
 (incluyendo la unidad GTIN-13 y su caja GTIN-14) reciben su clasificación.
 
-Exporta a "./output_2024/", conservando todas las columnas originales y
+Exporta a "./Output_Clasificado/" (carpeta única para todos los lotes,
+sin importar el año), conservando todas las columnas originales y
 agregando únicamente las columnas nuevas al final.
 """
 
@@ -45,8 +46,8 @@ logging.basicConfig(
 logger = logging.getLogger("retrieve_batches")
 
 TRACKER_FILE = Path("batch_tracker.json")
-INPUT_DIR = Path("input_2024")
-OUTPUT_DIR = Path("output_2024")
+INPUT_DIR = Path("input_2024")  # solo fallback si source_path faltara en el tracker
+OUTPUT_DIR = Path("Output_Clasificado")  # carpeta única para todas las salidas (2024, 2025, ...)
 CATALOG_FILE = Path("catalogo/gpc_catalogo_oficial.csv")
 
 RESULT_COLUMNS = ["gpc_code", "nivel_asignado", "gpc_description", "confidence_score"]

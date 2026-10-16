@@ -69,26 +69,25 @@ INPUT_DIR = Path("input_2024")
 INPUT_GLOB_PATTERN = "Listado_General_2024_*.xlsx"
 TRACKER_FILE = Path("batch_tracker.json")
 CATALOG_FILE = Path("catalogo/gpc_catalogo_oficial.csv")
-# Por instrucción explícita: por ahora se procesa SOLO Parte_1. Subir este
-# número (hasta 5) cuando se confirme que la calidad de Parte_1 es buena.
-MAX_FILES = 1
-# Despacho del resto del catálogo 2024: fuerza el procesamiento a
-# exactamente estos archivos, ignorando INPUT_GLOB_PATTERN/MAX_FILES, para
-# no reenviar Parte_1/Parte_2 (ya recuperados) por accidente.
-# Poner en None/[] para volver al comportamiento normal (glob + MAX_FILES).
-TARGET_FILES: list[str] | None = [
-    "Listado_General_2024_Parte_3.xlsx",
-    "Listado_General_2024_Parte_4.xlsx",
-    "Listado_General_2024_Parte_5.xlsx",
-]
-# Bajado de 25 (Parte_1/Parte_2) a 8 por instrucción explícita para este
-# bloque: menos candidatos = menos tokens de entrada por solicitud, a
-# costa de algo de recall si el Brick correcto no cae en el top-8.
-TOP_K_BRICKS = 8
+# Por defecto se procesan hasta 5 archivos que calcen con
+# INPUT_GLOB_PATTERN en INPUT_DIR. En la práctica casi siempre se invoca
+# con archivos y --input-dir explícitos por línea de comandos (ver
+# parse_args), que tienen prioridad sobre esto — ver get_target_files().
+MAX_FILES = 5
+# Lista fija opcional para despachos puntuales sin tocar la línea de
+# comandos (p. ej. reenviar solo ciertos archivos). None/[] = usar
+# INPUT_GLOB_PATTERN/MAX_FILES. El bloque 2024 Parte_3-5 que vivía aquí ya
+# se recuperó (ver batch_tracker.json) — queda en None por defecto.
+TARGET_FILES: list[str] | None = None
+# 25 candidatos por producto (no 8): con 8, el bloque 2024 Parte_3-5 mostró
+# un NO_MATCH notablemente más alto (5-10% vs 4.2% con 25) — menos recall
+# en el pre-filtro local a cambio de menos tokens. 25 es el valor por
+# defecto recomendado salvo que el costo sea la prioridad.
+TOP_K_BRICKS = 25
 
-# Parte_1 se envió con "claude-sonnet-5" y Parte_2 con "claude-haiku-4-5"
-# (ver batch_tracker.json). El resto del catálogo (Parte_3-5) continúa con
-# Haiku 4.5, manteniendo igual el resto del pipeline (dedup, esquema JSON).
+# Modelo vigente para todo el pipeline: Claude Haiku 4.5 (más rápido y
+# ~57% más barato que Sonnet 5 en la comparación A/B de 2024, con cobertura
+# algo menor — ver reporte de esa comparación).
 MODEL = "claude-haiku-4-5"
 MAX_TOKENS = 45  # recorte radical de salida: solo {"gpc_code","confidence_score"}
 
