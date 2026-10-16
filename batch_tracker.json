@@ -134,40 +134,52 @@
     "source_file": "Base_2023_Parte_1.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_2023/Base_2023_Parte_1.xlsx",
     "model": "claude-haiku-4-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 6725,
     "created_at": "2026-10-16T15:23:24.972867+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Base_2023_Parte_1.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 2
   },
   {
     "batch_id": "msgbatch_017trduY11eVjZZknUSc5VZN",
     "source_file": "Base_2023_Parte_2.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_2023/Base_2023_Parte_2.xlsx",
     "model": "claude-haiku-4-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 7221,
     "created_at": "2026-10-16T15:25:31.145048+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Base_2023_Parte_2.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 1
   },
   {
     "batch_id": "msgbatch_01DLky1DXJdNwY1KVmjWVGnC",
     "source_file": "Base_2023_Parte_3.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_2023/Base_2023_Parte_3.xlsx",
     "model": "claude-haiku-4-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 7043,
     "created_at": "2026-10-16T15:27:35.940905+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Base_2023_Parte_3.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   },
   {
     "batch_id": "msgbatch_01PG6wdbw5NcVX2HPkwESXKH",
     "source_file": "Base_2023_Parte_4.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_2023/Base_2023_Parte_4.xlsx",
     "model": "claude-haiku-4-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 6741,
     "created_at": "2026-10-16T15:29:32.652433+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Base_2023_Parte_4.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 1
   },
   {
     "batch_id": "msgbatch_018qKPhJNqNypf4BhNv6spTE",
