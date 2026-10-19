@@ -122,6 +122,23 @@ SYNONYMS_VE = {
     "caraota": "frijol",
     "chucheria": "snack confiteria dulce",
     "chucherias": "snack confiteria dulce",
+    # Algunos proveedores (p. ej. calzado 2021) describen sus productos en
+    # inglés; el catálogo oficial GPC está en español, así que sin esto el
+    # TF-IDF no encuentra ningún candidato de Calzado para "FOOTWEAR" y el
+    # candado ground-truth termina bloqueando todo a NO_MATCH (verificado:
+    # 100% de las filas "FOOTWEAR" en Consolidacion 2021 Parte_1/2).
+    "footwear": "calzado zapatos",
+    "shoes": "zapatos calzado",
+    "shoe": "zapato calzado",
+    "boots": "botas calzado",
+    "boot": "bota calzado",
+    "sneakers": "zapatos deportivos calzado",
+    "sandals": "sandalias calzado",
+    "children": "ninos",
+    "kids": "ninos",
+    "ladies": "dama mujer",
+    "men": "hombre caballero",
+    "baby": "bebe",
 }
 
 # Sufijos de empaque a ignorar al construir la llave de deduplicación
