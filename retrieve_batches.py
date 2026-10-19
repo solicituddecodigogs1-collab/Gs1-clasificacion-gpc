@@ -262,11 +262,51 @@ def resolve_descripcion_marca_columns(df: pd.DataFrame) -> tuple[str, str]:
     return lower_map["descripcion"], lower_map["marca"]
 
 
+# Esquema estándar observado en todos los años (2021-2025) cuando el Excel
+# llega sin fila de encabezado real (se pierde en la exportación interna y
+# la primera fila queda como basura literal "Unnamed: N") — IDÉNTICO al de
+# submit_batches.py para que ambos scripts lean el mismo archivo igual.
+STANDARD_COLUMNS = [
+    "EMPRESA", "PREFIJO", "TIPO GTIN", "GTIN", "DESCRIPCION", "MARCA",
+    "ESTATUS", "CODIGO", "CLASIFICACION", "PAISES COMERCIALIZACION",
+    "ORIGEN", "FECHA CREACION", "FECHA MODIFICACION",
+]
+
+
+def _looks_like_header_row(values: list) -> bool:
+    text = {str(v).strip().lower() for v in values if pd.notna(v)}
+    return "descripcion" in text and "marca" in text
+
+
+def read_source_excel(source_path: Path) -> pd.DataFrame:
+    """Lee el Excel original detectando la fila de encabezado real (algunos
+    archivos traen una fila basura inicial y/o pierden el encabezado real
+    en la exportación interna — ver submit_batches.py:load_sample)."""
+    raw = pd.read_excel(source_path, header=None, nrows=10)
+    header_row = None
+    for i in range(len(raw)):
+        if _looks_like_header_row(raw.iloc[i].tolist()):
+            header_row = i
+            break
+
+    if header_row is not None:
+        return pd.read_excel(source_path, header=header_row)
+
+    logger.warning(
+        f"{source_path}: no se encontró fila de encabezado real en las primeras 10 filas; "
+        f"se asume esquema estándar {STANDARD_COLUMNS} tras descartar la primera fila."
+    )
+    df = pd.read_excel(source_path, header=None, skiprows=1)
+    df = df.iloc[:, : len(STANDARD_COLUMNS)]
+    df.columns = STANDARD_COLUMNS
+    return df.dropna(how="all")
+
+
 def merge_and_export(source_path: Path, results_by_id: dict[str, dict], file_name: str) -> Path:
     if not source_path.exists():
         raise FileNotFoundError(f"No se encuentra el archivo original: {source_path}")
 
-    df = pd.read_excel(source_path)
+    df = read_source_excel(source_path)
     descripcion_col, marca_col = resolve_descripcion_marca_columns(df)
 
     join_col = "_gpc_join_key"
