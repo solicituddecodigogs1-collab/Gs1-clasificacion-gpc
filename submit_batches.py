@@ -396,8 +396,44 @@ def resolve_columns(df: pd.DataFrame, required: list[str], optional: list[str] |
     return result
 
 
+# Esquema estándar observado en todos los años (2021-2025) cuando el Excel
+# llega sin fila de encabezado real (se pierde en la exportación interna y
+# la primera fila queda como basura literal "Unnamed: N").
+STANDARD_COLUMNS = [
+    "EMPRESA", "PREFIJO", "TIPO GTIN", "GTIN", "DESCRIPCION", "MARCA",
+    "ESTATUS", "CODIGO", "CLASIFICACION", "PAISES COMERCIALIZACION",
+    "ORIGEN", "FECHA CREACION", "FECHA MODIFICACION",
+]
+
+
+def _looks_like_header_row(values: list) -> bool:
+    text = {str(v).strip().lower() for v in values if pd.notna(v)}
+    return "descripcion" in text and "marca" in text
+
+
 def load_sample(file_path: str) -> tuple[pd.DataFrame, dict[str, str | None]]:
-    df = pd.read_excel(file_path)
+    # Detección robusta de la fila de encabezado: algunos archivos traen
+    # una fila basura inicial (texto literal "Unnamed: N") y/o pierden la
+    # fila de encabezado real durante la exportación interna.
+    raw = pd.read_excel(file_path, header=None, nrows=10)
+    header_row = None
+    for i in range(len(raw)):
+        if _looks_like_header_row(raw.iloc[i].tolist()):
+            header_row = i
+            break
+
+    if header_row is not None:
+        df = pd.read_excel(file_path, header=header_row)
+    else:
+        logger.warning(
+            f"{file_path}: no se encontró fila de encabezado real en las primeras 10 filas; "
+            f"se asume esquema estándar {STANDARD_COLUMNS} tras descartar la primera fila."
+        )
+        df = pd.read_excel(file_path, header=None, skiprows=1)
+        df = df.iloc[:, : len(STANDARD_COLUMNS)]
+        df.columns = STANDARD_COLUMNS
+        df = df.dropna(how="all")
+
     cols = resolve_columns(df, REQUIRED_COLUMNS, OPTIONAL_COLUMNS)
     gtin_col, descripcion_col, marca_col = cols["gtin"], cols["descripcion"], cols["marca"]
 
