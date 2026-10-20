@@ -427,5 +427,70 @@
     "output_path": "Output_Clasificado/clasificado_Listado completo 2020_Parte_5.xlsx",
     "num_errors_in_batch": 0,
     "num_codes_blocked": 2
+  },
+  {
+    "batch_id": "msgbatch_01QhmPkgKpLGrgb6rcWqkExK",
+    "source_file": "Listado completo 2020_Parte_1.xlsx (reproceso sinonimos EN 2020)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2020/Listado completo 2020_Parte_1.xlsx",
+    "model": "claude-haiku-4-5",
+    "status": "ended",
+    "num_requests": 222,
+    "created_at": "2026-10-20T12:11:39.431372+00:00",
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Listado completo 2020_Parte_1.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
+  },
+  {
+    "batch_id": "msgbatch_013oc8zvCEyaPghwGmg9EKAa",
+    "source_file": "Listado completo 2020_Parte_2.xlsx (reproceso sinonimos EN 2020)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2020/Listado completo 2020_Parte_2.xlsx",
+    "model": "claude-haiku-4-5",
+    "status": "ended",
+    "num_requests": 157,
+    "created_at": "2026-10-20T12:11:42.776241+00:00",
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Listado completo 2020_Parte_2.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
+  },
+  {
+    "batch_id": "msgbatch_01RwQmfzmffWTnprLrEjn2BP",
+    "source_file": "Listado completo 2020_Parte_3.xlsx (reproceso sinonimos EN 2020)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2020/Listado completo 2020_Parte_3.xlsx",
+    "model": "claude-haiku-4-5",
+    "status": "ended",
+    "num_requests": 522,
+    "created_at": "2026-10-20T12:11:52.694364+00:00",
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Listado completo 2020_Parte_3.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
+  },
+  {
+    "batch_id": "msgbatch_01CQwgrSHLTRN4CZNDkk5Sus",
+    "source_file": "Listado completo 2020_Parte_4.xlsx (reproceso sinonimos EN 2020)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2020/Listado completo 2020_Parte_4.xlsx",
+    "model": "claude-haiku-4-5",
+    "status": "ended",
+    "num_requests": 284,
+    "created_at": "2026-10-20T12:11:56.997262+00:00",
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Listado completo 2020_Parte_4.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
+  },
+  {
+    "batch_id": "msgbatch_01CYA1o7EJ4xaBGvjEPxNhV5",
+    "source_file": "Listado completo 2020_Parte_5.xlsx (reproceso sinonimos EN 2020)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2020/Listado completo 2020_Parte_5.xlsx",
+    "model": "claude-haiku-4-5",
+    "status": "ended",
+    "num_requests": 152,
+    "created_at": "2026-10-20T12:11:59.532840+00:00",
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Listado completo 2020_Parte_5.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   }
 ]
