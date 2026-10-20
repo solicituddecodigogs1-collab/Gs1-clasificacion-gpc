@@ -830,5 +830,70 @@
     "output_path": "Output_Clasificado/clasificado_2018_Parte_5.xlsx",
     "num_errors_in_batch": 0,
     "num_codes_blocked": 2
+  },
+  {
+    "batch_id": "msgbatch_019Lbj4wzyhY6tzZKXKtUACq",
+    "source_file": "2018_Parte_1.xlsx (reproceso vimay 2018)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2018/2018_Parte_1.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 233,
+    "created_at": "2026-10-20T18:32:29.630541+00:00",
+    "retrieved": false,
+    "output_path": null,
+    "num_errors_in_batch": null,
+    "num_codes_blocked": null
+  },
+  {
+    "batch_id": "msgbatch_01BeSM8UhA4cE4hXQ55LNAFk",
+    "source_file": "2018_Parte_2.xlsx (reproceso vimay 2018)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2018/2018_Parte_2.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 31,
+    "created_at": "2026-10-20T18:32:30.753290+00:00",
+    "retrieved": false,
+    "output_path": null,
+    "num_errors_in_batch": null,
+    "num_codes_blocked": null
+  },
+  {
+    "batch_id": "msgbatch_014ZoS1rkaiXfFKLrMZKhiMM",
+    "source_file": "2018_Parte_3.xlsx (reproceso vimay 2018)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2018/2018_Parte_3.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 21,
+    "created_at": "2026-10-20T18:32:31.706846+00:00",
+    "retrieved": false,
+    "output_path": null,
+    "num_errors_in_batch": null,
+    "num_codes_blocked": null
+  },
+  {
+    "batch_id": "msgbatch_01HbcXgxicf4PbyMgy6BrubT",
+    "source_file": "2018_Parte_4.xlsx (reproceso vimay 2018)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2018/2018_Parte_4.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 60,
+    "created_at": "2026-10-20T18:32:33.214330+00:00",
+    "retrieved": false,
+    "output_path": null,
+    "num_errors_in_batch": null,
+    "num_codes_blocked": null
+  },
+  {
+    "batch_id": "msgbatch_012SBQpuM3dLMJtzdaFJsiEt",
+    "source_file": "2018_Parte_5.xlsx (reproceso vimay 2018)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2018/2018_Parte_5.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 4,
+    "created_at": "2026-10-20T18:32:33.971226+00:00",
+    "retrieved": false,
+    "output_path": null,
+    "num_errors_in_batch": null,
+    "num_codes_blocked": null
   }
 ]
