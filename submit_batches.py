@@ -88,7 +88,7 @@ TOP_K_BRICKS = 25
 # Modelo vigente para todo el pipeline: Claude Haiku 4.5 (más rápido y
 # ~57% más barato que Sonnet 5 en la comparación A/B de 2024, con cobertura
 # algo menor — ver reporte de esa comparación).
-MODEL = "claude-haiku-4-5"
+MODEL = "claude-haiku-5-5"
 MAX_TOKENS = 45  # recorte radical de salida: solo {"gpc_code","confidence_score"}
 
 # Precios Batch API (50% del precio estándar) usados solo para la
