@@ -164,6 +164,13 @@ SYNONYMS_VE = {
     "kitchen": "cocina",
     "accessories": "accesorios",
     "sport": "deportivo",
+    # Detectado en 2019 Consolidado Parte_1 (marca KOLOSSUS): "COVERALL"
+    # (overol/mono de trabajo de cuerpo completo) no tiene overlap de
+    # n-gramas con el catálogo en español y no encontraba ningún candidato
+    # de Prendas de vestir — sí existe "Prendas de protección – Para todo
+    # el cuerpo" (10001394), solo no se veía en la lista de candidatos.
+    "coverall": "mono de trabajo prendas de proteccion cuerpo completo",
+    "coveralls": "mono de trabajo prendas de proteccion cuerpo completo",
 }
 
 # Sufijos de empaque a ignorar al construir la llave de deduplicación
