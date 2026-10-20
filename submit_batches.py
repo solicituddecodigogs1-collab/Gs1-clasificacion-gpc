@@ -171,6 +171,15 @@ SYNONYMS_VE = {
     # el cuerpo" (10001394), solo no se veía en la lista de candidatos.
     "coverall": "mono de trabajo prendas de proteccion cuerpo completo",
     "coveralls": "mono de trabajo prendas de proteccion cuerpo completo",
+    # Detectado en 2018 Parte_1 (marca VIMAY, ropa infantil venezolana):
+    # estos términos regionales no tienen overlap de n-gramas con el
+    # catálogo en español estándar y además "bordada/bordado" (bordado a
+    # mano) colisiona por n-gramas con "Bordes" (de construcción),
+    # desplazando cualquier candidato de ropa relevante.
+    "franela": "camiseta camisa",
+    "almillas": "camiseta interior bebe",
+    "enteritos": "mono bebe cuerpo entero prenda",
+    "leggins": "mallas pantalon",
 }
 
 # Sufijos de empaque a ignorar al construir la llave de deduplicación
