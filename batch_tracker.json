@@ -622,5 +622,57 @@
     "output_path": "Output_Clasificado/clasificado_2019 Consolidado_Parte_5.xlsx",
     "num_errors_in_batch": 0,
     "num_codes_blocked": 1
+  },
+  {
+    "batch_id": "msgbatch_01Hb46AoQ7XeqAYA3MBaCqaT",
+    "source_file": "2019 Consolidado_Parte_1.xlsx (reproceso coverall 2019)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2019/2019 Consolidado_Parte_1.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 1500,
+    "created_at": "2026-10-20T14:05:39.522592+00:00",
+    "retrieved": false,
+    "output_path": null,
+    "num_errors_in_batch": null,
+    "num_codes_blocked": null
+  },
+  {
+    "batch_id": "msgbatch_01RLB7V8WLuDCpyEnhHEudzz",
+    "source_file": "2019 Consolidado_Parte_2.xlsx (reproceso coverall 2019)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2019/2019 Consolidado_Parte_2.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "ended",
+    "num_requests": 151,
+    "created_at": "2026-10-20T14:05:41.948021+00:00",
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_2019 Consolidado_Parte_2.xlsx (reproceso coverall 2019)",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
+  },
+  {
+    "batch_id": "msgbatch_01LivNpv5wwi1441sYUbTdpG",
+    "source_file": "2019 Consolidado_Parte_3.xlsx (reproceso coverall 2019)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2019/2019 Consolidado_Parte_3.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 1046,
+    "created_at": "2026-10-20T14:05:54.175987+00:00",
+    "retrieved": false,
+    "output_path": null,
+    "num_errors_in_batch": null,
+    "num_codes_blocked": null
+  },
+  {
+    "batch_id": "msgbatch_01YKmv9hR7U3JR2WnnrWKGbg",
+    "source_file": "2019 Consolidado_Parte_4.xlsx (reproceso coverall 2019)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2019/2019 Consolidado_Parte_4.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "ended",
+    "num_requests": 28,
+    "created_at": "2026-10-20T14:05:55.190094+00:00",
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_2019 Consolidado_Parte_4.xlsx (reproceso coverall 2019)",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   }
 ]
