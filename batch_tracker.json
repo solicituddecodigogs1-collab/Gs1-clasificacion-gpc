@@ -628,13 +628,13 @@
     "source_file": "2019 Consolidado_Parte_1.xlsx (reproceso coverall 2019)",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_2019/2019 Consolidado_Parte_1.xlsx",
     "model": "claude-haiku-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 1500,
     "created_at": "2026-10-20T14:05:39.522592+00:00",
-    "retrieved": false,
-    "output_path": null,
-    "num_errors_in_batch": null,
-    "num_codes_blocked": null
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_2019 Consolidado_Parte_1.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   },
   {
     "batch_id": "msgbatch_01RLB7V8WLuDCpyEnhHEudzz",
@@ -645,7 +645,7 @@
     "num_requests": 151,
     "created_at": "2026-10-20T14:05:41.948021+00:00",
     "retrieved": true,
-    "output_path": "Output_Clasificado/clasificado_2019 Consolidado_Parte_2.xlsx (reproceso coverall 2019)",
+    "output_path": "Output_Clasificado/clasificado_2019 Consolidado_Parte_2.xlsx",
     "num_errors_in_batch": 0,
     "num_codes_blocked": 0
   },
@@ -654,13 +654,13 @@
     "source_file": "2019 Consolidado_Parte_3.xlsx (reproceso coverall 2019)",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_2019/2019 Consolidado_Parte_3.xlsx",
     "model": "claude-haiku-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 1046,
     "created_at": "2026-10-20T14:05:54.175987+00:00",
-    "retrieved": false,
-    "output_path": null,
-    "num_errors_in_batch": null,
-    "num_codes_blocked": null
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_2019 Consolidado_Parte_3.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   },
   {
     "batch_id": "msgbatch_01YKmv9hR7U3JR2WnnrWKGbg",
@@ -671,7 +671,7 @@
     "num_requests": 28,
     "created_at": "2026-10-20T14:05:55.190094+00:00",
     "retrieved": true,
-    "output_path": "Output_Clasificado/clasificado_2019 Consolidado_Parte_4.xlsx (reproceso coverall 2019)",
+    "output_path": "Output_Clasificado/clasificado_2019 Consolidado_Parte_4.xlsx",
     "num_errors_in_batch": 0,
     "num_codes_blocked": 0
   }
