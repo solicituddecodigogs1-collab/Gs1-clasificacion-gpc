@@ -138,7 +138,32 @@ SYNONYMS_VE = {
     "kids": "ninos",
     "ladies": "dama mujer",
     "men": "hombre caballero",
+    "women": "mujer dama",
     "baby": "bebe",
+    # Mismo problema, detectado en Listado completo 2020 (99% de las filas
+    # sin CLASIFICACION interna que compense): lubricantes automotrices y
+    # ropa descritos en inglés sin ningún candidato de Lubricantes/Prendas
+    # de vestir en el pre-filtro (p. ej. "25W-40 SYNT BLEND 4T" o "LEGGING
+    # YOGA"), resultando en NO_MATCH masivo aunque el catálogo sí tiene
+    # Brick equivalente ("Aceites/líquidos lubricantes", "Pantalones").
+    "oil": "aceite lubricante",
+    "lubricant": "lubricante",
+    "synt": "sintetico aceite",
+    "synthetic": "sintetico",
+    "legging": "mallas pantalon",
+    "leggings": "mallas pantalon",
+    "shirt": "camisa",
+    "hoodie": "sudadera chaqueta",
+    "shorts": "pantalon corto",
+    "underwear": "ropa interior",
+    "boxer": "ropa interior calzoncillo",
+    "shampoo": "champu",
+    "silicon": "silicona",
+    "silicone": "silicona",
+    "mask": "mascarilla",
+    "kitchen": "cocina",
+    "accessories": "accesorios",
+    "sport": "deportivo",
 }
 
 # Sufijos de empaque a ignorar al construir la llave de deduplicación
