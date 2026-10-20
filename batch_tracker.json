@@ -524,29 +524,38 @@
     "source_file": "2019 Consolidado_Parte_3.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_2019/2019 Consolidado_Parte_3.xlsx",
     "model": "claude-haiku-4-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 11863,
     "created_at": "2026-10-20T12:34:42.180297+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_2019 Consolidado_Parte_3.xlsx",
+    "num_errors_in_batch": 11863,
+    "num_codes_blocked": 0
   },
   {
     "batch_id": "msgbatch_01Bi9uWADqk1USdHkmzzkPtc",
     "source_file": "2019 Consolidado_Parte_4.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_2019/2019 Consolidado_Parte_4.xlsx",
     "model": "claude-haiku-4-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 11977,
     "created_at": "2026-10-20T12:36:58.145406+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_2019 Consolidado_Parte_4.xlsx",
+    "num_errors_in_batch": 11977,
+    "num_codes_blocked": 0
   },
   {
     "batch_id": "msgbatch_01PtJrNEdcf5fNpCitwuSni4",
     "source_file": "2019 Consolidado_Parte_5.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_2019/2019 Consolidado_Parte_5.xlsx",
     "model": "claude-haiku-4-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 11772,
     "created_at": "2026-10-20T12:39:15.548644+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_2019 Consolidado_Parte_5.xlsx",
+    "num_errors_in_batch": 11772,
+    "num_codes_blocked": 0
   }
 ]
