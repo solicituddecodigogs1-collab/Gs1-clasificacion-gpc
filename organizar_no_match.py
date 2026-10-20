@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Consolida todos los registros NO_MATCH de los años ya procesados
-(2019, 2020, 2021, 2022, 2023, 2025) en un único lugar para revisión/
-auditoría manual.
+(2019, 2020, 2021, 2022, 2023, 2024, 2025) en un único lugar para
+revisión/auditoría manual.
 
 Script completamente independiente: no importa submit_batches.py ni
 retrieve_batches.py.
@@ -16,9 +16,6 @@ Pasos:
    no_match_historico/no_match_<año>.xlsx, conservando todas las
    columnas originales.
 4. Imprime un resumen en consola con el conteo por año y el total.
-
-Nota: 2024 no está en la lista de años pedida explícitamente por el
-usuario (ver mensaje); si fue un olvido, es trivial agregarlo luego.
 """
 
 import sys
@@ -35,6 +32,7 @@ YEAR_GLOBS = {
     2021: "clasificado_Consolidacion 2021_Parte_*.xlsx",
     2022: "clasificado_Listado General (2022)_Parte_*.xlsx",
     2023: "clasificado_Base_2023_Parte_*.xlsx",
+    2024: "clasificado_Listado_General_2024_Parte_*.xlsx",
     2025: "clasificado_Base_2025_Parte_*.xlsx",
 }
 
