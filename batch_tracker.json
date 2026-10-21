@@ -1194,5 +1194,35 @@
     "output_path": "Output_Clasificado/clasificado_Consolidado_2015_Parte_2.xlsx",
     "num_errors_in_batch": 0,
     "num_codes_blocked": 0
+  },
+  {
+    "batch_id": "msgbatch_011x2Nk5QX5DLp19t3hGimjT",
+    "source_file": "no_match_2015.xlsx (rescate Sonnet 5.5)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/no_match_historico/no_match_2015.xlsx",
+    "model": "claude-sonnet-5-5",
+    "status": "in_progress",
+    "num_requests": 14996,
+    "created_at": "2026-10-21T20:23:07.203600+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_01THGMfJrFJhQQYuU4GFgRtu",
+    "source_file": "no_match_2016.xlsx (rescate Sonnet 5.5)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/no_match_historico/no_match_2016.xlsx",
+    "model": "claude-sonnet-5-5",
+    "status": "in_progress",
+    "num_requests": 10867,
+    "created_at": "2026-10-21T20:26:11.657024+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_01HEsd1gWGZ7cNJg38NYvTcs",
+    "source_file": "no_match_2017.xlsx (rescate Sonnet 5.5)",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/no_match_historico/no_match_2017.xlsx",
+    "model": "claude-sonnet-5-5",
+    "status": "in_progress",
+    "num_requests": 7496,
+    "created_at": "2026-10-21T20:28:21.814671+00:00",
+    "retrieved": false
   }
 ]
