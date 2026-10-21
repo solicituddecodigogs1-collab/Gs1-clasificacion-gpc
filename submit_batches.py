@@ -180,6 +180,18 @@ SYNONYMS_VE = {
     "almillas": "camiseta interior bebe",
     "enteritos": "mono bebe cuerpo entero prenda",
     "leggins": "mallas pantalon",
+    # Detectado en 2017 Parte_4.
+    "cooler": "nevera hielera",
+    # Marca EXTELL: solo viene el nombre genérico del fármaco + dosis, sin
+    # ningún término en español que conecte con el catálogo; estos 5 son
+    # todos antiácidos/H2-bloqueadores/inhibidores de bomba de protones —
+    # la Class "Remedios gastrointestinales" sí tiene Brick para esto
+    # ("Remedios contra la flatulencia/indigestión/antiácidos").
+    "ranitidina": "antiacido gastrointestinal indigestion",
+    "cimetidina": "antiacido gastrointestinal indigestion",
+    "omeprazol": "antiacido gastrointestinal indigestion",
+    "pantoprazol": "antiacido gastrointestinal indigestion",
+    "esomeprazol": "antiacido gastrointestinal indigestion",
 }
 
 # Sufijos de empaque a ignorar al construir la llave de deduplicación
