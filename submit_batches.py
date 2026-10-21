@@ -192,6 +192,13 @@ SYNONYMS_VE = {
     "omeprazol": "antiacido gastrointestinal indigestion",
     "pantoprazol": "antiacido gastrointestinal indigestion",
     "esomeprazol": "antiacido gastrointestinal indigestion",
+    # Marca KSKIN (2016 Parte_5): fundas/protectores de pantalla descritos
+    # solo como "[marca/modelo de teléfono] PROTECT[OR] ANTI-HUELLA/
+    # DIAMANTE/TRANSPARENTE" — sin ningún término que conecte con el
+    # catálogo, y "MOTOROLA MOTO" incluso colisiona con partes de
+    # motocicleta. Ancla directa por nombre de marca: cubre todos los
+    # modelos de teléfono sin tener que listarlos uno por uno.
+    "kskin": "accesorios telefono movil smartphone funda protector pantalla",
 }
 
 # Sufijos de empaque a ignorar al construir la llave de deduplicación
