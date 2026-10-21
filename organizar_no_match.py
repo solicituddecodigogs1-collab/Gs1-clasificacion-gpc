@@ -27,6 +27,10 @@ OUTPUT_DIR = Path("Output_Clasificado")
 NO_MATCH_DIR = Path("no_match_historico")
 
 YEAR_GLOBS = {
+    2015: "clasificado_Consolidado_2015_Parte_*.xlsx",
+    2016: "clasificado_Consolidado_2016_Parte_*.xlsx",
+    2017: "clasificado_Consolidado_2017_Parte_*.xlsx",
+    2018: "clasificado_2018_Parte_*.xlsx",
     2019: "clasificado_2019 Consolidado_Parte_*.xlsx",
     2020: "clasificado_Listado completo 2020_Parte_*.xlsx",
     2021: "clasificado_Consolidacion 2021_Parte_*.xlsx",
@@ -47,9 +51,17 @@ def is_no_match(df: pd.DataFrame) -> pd.Series:
 def main() -> int:
     NO_MATCH_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Años explícitos por línea de comandos (p. ej. "2015 2016 2017 2018")
+    # para no regenerar innecesariamente los años ya exportados.
+    if len(sys.argv) > 1:
+        requested_years = [int(a) for a in sys.argv[1:]]
+        year_globs = {y: YEAR_GLOBS[y] for y in requested_years}
+    else:
+        year_globs = YEAR_GLOBS
+
     summary = []
 
-    for year, pattern in YEAR_GLOBS.items():
+    for year, pattern in year_globs.items():
         files = sorted(OUTPUT_DIR.glob(pattern))
         if not files:
             print(f"[AVISO] año {year}: no se encontraron archivos con el patrón '{pattern}'")
