@@ -433,24 +433,50 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+# Alias de nombres de columna vistos en formatos de años más antiguos
+# (p. ej. 2017: "Nombre"/"EAN13"/"Clasificación Global del Producto" en
+# vez de "DESCRIPCION"/"GTIN"/"CLASIFICACION"). Claves y valores ya
+# normalizados (sin acentos, minúsculas) — ver _normalize_col_key.
+COLUMN_ALIASES: dict[str, list[str]] = {
+    "descripcion": ["nombre"],
+    "gtin": ["ean13", "ean-13", "ean 13"],
+    "clasificacion": ["clasificacion global del producto"],
+}
+
+
+def _normalize_col_key(value) -> str:
+    return strip_accents(str(value)).strip().lower()
+
+
 def resolve_columns(df: pd.DataFrame, required: list[str], optional: list[str] | None = None) -> dict[str, str | None]:
-    """Mapea nombres canónicos (minúsculas) a los nombres reales de columna,
-    sin importar mayúsculas/minúsculas ni espacios extremos (p. ej. la
-    columna real puede llamarse "GTIN" o "DESCRIPCION"). Las columnas
-    `optional` que no existan quedan en None en vez de fallar."""
+    """Mapea nombres canónicos (minúsculas, sin acentos) a los nombres
+    reales de columna, sin importar mayúsculas/minúsculas, acentos ni
+    espacios extremos (p. ej. la columna real puede llamarse "GTIN",
+    "DESCRIPCION", o un alias de un formato de año distinto como "Nombre"
+    o "EAN13" — ver COLUMN_ALIASES). Las columnas `optional` que no
+    existan quedan en None en vez de fallar."""
     lower_map: dict[str, str] = {}
     for col in df.columns:
-        key = str(col).strip().lower()
+        key = _normalize_col_key(col)
         if key not in lower_map:
             lower_map[key] = col
-    missing = [r for r in required if r not in lower_map]
+
+    def find(canonical: str) -> str | None:
+        if canonical in lower_map:
+            return lower_map[canonical]
+        for alias in COLUMN_ALIASES.get(canonical, []):
+            if alias in lower_map:
+                return lower_map[alias]
+        return None
+
+    missing = [r for r in required if find(r) is None]
     if missing:
         raise ValueError(
             f"Faltan columnas requeridas {missing}. Columnas disponibles: {list(df.columns)}"
         )
-    result: dict[str, str | None] = {r: lower_map[r] for r in required}
+    result: dict[str, str | None] = {r: find(r) for r in required}
     for opt in optional or []:
-        result[opt] = lower_map.get(opt)
+        result[opt] = find(opt)
     return result
 
 
@@ -465,8 +491,11 @@ STANDARD_COLUMNS = [
 
 
 def _looks_like_header_row(values: list) -> bool:
-    text = {str(v).strip().lower() for v in values if pd.notna(v)}
-    return "descripcion" in text and "marca" in text
+    text = {_normalize_col_key(v) for v in values if pd.notna(v)}
+    tiene_descripcion = "descripcion" in text or any(
+        alias in text for alias in COLUMN_ALIASES["descripcion"]
+    )
+    return tiene_descripcion and "marca" in text
 
 
 def load_sample(file_path: str) -> tuple[pd.DataFrame, dict[str, str | None]]:

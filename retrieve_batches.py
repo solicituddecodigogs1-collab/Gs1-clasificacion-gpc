@@ -246,20 +246,45 @@ def fetch_results(
     return results_by_id, num_errors, num_blocked
 
 
+# Alias de nombres de columna vistos en formatos de años más antiguos
+# (p. ej. 2017: "Nombre" en vez de "DESCRIPCION") — IDÉNTICO a
+# submit_batches.py:COLUMN_ALIASES para que ambos scripts resuelvan la
+# misma columna en el mismo archivo.
+DESCRIPCION_ALIASES = ["nombre"]
+
+
+def _normalize_col_key(value) -> str:
+    return strip_accents(str(value)).strip().lower()
+
+
 def resolve_descripcion_marca_columns(df: pd.DataFrame) -> tuple[str, str]:
     """Encuentra las columnas descripcion/marca sin importar mayúsculas/
-    minúsculas (p. ej. la columna real puede llamarse "DESCRIPCION")."""
+    minúsculas ni acentos (p. ej. la columna real puede llamarse
+    "DESCRIPCION", o un alias de un formato de año distinto como
+    "Nombre")."""
     lower_map: dict[str, str] = {}
     for col in df.columns:
-        key = str(col).strip().lower()
+        key = _normalize_col_key(col)
         if key not in lower_map:
             lower_map[key] = col
-    missing = [r for r in ("descripcion", "marca") if r not in lower_map]
+
+    descripcion_col = lower_map.get("descripcion")
+    if descripcion_col is None:
+        for alias in DESCRIPCION_ALIASES:
+            if alias in lower_map:
+                descripcion_col = lower_map[alias]
+                break
+
+    missing = []
+    if descripcion_col is None:
+        missing.append("descripcion")
+    if "marca" not in lower_map:
+        missing.append("marca")
     if missing:
         raise ValueError(
             f"Faltan columnas requeridas {missing} para el merge. Columnas disponibles: {list(df.columns)}"
         )
-    return lower_map["descripcion"], lower_map["marca"]
+    return descripcion_col, lower_map["marca"]
 
 
 # Esquema estándar observado en todos los años (2021-2025) cuando el Excel
@@ -274,8 +299,9 @@ STANDARD_COLUMNS = [
 
 
 def _looks_like_header_row(values: list) -> bool:
-    text = {str(v).strip().lower() for v in values if pd.notna(v)}
-    return "descripcion" in text and "marca" in text
+    text = {_normalize_col_key(v) for v in values if pd.notna(v)}
+    tiene_descripcion = "descripcion" in text or any(alias in text for alias in DESCRIPCION_ALIASES)
+    return tiene_descripcion and "marca" in text
 
 
 def read_source_excel(source_path: Path) -> pd.DataFrame:
