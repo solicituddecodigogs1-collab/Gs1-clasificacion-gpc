@@ -133,7 +133,7 @@ OPTIONAL_COLUMNS = ["clasificacion", "clasificacion macro"]
 # desactiva explícitamente el "thinking" (sí soportado en Sonnet 5) para
 # que los 45 tokens de max_tokens no se gasten en razonamiento interno
 # invisible antes de emitir el JSON.
-THINKING_CONFIG = {"type": "disabled"}
+THINKING_CONFIG = {"type": "between_tools"}  # Sonnet 5.5 rechaza "disabled" (válido en Haiku); éste es su equivalente de "no pensar antes de responder".
 
 # Mapeo básico de venezolanismos a términos en español neutro/MX, para
 # mejorar el recall de la búsqueda léxica contra el catálogo oficial.
