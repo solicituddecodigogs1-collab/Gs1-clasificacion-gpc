@@ -199,6 +199,11 @@ SYNONYMS_VE = {
     # motocicleta. Ancla directa por nombre de marca: cubre todos los
     # modelos de teléfono sin tener que listarlos uno por uno.
     "kskin": "accesorios telefono movil smartphone funda protector pantalla",
+    # Detectado en 2015 Parte_1: "JEANS [licencia infantil] NNNNNNN" —
+    # "jeans" no tiene overlap de n-gramas con "pantalones", y encima la
+    # marca (BARBIE, HOT WHEELS, MONSTER HIGH...) colisiona por n-gramas
+    # con palabras sin relación ("barba", "barras", "ruibarbo").
+    "jeans": "pantalon pantalones mezclilla",
 }
 
 # Sufijos de empaque a ignorar al construir la llave de deduplicación
