@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "sports-betting-analyzer": {
+      "source": "OneWave-AI/claude-skills",
+      "sourceType": "github",
+      "skillPath": "sports-betting-analyzer/SKILL.md",
+      "computedHash": "6fdc4e49e5aa50cde742238cf3beac3838f5451193fbed5601d5a9d7be4a0abc"
+    }
+  }
+}
