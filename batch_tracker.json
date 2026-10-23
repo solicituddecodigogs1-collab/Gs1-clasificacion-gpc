@@ -1644,49 +1644,64 @@
     "source_file": "Consolidado_2012_Parte_1.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/Consolidado_2012_Parte_1.xlsx",
     "model": "claude-haiku-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 15460,
     "created_at": "2026-10-23T15:01:22.403438+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Consolidado_2012_Parte_1.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   },
   {
     "batch_id": "msgbatch_01FvYtm3gbeEZWfsBHP5BHhQ",
     "source_file": "Consolidado_2012_Parte_2.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/Consolidado_2012_Parte_2.xlsx",
     "model": "claude-haiku-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 15299,
     "created_at": "2026-10-23T15:04:26.273354+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Consolidado_2012_Parte_2.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 1
   },
   {
     "batch_id": "msgbatch_01AkzfUJKcVhnzzepWUyq25c",
     "source_file": "Consolidado_2012_Parte_3.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/Consolidado_2012_Parte_3.xlsx",
     "model": "claude-haiku-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 15412,
     "created_at": "2026-10-23T15:07:49.732532+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Consolidado_2012_Parte_3.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 5
   },
   {
     "batch_id": "msgbatch_01NBL5dK2sUPcGtox5x4fZBa",
     "source_file": "Consolidado_2012_Parte_4.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/Consolidado_2012_Parte_4.xlsx",
     "model": "claude-haiku-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 13257,
     "created_at": "2026-10-23T15:10:35.420368+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Consolidado_2012_Parte_4.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 2
   },
   {
     "batch_id": "msgbatch_012vDiWhmheEbPv2ZKVhb7Fp",
     "source_file": "Consolidado_2012_Parte_5.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/Consolidado_2012_Parte_5.xlsx",
     "model": "claude-haiku-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 14847,
     "created_at": "2026-10-23T15:13:51.325924+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Consolidado_2012_Parte_5.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   }
 ]
