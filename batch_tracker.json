@@ -1891,9 +1891,12 @@
     "source_file": "no_match_2010.xlsx (rescate anticipado Sonnet 5.5 (2010))",
     "source_path": "/home/user/Gs1-clasificacion-gpc/no_match_historico/no_match_2010.xlsx",
     "model": "claude-sonnet-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 15430,
     "created_at": "2026-10-23T19:17:08.778725+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/no_match_2010_rescate_sonnet.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   }
 ]
