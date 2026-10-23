@@ -152,6 +152,7 @@ SYNONYMS_VE = {
     "synthetic": "sintetico",
     "legging": "mallas pantalon",
     "leggings": "mallas pantalon",
+    "leguing": "legging mallas pantalon",
     "shirt": "camisa",
     "hoodie": "sudadera chaqueta",
     "shorts": "pantalon corto",
@@ -164,6 +165,10 @@ SYNONYMS_VE = {
     "kitchen": "cocina",
     "accessories": "accesorios",
     "sport": "deportivo",
+    # Detectado en 2014 (marca I-ONSET): "CASE" (funda/estuche, p.ej.
+    # fundas de teléfono "JELLY CASE IP5/S") no tiene overlap léxico
+    # con "funda"/"estuche" en el catálogo.
+    "case": "funda estuche",
     # Detectado en 2019 Consolidado Parte_1 (marca KOLOSSUS): "COVERALL"
     # (overol/mono de trabajo de cuerpo completo) no tiene overlap de
     # n-gramas con el catálogo en español y no encontraba ningún candidato
@@ -288,6 +293,72 @@ def apply_synonyms(text: str) -> str:
     return " ".join(expanded)
 
 
+def _build_segmentation_vocab() -> set[str]:
+    """Vocabulario para separar palabras pegadas sin espacios (detectado
+    en 2014, marca KE: "JEANSDECOLOR8403", "CAMISAPERFLIVIANAM/CORTACC...").
+    Usa las mismas palabras que el catálogo oficial ya sabe reconocer
+    (para que una palabra separada tenga sentido para el TF-IDF), más
+    conectores españoles comunes y el propio vocabulario de SYNONYMS_VE."""
+    vocab = {
+        "de", "del", "la", "el", "los", "las", "y", "con", "sin", "para",
+        "por", "en", "color", "talla", "unidad", "unidades", "corta",
+        "corto", "larga", "largo",
+    }
+    try:
+        catalog_df = pd.read_csv(CATALOG_FILE, dtype=str)
+        for titulo in catalog_df["titulo"].dropna():
+            for w in normalize_text(titulo).split():
+                if len(w) >= 3:
+                    vocab.add(w)
+    except Exception:
+        pass
+    for key, value in SYNONYMS_VE.items():
+        vocab.add(key)
+        vocab.update(value.split())
+    return vocab
+
+
+_SEGMENTATION_VOCAB = _build_segmentation_vocab()
+
+
+def _segment_glued_word(run: str) -> list[str] | None:
+    """Segmentación por programación dinámica: devuelve la lista de
+    palabras si `run` se descompone POR COMPLETO en palabras conocidas,
+    o None si no se puede. La exigencia de descomposición completa es
+    la salvaguarda: un código de SKU real (sin palabras reales, p.ej.
+    "velcro" o "fk51") simplemente no se segmenta y queda intacto."""
+    n = len(run)
+    dp: list[list[str] | None] = [None] * (n + 1)
+    dp[0] = []
+    for i in range(1, n + 1):
+        for j in range(max(0, i - 15), i):
+            if dp[j] is None:
+                continue
+            word = run[j:i]
+            if len(word) >= 2 and word in _SEGMENTATION_VOCAB:
+                dp[i] = dp[j] + [word]
+                break
+    return dp[n]
+
+
+def split_glued_words(text: str) -> str:
+    """Separa palabras en español pegadas sin espacios (p.ej.
+    "jeansdecolor8403" -> "jeans de color 8403"). Solo se usa para el
+    texto de búsqueda del pre-filtro TF-IDF (query_text) — NUNCA para
+    normalize_key/make_custom_id, así que no afecta la deduplicación ni
+    el merge con retrieve_batches.py."""
+    out: list[str] = []
+    for token in text.split():
+        for chunk in re.findall(r"[a-z]+|[0-9]+", token):
+            if chunk.isalpha() and len(chunk) >= 4 and chunk not in _SEGMENTATION_VOCAB:
+                segmented = _segment_glued_word(chunk)
+                if segmented:
+                    out.extend(segmented)
+                    continue
+            out.append(chunk)
+    return " ".join(out)
+
+
 def normalize_key(marca, descripcion) -> str:
     return f"{normalize_text(marca)}|{normalize_descripcion(descripcion)}"
 
@@ -310,7 +381,8 @@ def query_text(marca, descripcion, clasificacion=None, clasificacion_macro=None)
         parts.append(normalize_text(clasificacion))
     if clasificacion_macro:
         parts.append(normalize_text(clasificacion_macro))
-    return apply_synonyms(" ".join(p for p in parts if p))
+    combined = split_glued_words(" ".join(p for p in parts if p))
+    return apply_synonyms(combined)
 
 
 def clean_gtin(value) -> str:
