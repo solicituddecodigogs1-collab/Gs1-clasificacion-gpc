@@ -1469,5 +1469,55 @@
     "output_path": "Output_Clasificado/no_match_2025_rescate_sonnet.xlsx",
     "num_errors_in_batch": 0,
     "num_codes_blocked": 0
+  },
+  {
+    "batch_id": "msgbatch_01GnG1AbabV5VoDi4xEW3RHF",
+    "source_file": "Consolidado_2014_Parte_1.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/Consolidado_2014_Parte_1.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 7555,
+    "created_at": "2026-10-23T13:01:04.975381+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_01QNS1KHeB5GGCr7E8jAr2Qx",
+    "source_file": "Consolidado_2014_Parte_2.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/Consolidado_2014_Parte_2.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 8670,
+    "created_at": "2026-10-23T13:02:49.991192+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_011s8cSsD6j6qffKGoFJE73C",
+    "source_file": "Consolidado_2014_Parte_3.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/Consolidado_2014_Parte_3.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 8852,
+    "created_at": "2026-10-23T13:04:44.445682+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_01YECg3TrwGVFsumqQBAUzB2",
+    "source_file": "Consolidado_2014_Parte_4.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/Consolidado_2014_Parte_4.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 8623,
+    "created_at": "2026-10-23T13:06:28.034934+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_01L5nueiHdYZjyMnfMq7oiuS",
+    "source_file": "Consolidado_2014_Parte_5.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/Consolidado_2014_Parte_5.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 8851,
+    "created_at": "2026-10-23T13:08:22.664773+00:00",
+    "retrieved": false
   }
 ]
