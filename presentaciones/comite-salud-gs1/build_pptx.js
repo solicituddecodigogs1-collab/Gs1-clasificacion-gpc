@@ -45,6 +45,10 @@ const iconCache={};
 async function icon(name,color){const k=name+color;if(iconCache[k])return iconCache[k];const C_=LU['Lu'+name];if(!C_)throw new Error('icon '+name);
  const svg=RDS.renderToStaticMarkup(React.createElement(C_,{color:'#'+color,size:256}));return iconCache[k]='image/png;base64,'+(await sharp(Buffer.from(svg)).resize(256,256).png().toBuffer()).toString('base64')}
 
+async function clampAdj(f){const JSZip=require('jszip');const z=await JSZip.loadAsync(fs.readFileSync(f));
+ for(const n of Object.keys(z.files)){if(!/ppt\/(slides|slideLayouts|slideMasters)\/[^/]+\.xml$/.test(n))continue;let x=await z.file(n).async('string');
+  const y=x.replace(/(prst="roundRect"><a:avLst><a:gd name="adj" fmla="val )(\d+)"/g,(m,a,v)=>a+Math.min(+v,50000)+'"');if(y!==x)z.file(n,y)}
+ fs.writeFileSync(f,await z.generateAsync({type:'nodebuffer',compression:'DEFLATE'}))}
 (async()=>{
 const IMG={};
 IMG.logoL=await png(logoSvg(false));IMG.logoD=await png(logoSvg(true));IMG.logoMiniL=await png(logoSvg(false));IMG.logoMiniD=await png(logoSvg(true));
@@ -66,14 +70,14 @@ const footer=(dark)=>[
  {text:{text:'Comité Salud GS1 · 5 Nov 2026 · www.gs1ve.org',options:{x:p(340),y:p(686),w:p(600),h:p(20),fontSize:9,color:dark?'94A3B8':'64748B',align:'center',margin:0}}},
  {image:{x:p(1090),y:0,w:p(190),h:p(86),data:dark?IMG.wCD:IMG.wCL,altText:'Onda decorativa'}},{image:{x:p(980),y:p(656),w:p(300),h:p(64),data:IMG.wBot,altText:'Onda decorativa'}}];
 pres.defineSlideMaster({title:'GS1_CLARO',background:{color:'F8FAFC'},objects:[...footer(false),
- {placeholder:{options:{name:'title',type:'title',x:p(48),y:p(52),w:p(960),h:p(76),fontSize:26,align:'left',bold:true,color:C.text2,fontFace:'+mj-lt',margin:0,valign:'top'},text:''}}],slideNumber:{x:p(1170),y:p(684),w:p(60),h:p(24),fontSize:10,bold:true,color:'FFFFFF',align:'right'}});
+ {placeholder:{options:{name:'title',type:'title',x:p(48),y:p(52),w:p(960),h:p(76),fontSize:26,align:'left',bold:true,color:C.text2,fontFace:'Arial',margin:0,valign:'top'},text:''}}],slideNumber:{x:p(1170),y:p(684),w:p(60),h:p(24),fontSize:10,bold:true,color:'FFFFFF',align:'right'}});
 pres.defineSlideMaster({title:'GS1_OSCURO',background:{data:IMG.bgDark},objects:[...footer(true),
- {placeholder:{options:{name:'title',type:'title',x:p(48),y:p(52),w:p(1000),h:p(76),fontSize:26,align:'left',bold:true,color:C.background1,fontFace:'+mj-lt',margin:0,valign:'top'},text:''}}],slideNumber:{x:p(1170),y:p(684),w:p(60),h:p(24),fontSize:10,bold:true,color:H.orange,align:'right'}});
+ {placeholder:{options:{name:'title',type:'title',x:p(48),y:p(52),w:p(1000),h:p(76),fontSize:26,align:'left',bold:true,color:C.background1,fontFace:'Arial',margin:0,valign:'top'},text:''}}],slideNumber:{x:p(1170),y:p(684),w:p(60),h:p(24),fontSize:10,bold:true,color:H.orange,align:'right'}});
 pres.defineSlideMaster({title:'GS1_LIBRE',background:{color:'FFFFFF'},objects:[]});
 
 /* ---------- helpers ---------- */
 const shadow=()=>({type:'outer',color:'1E3A8A',opacity:.14,blur:14,offset:3,angle:90});
-function T(s,t,x,y,w,h,o={}){s.addText(t,{x:p(x),y:p(y),w:p(w),h:p(h),fontSize:o.sz||11,bold:o.b,italic:o.i,color:o.c||col.dark,align:o.al||'left',valign:o.va||'top',margin:0,isTextBox:true,fontFace:o.mono?'Courier New':(o.h?'+mj-lt':undefined),charSpacing:o.cs,paraSpaceAfter:o.psa,lineSpacingMultiple:o.ls,objectName:o.name,rotate:o.rot,fit:'none'})}
+function T(s,t,x,y,w,h,o={}){s.addText(t,{x:p(x),y:p(y),w:p(w),h:p(h),fontSize:o.sz||11,bold:o.b,italic:o.i,color:o.c||col.dark,align:o.al||'left',valign:o.va||'top',margin:0,isTextBox:true,fontFace:o.mono?'Courier New':(o.h?'Arial':'Calibri'),charSpacing:o.cs,paraSpaceAfter:o.psa,lineSpacingMultiple:o.ls,objectName:o.name,rotate:o.rot,fit:'none'})}
 function card(s,x,y,w,h,o={}){s.addShape(pres.ShapeType.roundRect,{x:p(x),y:p(y),w:p(w),h:p(h),rectRadius:o.r??.2,fill:{color:o.fill||col.white,transparency:o.tr},line:{color:o.line||'E2E8F0',width:o.lw||.75},shadow:o.noShadow?undefined:shadow(),objectName:o.name||'Tarjeta',rotate:o.rot})}
 function dcard(s,x,y,w,h){s.addShape(pres.ShapeType.roundRect,{x:p(x),y:p(y),w:p(w),h:p(h),rectRadius:.18,fill:{color:'FFFFFF',transparency:92},line:{color:'FFFFFF',transparency:85,width:.75},objectName:'Tarjeta oscura'})}
 function circle(s,x,y,d,fill,o={}){s.addShape(pres.ShapeType.ellipse,{x:p(x),y:p(y),w:p(d),h:p(d),fill:{color:fill,transparency:o.tr},line:o.line?{color:o.line,width:o.lw||1}:{type:'none'},shadow:o.sh?shadow():undefined,objectName:o.name||'Círculo'})}
@@ -91,7 +95,8 @@ async function photo(s,x,y,w,h,o={}){ // marcador de foto editable (clic derecho
 function pimg(s,f,x,y,w,h,rot,name){s.addImage({data:b64(f),x:p(x),y:p(y),w:p(w),h:p(h),rotate:rot,altText:name})}
 function line(s,x1,y1,x2,y2,color,w=1,o={}){const dx=x2-x1,dy=y2-y1;s.addShape(pres.ShapeType.line,{x:p(Math.min(x1,x2)),y:p(Math.min(y1,y2)),w:p(Math.abs(dx)),h:p(Math.abs(dy)),flipV:dx*dy<0,line:{color,width:w,transparency:o.tr,dashType:o.dash}})}
 
-function strip(s,x,y,w,c,h=8){s.addShape(pres.ShapeType.round2SameRect,{x:p(x),y:p(y),w:p(w),h:p(h),rectRadius:.5,fill:{color:c},line:{type:'none'},objectName:'Barra de color'})}
+function topRound(s,o){s.addShape(pres.ShapeType.roundRect,{...o,rectRadius:Math.min(o.rectRadius||.2,.5)});s.addShape(pres.ShapeType.rect,{x:o.x,y:o.y+o.h/2,w:o.w,h:o.h/2,fill:o.fill,line:{type:'none'},objectName:(o.objectName||'Forma')+' (base)'})}
+function strip(s,x,y,w,c,h=8){topRound(s,{x:p(x),y:p(y),w:p(w),h:p(h),rectRadius:.5,fill:{color:c},line:{type:'none'},objectName:'Barra de color'})}
 /* ===== 1 PORTADA ===== */
 let s=pres.addSlide({masterName:'GS1_LIBRE'});
 s.addImage({data:IMG.wCover,x:0,y:0,w:p(1280),h:p(720),altText:'Ondas corporativas'});
@@ -141,7 +146,7 @@ s=pres.addSlide({masterName:'GS1_CLARO'});
 kicker(s,'Agenda · Punto 1');title(s,[R('Rastreo Inteligente: ',col.navy),R('la IA parte del dato estándar',col.cyan)]);
 T(s,'Los algoritmos de IA son tan buenos como la calidad de los datos estándar que los alimentan.',48,114,1000,24,{sz:12.5,i:true,c:'475569'});
 const c3=[['Database',col.navy,H.navy,'1 · Datos estándar GS1','Identificadores únicos y universales',[['GTIN','qué producto'],['GLN','dónde / ubicación'],['Lote/Serie','qué unidad'],['SSCC','qué envío']]],['Radar',col.cyan,H.cyan2,'2 · Eventos EPCIS 2.0','Cada movimiento queda registrado',[['QUÉ','producto y cantidad'],['DÓNDE','ubicación GLN'],['CUÁNDO','fecha y hora'],['POR QUÉ','recepción, despacho, dispensación']]],['Cpu',col.teal,H.teal,'3 · Inteligencia Artificial','Modelos sobre datos confiables',[['Predicción','demanda y escasez'],['Visión','verificación de códigos 2D'],['Anomalías','desvíos y cadena de frío']]]];
-for(let i=0;i<3;i++){const x=48+i*420,c=c3[i];card(s,x,160,344,350);s.addShape(pres.ShapeType.round2SameRect,{x:p(x),y:p(160),w:p(344),h:p(76),rectRadius:.18,fill:{color:c[1]},line:{type:'none'},objectName:'Cabecero'});
+for(let i=0;i<3;i++){const x=48+i*420,c=c3[i];card(s,x,160,344,350);topRound(s,{x:p(x),y:p(160),w:p(344),h:p(76),rectRadius:.18,fill:{color:c[1]},line:{type:'none'},objectName:'Cabecero'});
  await ic(s,c[0],'FFFFFF',x+18,176,26);T(s,c[3],x+52,174,280,28,{sz:13.5,b:true,c:col.white,h:true,va:'middle'});T(s,c[4],x+18,206,310,22,{sz:10.5,c:col.white});
  c[5].forEach((r,j)=>{const y=252+j*60;s.addShape(pres.ShapeType.roundRect,{x:p(x+16),y:p(y),w:p(312),h:p(50),rectRadius:.12,fill:{color:'F4F8FB'},line:{type:'none'},objectName:'Dato '+r[0]});T(s,r[0],x+26,y,100,50,{sz:10.5,b:true,c:c[2]==='0097B2'?col.cyan2:(i?col.teal:col.navy),mono:true,va:'middle'});T(s,r[1],x+128,y,196,50,{sz:11,c:'334155',va:'middle'})});
  if(i<2)s.addShape(pres.ShapeType.rightArrow,{x:p(x+354),y:p(320),w:p(56),h:p(32),fill:{color:col.cyan},line:{type:'none'},objectName:'Flecha'})}
@@ -203,7 +208,7 @@ s=pres.addSlide({masterName:'GS1_CLARO'});
 kicker(s,'Evidencia internacional · GS1 Healthcare');title(s,[R('Casos de éxito: ',col.navy),R('impacto real en hospitales y regulación',col.cyan)]);
 const cs=[['Hospital',H.navy,'Reino Unido · NHS','Proyecto Scan4Safety','GTIN · GLN · GSRN','Adopción en hospitales públicos británicos.'],['Pill',H.cyan2,'Argentina (ANMAT) y Brasil','ANVISA · Sírio-Libanês · Einstein','GS1 DataMatrix','Trazabilidad unitaria de medicamentos oncológicos y de alto costo.'],['ScanLine',H.teal,'Unión Europea (FMD) y Colombia','Sincronización GDSN','DataMatrix · e-PIL · Digital Link','Verificación serializada punto a punto y prospecto electrónico (e-PIL) mediante GS1 Digital Link.']];
 for(let i=0;i<3;i++){const x=48+i*402,c=cs[i];card(s,x,125,378,500);
- s.addShape(pres.ShapeType.round2SameRect,{x:p(x),y:p(125),w:p(378),h:p(130),rectRadius:.18,fill:{color:c[1]},line:{type:'none'},objectName:'FOTO (reemplazar): '+c[2]});await ic(s,c[0],'FFFFFF',x+169,163,40);T(s,'Insertar foto',x+10,232,358,16,{sz:8,c:col.white,al:'center'});
+ topRound(s,{x:p(x),y:p(125),w:p(378),h:p(130),rectRadius:.18,fill:{color:c[1]},line:{type:'none'},objectName:'FOTO (reemplazar): '+c[2]});await ic(s,c[0],'FFFFFF',x+169,163,40);T(s,'Insertar foto',x+10,232,358,16,{sz:8,c:col.white,al:'center'});
  T(s,c[2],x+20,268,340,24,{sz:14,b:true,c:col.navy,h:true});T(s,c[3],x+20,294,340,20,{sz:11.5,b:true,c:col.cyan});T(s,c[4],x+20,322,340,18,{sz:10,b:true,c:col.orange,mono:true});T(s,c[5],x+20,346,340,46,{sz:11,c:'475569'});}
 // metricas
 {const x=48;for(let j=0;j<3;j++){const m=[['76%','menos errores de medicación'],['+140,000','horas clínicas liberadas'],['<30 min','para ubicar lotes (recall)']][j];const bx=x+20+j*114;card(s,bx,404,106,120,{fill:col.bg,noShadow:true,r:.15});T(s,m[0],bx,416,106,40,{sz:j?15:24,b:true,c:col.orange,al:'center',va:'middle',h:true});T(s,m[1],bx+6,462,94,56,{sz:9.5,c:'475569',al:'center'})}}
@@ -241,5 +246,5 @@ T(s,'ESCANEA · SOLICITA ACCESO',130,584,300,16,{sz:9,b:true,c:col.orange,al:'ce
 const ct=[['MapPin',[R('Oficina GS1 Venezuela. ',col.dark,{bold:true}),R('Los Ruices, Calle Los Laboratorios, Edf. Quorum, Piso 1, Oficina K, Caracas, Venezuela.',col.dark)],58,false],['Phone','+58 414-2771877  /  +58 412-628-3276',44,true],['Mail','Solicituddecodigo@gs1ve.org\nGlabrador@gs1ve.org · Acastro@gs1ve.org',66,true],['Globe','www.gs1ve.org  ·  Instagram @GS1Venezuela  ·  RIF J-00336360-0',44,false]];
 let cy=214;for(const [ico,txt,h,mono] of ct){card(s,520,cy,712,h,{r:.3});await ic(s,ico,H.orange,540,cy+h/2-11,22);T(s,txt,576,cy,640,h,{sz:mono?11:11.5,b:ico!=='MapPin',va:'middle',mono,c:col.dark});cy+=h+14}
 T(s,[R('Datos estándar, ',col.navy),R('decisiones seguras.',col.orange)],520,540,500,34,{sz:17,b:true,h:true});
-await pres.writeFile({fileName:OUT});await applyTheme(OUT,THEME);console.log('ok');
+await pres.writeFile({fileName:OUT});await applyTheme(OUT,THEME);await clampAdj(OUT);console.log('ok');
 })().catch(e=>{console.error(e);process.exit(1)});
