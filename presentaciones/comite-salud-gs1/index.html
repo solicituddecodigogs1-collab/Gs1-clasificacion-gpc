@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COMITÉ Salud GS1 — GS1 Venezuela</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.294.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{--navy:#002C6C;--cyan:#1CA9C9;--cyan2:#0097B2;--orange:#F26334;--teal:#00A79D;--dark:#0B132B;--ok:#10B981;--bad:#EF4444}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#0B132B;overflow:hidden;font-family:Inter,sans-serif;color:var(--navy)}
+#stage{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0}
+.slide{position:absolute;inset:0;width:1280px;height:720px;overflow:hidden;background:#F8FAFC;opacity:0;visibility:hidden;transform:translateY(26px) scale(.985);transition:opacity .6s cubic-bezier(.22,.8,.3,1),transform .6s cubic-bezier(.22,.8,.3,1),visibility 0s .6s}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .6s cubic-bezier(.22,.8,.3,1),transform .6s cubic-bezier(.22,.8,.3,1),visibility 0s}
+.slide.dark{background:radial-gradient(circle at 12% 8%,rgba(28,169,201,.22),transparent 45%),radial-gradient(circle at 92% 95%,rgba(242,99,52,.16),transparent 45%),#0B132B;color:#fff}
+.font-title{font-family:Montserrat,sans-serif;letter-spacing:-.02em}
+.mono{font-family:'JetBrains Mono',monospace}
+.card{background:#fff;border:1px solid #f1f5f9;border-radius:22px;box-shadow:0 20px 40px -18px rgba(0,44,108,.18)}
+.dcard{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;backdrop-filter:blur(6px)}
+.photo:not(.absolute){position:relative}.photo{overflow:hidden;background:linear-gradient(145deg,#002C6C,#1CA9C9)}
+.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.photo .fb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35)}
+.photo .fb svg{width:42%;height:42%}
+.cap{border-radius:32px;border:4px solid #fff;box-shadow:0 25px 50px -12px rgba(0,44,108,.4)}
+.circ{border-radius:9999px;border:8px solid #fff;box-shadow:0 20px 40px -10px rgba(0,44,108,.35)}
+.badge{display:inline-flex;align-items:center;justify-content:center;border-radius:9999px;font-weight:800;font-family:Montserrat}
+.pill{border-radius:9999px}
+.tag{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.slide i[data-lucide]{display:inline-block}
+#bar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:50;display:flex;gap:8px;align-items:center;padding:8px 12px;border-radius:9999px;background:rgba(11,19,43,.88);backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,.4);color:#fff;font:600 13px Inter;opacity:.25;transition:opacity .3s}
+#bar:hover,#bar:focus-within{opacity:1}
+#bar button,#bar select{background:rgba(255,255,255,.1);color:#fff;border:0;border-radius:9999px;padding:8px 12px;font:600 13px Inter;cursor:pointer;display:flex;align-items:center;gap:6px}
+#bar button:hover{background:#F26334}
+#bar select option{color:#000}
+#prog{position:fixed;left:0;top:0;height:5px;background:#F26334;z-index:60;transition:width .5s cubic-bezier(.22,.8,.3,1)}
+@media print{
+ @page{size:1280px 720px;margin:0}
+ html,body{overflow:visible;height:auto;background:#fff}
+ #bar,#prog{display:none!important}
+ #stage{position:static;transform:none!important;width:1280px;height:auto}
+ .slide{position:relative;opacity:1!important;visibility:visible!important;transform:none!important;transition:none;page-break-after:always;break-after:page;page-break-inside:avoid}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div id="prog" style="width:0"></div>
+<div id="stage">
+
+<!-- ============ 1. PORTADA ============ -->
+<section class="slide" data-title="Portada — Comité Salud GS1">
+  <svg class="absolute inset-0" width="1280" height="720" viewBox="0 0 1280 720" fill="none">
+    <path d="M760 0H1280V330C1160 290 1020 230 950 130C905 66 850 20 760 0Z" fill="#1CA9C9"/>
+    <path d="M900 0H1280V250C1180 225 1070 170 1015 100C985 62 945 20 900 0Z" fill="#002C6C"/>
+    <path d="M1280 720H760C880 650 1040 610 1280 585Z" fill="#1CA9C9"/>
+    <path d="M1280 720H900C990 680 1120 650 1280 640Z" fill="#002C6C"/>
+  </svg>
+  <div class="absolute left-14 top-9" data-logo="light"></div>
+  <div class="absolute left-14 top-[112px]">
+    <div class="font-title font-black text-[92px] leading-[.92] text-[#002C6C]">COMITÉ</div>
+    <div class="font-title font-black text-[78px] leading-[1] text-[#1CA9C9]">Salud GS1</div>
+  </div>
+  <ol class="absolute left-14 top-[318px] w-[640px] space-y-[9px]">
+    <li class="flex gap-3 items-start"><span class="badge w-8 h-8 bg-[#002C6C] text-white text-sm shrink-0"><i data-lucide="brain-circuit" class="w-4 h-4"></i></span><span class="text-[15px] font-semibold leading-snug"><b class="text-[#F26334]">1.</b> Rastreo Inteligente: IA Aplicada a la Trazabilidad Médica.</span></li>
+    <li class="flex gap-3 items-start"><span class="badge w-8 h-8 bg-[#1CA9C9] text-white shrink-0"><i data-lucide="shield-plus" class="w-4 h-4"></i></span><span class="text-[15px] font-semibold leading-snug"><b class="text-[#F26334]">2.</b> Seguridad del paciente, eficiencia de la cadena de suministro y trazabilidad de medicamentos.</span></li>
+    <li class="flex gap-3 items-start"><span class="badge w-8 h-8 bg-[#002C6C] text-white shrink-0"><i data-lucide="globe-2" class="w-4 h-4"></i></span><span class="text-[15px] font-semibold leading-snug"><b class="text-[#F26334]">3.</b> Casos de Éxito Internacionales y Contexto Venezolano.</span></li>
+    <li class="flex gap-3 items-start"><span class="badge w-8 h-8 bg-[#1CA9C9] text-white shrink-0"><i data-lucide="messages-square" class="w-4 h-4"></i></span><span class="text-[15px] font-semibold leading-snug"><b class="text-[#F26334]">4.</b> GS1 News &amp; Ronda Abierta.</span></li>
+  </ol>
+  <div class="absolute left-14 bottom-9 w-[660px] rounded-3xl bg-[#1CA9C9] text-white px-7 py-5 shadow-xl shadow-cyan-900/20 flex gap-6 items-center">
+    <div class="shrink-0">
+      <div class="flex items-center gap-2 font-title font-extrabold text-[22px]"><i data-lucide="calendar-days" class="w-5 h-5"></i>5 Noviembre, 2026</div>
+      <div class="flex items-center gap-2 font-bold text-[16px] mt-1"><i data-lucide="clock" class="w-4 h-4"></i>8:30 am – 10:00 am</div>
+    </div>
+    <div class="w-px self-stretch bg-white/40"></div>
+    <div class="flex gap-2 text-[13px] leading-snug font-medium"><i data-lucide="map-pin" class="w-5 h-5 shrink-0 mt-0.5"></i><span><b>Oficina GS1 Venezuela.</b> Los Ruices, Calle Los Laboratorios, Edf. Quorum, Piso 1, Oficina K (Caracas).</span></div>
+  </div>
+  <!-- composición derecha -->
+  <div class="photo cap absolute" style="left:850px;top:150px;width:260px;height:420px;transform:rotate(6deg)" data-img="1576091160550-2173dba999ef" data-icon="stethoscope"></div>
+  <div class="photo circ absolute" style="left:740px;top:318px;width:230px;height:230px" data-img="1612349317150-e413f6a5b16d" data-icon="user-round"></div>
+  <div class="badge absolute w-14 h-14 bg-white text-[#1CA9C9] shadow-xl text-4xl" style="left:935px;top:285px;border:4px solid #1CA9C9">+</div>
+  <div class="badge absolute w-12 h-12 bg-[#F26334] text-white shadow-xl" style="left:1090px;top:130px"><i data-lucide="shield-check" class="w-6 h-6"></i></div>
+  <div class="absolute right-10 bottom-8 text-white text-right text-[13px] font-semibold leading-relaxed">
+    <div class="flex items-center justify-end gap-2"><i data-lucide="phone" class="w-4 h-4"></i>+58 414 2771877</div>
+    <div class="flex items-center justify-end gap-2"><i data-lucide="globe" class="w-4 h-4"></i>www.gs1ve.org</div>
+  </div>
+</section>
+
+<!-- ============ 2. NUEVO PACIENTE ============ -->
+<section class="slide" data-title="El Nuevo Paciente" data-footer="light">
+  <div class="absolute left-12 top-9 w-[900px]">
+    <div class="tag text-[#F26334]">El ecosistema de salud en Venezuela</div>
+    <h2 class="font-title font-extrabold text-[38px] leading-tight mt-1">El <span class="text-[#1CA9C9]">Nuevo Paciente</span> venezolano</h2>
+  </div>
+  <!-- stats -->
+  <div class="absolute left-12 top-[150px] flex gap-6">
+    <div class="card w-[300px] h-[245px] p-6 relative overflow-hidden">
+      <div class="absolute top-0 inset-x-0 h-1.5 bg-[#002C6C]"></div>
+      <div class="flex items-center gap-4">
+        <svg width="92" height="92" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#e2e8f0" stroke-width="12"/><circle cx="50" cy="50" r="42" fill="none" stroke="#EF4444" stroke-width="12" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="156" transform="rotate(-90 50 50)"/><text x="50" y="58" text-anchor="middle" font-family="Montserrat" font-weight="800" font-size="22" fill="#002C6C">41%</text></svg>
+        <i data-lucide="qr-code" class="w-10 h-10 text-[#EF4444]"></i>
+      </div>
+      <div class="font-title font-extrabold text-[64px] text-[#F26334] leading-none mt-3">41%</div>
+      <p class="text-[14px] font-medium text-slate-600 mt-2 leading-snug">No escanea códigos QR estáticos sin valor agregado.</p>
+    </div>
+    <div class="card w-[300px] h-[245px] p-6 relative overflow-hidden">
+      <div class="absolute top-0 inset-x-0 h-1.5 bg-[#1CA9C9]"></div>
+      <div class="flex items-center gap-4">
+        <svg width="92" height="92" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#e2e8f0" stroke-width="12"/><circle cx="50" cy="50" r="42" fill="none" stroke="#10B981" stroke-width="12" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="53" transform="rotate(-90 50 50)"/><text x="50" y="58" text-anchor="middle" font-family="Montserrat" font-weight="800" font-size="22" fill="#002C6C">80%</text></svg>
+        <i data-lucide="badge-check" class="w-10 h-10 text-[#10B981]"></i>
+      </div>
+      <div class="font-title font-extrabold text-[64px] text-[#F26334] leading-none mt-3">80%</div>
+      <p class="text-[14px] font-medium text-slate-600 mt-2 leading-snug">Escanearía para verificar origen, registro sanitario y autenticidad.</p>
+    </div>
+  </div>
+  <div class="photo cap absolute" style="left:720px;top:140px;width:230px;height:270px;transform:rotate(-5deg)" data-img="1587854692152-cbe660dbde88" data-icon="pill"></div>
+  <div class="photo circ absolute" style="left:900px;top:215px;width:200px;height:200px" data-img="1556742049-0cfed4f6a45d" data-icon="smartphone"></div>
+  <div class="absolute" style="left:1075px;top:170px"><div class="badge w-14 h-14 bg-[#F26334] text-white shadow-xl"><i data-lucide="scan-line" class="w-7 h-7"></i></div></div>
+  <!-- tríada -->
+  <div class="absolute left-12 right-12 top-[425px] grid grid-cols-3 gap-6">
+    <div class="card p-5 flex gap-4 border-l-4 !border-l-[#002C6C]"><span class="badge w-12 h-12 bg-[#002C6C] text-white shrink-0"><i data-lucide="file-text" class="w-6 h-6"></i></span><div><div class="font-title font-extrabold text-[18px]">1 · Información</div><p class="text-[13px] text-slate-600 leading-snug mt-1">Posología, alertas de farmacovigilancia y prospecto digital <b>(e-PIL)</b> al instante.</p></div></div>
+    <div class="card p-5 flex gap-4 border-l-4 !border-l-[#F26334]"><span class="badge w-12 h-12 bg-[#F26334] text-white shrink-0"><i data-lucide="shield-check" class="w-6 h-6"></i></span><div><div class="font-title font-extrabold text-[18px]">2 · Confianza</div><p class="text-[13px] text-slate-600 leading-snug mt-1">Validación frente a medicamentos ilícitos, contrabando o sin registro sanitario <b>(SACS / INHRR)</b>.</p></div></div>
+    <div class="card p-5 flex gap-4 border-l-4 !border-l-[#1CA9C9]"><span class="badge w-12 h-12 bg-[#1CA9C9] text-white shrink-0"><i data-lucide="network" class="w-6 h-6"></i></span><div><div class="font-title font-extrabold text-[18px]">3 · Experiencia</div><p class="text-[13px] text-slate-600 leading-snug mt-1">Conexión directa: laboratorio, droguería, farmacia, clínica y paciente.</p></div></div>
+  </div>
+</section>
+
+<!-- ============ 3. IA ============ -->
+<section class="slide dark" data-title="Rastreo Inteligente: IA" data-footer="dark">
+  <div class="absolute left-12 top-9 w-[1000px]">
+    <div class="tag text-[#F26334]">Agenda · Punto 1</div>
+    <h2 class="font-title font-extrabold text-[38px] leading-tight mt-1">Rastreo Inteligente: <span class="text-[#1CA9C9]">IA aplicada a la trazabilidad médica</span></h2>
+    <p class="text-[16px] italic text-slate-300 mt-2">Los algoritmos de IA son tan buenos como la calidad de los datos estándar que los alimentan.</p>
+  </div>
+  <div class="absolute left-12 top-[190px] w-[600px] space-y-4">
+    <div class="tag text-[#1CA9C9]">IA + GS1 · GTIN + GLN + EPCIS 2.0</div>
+    <div class="dcard p-5 flex gap-4"><span class="badge w-12 h-12 bg-[#1CA9C9] text-white shrink-0"><i data-lucide="line-chart" class="w-6 h-6"></i></span><div><div class="font-title font-bold text-[17px]">Modelos predictivos de demanda</div><p class="text-[13px] text-slate-300 mt-1 leading-snug">Anticipan la escasez de insumos críticos y reactivos en clínicas y hospitales venezolanos.</p></div></div>
+    <div class="dcard p-5 flex gap-4"><span class="badge w-12 h-12 bg-[#F26334] text-white shrink-0"><i data-lucide="scan-eye" class="w-6 h-6"></i></span><div><div class="font-title font-bold text-[17px]">Visión artificial en líneas de empaque</div><p class="text-[13px] text-slate-300 mt-1 leading-snug">Verificación a alta velocidad de <b class="mono text-white">GS1 DataMatrix</b> y <b class="mono text-white">QR GS1 Digital Link</b>.</p></div></div>
+    <div class="dcard p-5 flex gap-4"><span class="badge w-12 h-12 bg-[#00A79D] text-white shrink-0"><i data-lucide="snowflake" class="w-6 h-6"></i></span><div><div class="font-title font-bold text-[17px]">Detección de anomalías con Machine Learning</div><p class="text-[13px] text-slate-300 mt-1 leading-snug">Alerta temprana de desvíos a canales irregulares y rupturas de cadena de frío (insulinas, vacunas, biológicos).</p></div></div>
+  </div>
+  <!-- derecha -->
+  <div class="photo cap absolute" style="left:700px;top:195px;width:215px;height:215px;border-radius:28px" data-img="1586528116311-ad8dd3c8310d" data-icon="warehouse"></div>
+  <svg class="absolute" style="left:925px;top:190px" width="310" height="225" viewBox="0 0 310 225" fill="none">
+    <g stroke="#1CA9C9" stroke-opacity=".6" stroke-width="1.5">
+      <path d="M30 40L110 20M30 40L110 80M30 110L110 20M30 110L110 80M30 110L110 140M30 180L110 80M30 180L110 140M110 20L200 50M110 80L200 50M110 80L200 110M110 140L200 110M110 140L200 175M200 50L275 85M200 110L275 85M200 110L275 150M200 175L275 150"/>
+    </g>
+    <g fill="#0B132B" stroke="#1CA9C9" stroke-width="2"><circle cx="30" cy="40" r="9"/><circle cx="30" cy="110" r="9"/><circle cx="30" cy="180" r="9"/><circle cx="110" cy="20" r="9"/><circle cx="110" cy="80" r="9"/><circle cx="110" cy="140" r="9"/><circle cx="200" cy="50" r="9"/><circle cx="200" cy="110" r="9"/><circle cx="200" cy="175" r="9"/></g>
+    <circle cx="275" cy="85" r="13" fill="#F26334"/><circle cx="275" cy="150" r="13" fill="#F26334"/>
+    <g font-family="JetBrains Mono" font-size="10" font-weight="700" fill="#fff"><text x="8" y="14">GTIN</text><text x="8" y="215">GLN</text><text x="130" y="208">EPCIS</text></g>
+  </svg>
+  <div class="dcard absolute left-[700px] top-[435px] w-[535px] p-5">
+    <div class="tag text-[#F26334] mb-3">Impacto directo en Venezuela</div>
+    <div class="space-y-3 text-[14px]">
+      <div class="flex gap-3 items-start"><i data-lucide="route" class="w-5 h-5 text-[#1CA9C9] shrink-0 mt-0.5"></i><span>Optimización de rutas logísticas entre laboratorios nacionales, droguerías y farmacias en todo el país.</span></div>
+      <div class="flex gap-3 items-start"><i data-lucide="hourglass" class="w-5 h-5 text-[#1CA9C9] shrink-0 mt-0.5"></i><span>Gestión de vencimientos <b class="text-[#F26334]">FEFO</b> (<i>First Expired, First Out</i>): menos mermas financieras por caducidad.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. BCMA ============ -->
+<section class="slide" data-title="Seguridad del Paciente · 5 Correctos" data-footer="light">
+  <div class="absolute left-[400px] top-7 w-[780px]">
+    <div class="tag text-[#F26334]">Agenda · Punto 2</div>
+    <h2 class="font-title font-extrabold text-[32px] leading-tight mt-1 whitespace-nowrap">Seguridad del paciente: los <span class="text-[#1CA9C9]">5 Correctos</span> (BCMA)</h2>
+    <p class="text-[13px] text-slate-500 mt-1">Escaneo a pie de cama — <i>Bedside Barcode Medication Administration</i></p>
+  </div>
+  <div class="photo cap absolute" style="left:60px;top:70px;width:270px;height:470px;transform:rotate(-5deg)" data-img="1584515933487-779824d29309" data-icon="heart-pulse"></div>
+  <div class="photo circ absolute" style="left:180px;top:420px;width:200px;height:200px" data-img="1576091160550-2173dba999ef" data-icon="scan-line"></div>
+  <div class="absolute left-[400px] top-[150px] w-[820px] space-y-[10px]">
+    <div class="card px-5 py-3 flex items-center gap-4"><span class="badge w-11 h-11 bg-[#002C6C] text-white text-lg shrink-0">1</span><div class="flex-1"><b class="font-title text-[17px]">Paciente correcto</b><div class="text-[13px] text-slate-600">Escaneo del código GS1 del brazalete de identificación hospitalaria.</div></div><span class="mono font-bold text-[13px] bg-[#1CA9C9]/10 text-[#0097B2] px-3 py-1 rounded-full">GSRN</span></div>
+    <div class="card px-5 py-3 flex items-center gap-4"><span class="badge w-11 h-11 bg-[#1CA9C9] text-white text-lg shrink-0">2</span><div class="flex-1"><b class="font-title text-[17px]">Medicamento correcto</b><div class="text-[13px] text-slate-600">Validación instantánea del GTIN contra la prescripción médica electrónica.</div></div><span class="mono font-bold text-[13px] bg-[#F26334]/10 text-[#F26334] px-3 py-1 rounded-full">GTIN</span></div>
+    <div class="card px-5 py-3 flex items-center gap-4"><span class="badge w-11 h-11 bg-[#002C6C] text-white text-lg shrink-0">3</span><div class="flex-1"><b class="font-title text-[17px]">Dosis correcta</b><div class="text-[13px] text-slate-600">Confirma la concentración (<b>500 mg vs 1000 mg</b>) y evita errores <i>LASA</i> (Look-Alike, Sound-Alike).</div></div><span class="mono font-bold text-[13px] bg-slate-100 text-slate-600 px-3 py-1 rounded-full">LASA</span></div>
+    <div class="card px-5 py-3 flex items-center gap-4"><span class="badge w-11 h-11 bg-[#1CA9C9] text-white text-lg shrink-0">4</span><div class="flex-1"><b class="font-title text-[17px]">Vía y hora correctas</b><div class="text-[13px] text-slate-600">Registro automático en la Historia Clínica Electrónica.</div></div><span class="mono font-bold text-[13px] bg-[#00A79D]/10 text-[#00A79D] px-3 py-1 rounded-full">HCE</span></div>
+    <div class="card px-5 py-3 flex items-center gap-4 !border-[#10B981]"><span class="badge w-11 h-11 bg-[#10B981] text-white text-lg shrink-0">5</span><div class="flex-1"><b class="font-title text-[17px]">Vigencia garantizada</b><div class="text-[13px] text-slate-600">El sistema bloquea la dosis si <span class="mono font-bold text-[#F26334]">(17)</span> indica vencido o el lote <span class="mono font-bold text-[#F26334]">(10)</span> tiene alerta de retiro.</div></div><i data-lucide="ban" class="w-6 h-6 text-[#EF4444]"></i></div>
+  </div>
+</section>
+
+<!-- ============ 5. ANATOMÍA ============ -->
+<section class="slide" data-title="Anatomía técnica 1D → 2D" data-footer="light">
+  <div class="absolute left-12 top-8 w-[950px]">
+    <div class="tag text-[#F26334]">Anatomía técnica del estándar</div>
+    <h2 class="font-title font-extrabold text-[34px] leading-tight mt-1">De la barra tradicional al <span class="text-[#1CA9C9]">estándar 2D en salud</span></h2>
+  </div>
+  <div class="absolute left-12 right-12 top-[130px] grid grid-cols-3 gap-8">
+    <div class="card p-4 text-center relative"><span class="pill inline-block bg-slate-200 text-slate-700 text-[12px] font-bold px-3 py-1">1973 – 2022 · Hasta ahora</span>
+      <div class="flex justify-center my-1" data-box="ean" style="height:150px"></div>
+      <div class="font-title font-bold text-[15px]">EAN-13 · código 1D</div><p class="text-[12px] text-slate-600">Solo identifica el GTIN, de forma estática.</p></div>
+    <div class="card p-4 text-center relative"><span class="pill inline-block bg-[#F26334]/15 text-[#F26334] text-[12px] font-bold px-3 py-1">2023 – 2026 · Transición dual</span>
+      <div class="flex justify-center items-center gap-2 my-1" style="height:150px"><div data-box="ean" style="width:120px"></div><div data-box="qr" style="width:120px"></div></div>
+      <div class="font-title font-bold text-[15px]">Coexisten 1D + 2D</div><p class="text-[12px] text-slate-600">Se preparan lectores ópticos en farmacias y centros de salud.</p></div>
+    <div class="card p-4 text-center relative !border-[#1CA9C9]"><span class="pill inline-block bg-[#1CA9C9] text-white text-[12px] font-bold px-3 py-1">2027+ · Ambición global y Healthcare</span>
+      <div class="flex justify-center items-center gap-2 my-1" style="height:150px"><div data-box="dm" style="width:120px"></div><div data-box="qr" style="width:120px"></div></div>
+      <div class="font-title font-bold text-[15px]">GS1 DataMatrix + QR Digital Link</div><p class="text-[12px] text-slate-600">Trazabilidad clínica/regulatoria + interacción con el paciente.</p></div>
+  </div>
+  <svg class="absolute" style="left:0;top:190px" width="1280" height="30"><g fill="#F26334"><path d="M420 5l14 10-14 10z"/><path d="M846 5l14 10-14 10z"/></g></svg>
+  <div class="absolute left-12 right-12 top-[418px] grid grid-cols-4 gap-4">
+    <div class="card p-3"><div class="mono font-bold text-[15px]"><span class="text-[#F26334]">(01)</span> <span class="text-[#002C6C]">07591196014853</span></div><div class="text-[12px] text-slate-600 mt-1"><b>GTIN</b> · ID único del medicamento (prefijo <b>759</b> GS1 Venezuela)</div></div>
+    <div class="card p-3"><div class="mono font-bold text-[15px]"><span class="text-[#F26334]">(17)</span> <span class="text-[#002C6C]">281231</span></div><div class="text-[12px] text-slate-600 mt-1"><b>Vencimiento</b> · 31 Dic 2028</div></div>
+    <div class="card p-3"><div class="mono font-bold text-[15px]"><span class="text-[#F26334]">(10)</span> <span class="text-[#002C6C]">LOTE-VE26</span></div><div class="text-[12px] text-slate-600 mt-1"><b>Lote</b> · trazabilidad de producción</div></div>
+    <div class="card p-3"><div class="mono font-bold text-[15px]"><span class="text-[#F26334]">(21)</span> <span class="text-[#002C6C]">SN998877</span></div><div class="text-[12px] text-slate-600 mt-1"><b>Serie</b> · autenticación unitaria anti-falsificación</div></div>
+  </div>
+  <div class="absolute left-12 right-12 top-[528px]">
+    <div class="tag text-slate-500 mb-2">Estructura GS1 Digital Link</div>
+    <div class="card px-6 py-4 mono font-bold text-[21px] whitespace-nowrap overflow-hidden"><span class="text-slate-400">https://</span><span class="text-[#00A79D]">dl.gs1ve.org</span><span class="text-[#F26334]">/01/</span><span class="text-[#002C6C]">07591196014853</span><span class="text-[#F26334]">/10/</span><span class="text-[#002C6C]">LOTE-VE26</span><span class="text-[#F26334]">?17=</span><span class="text-[#002C6C]">281231</span></div>
+    <div class="flex gap-5 mt-2 text-[12px] font-semibold"><span class="text-[#00A79D]">● Dominio web</span><span class="text-[#F26334]">● Identificador de aplicación (AI)</span><span class="text-[#002C6C]">● GTIN / Lote / Vencimiento</span></div>
+  </div>
+</section>
+
+<!-- ============ 6. LIBRO VS TELEVISOR ============ -->
+<section class="slide" data-title="QR común vs QR GS1" style="background:#fff">
+  <div class="absolute inset-y-0 left-0 w-1/2" style="background:#eef0f3"></div>
+  <div class="absolute inset-y-0 right-0 w-1/2" style="background:linear-gradient(160deg,#002C6C,#0B3A82)"></div>
+  <svg class="absolute right-0 top-0" width="260" height="260" viewBox="0 0 260 260"><path d="M260 0V260C150 230 70 130 90 0Z" fill="#00A79D" opacity=".35"/></svg>
+  <div class="absolute left-1/2 -translate-x-1/2 top-7 z-10 text-center">
+    <div class="tag text-[#F26334]">Analogía conceptual</div>
+    <h2 class="font-title font-extrabold text-[30px] leading-tight text-[#002C6C] bg-white/95 rounded-full px-8 py-2 shadow-xl mt-1">El Libro <span class="text-slate-400">vs.</span> <span class="text-[#1CA9C9]">El Televisor Clínico</span></h2>
+  </div>
+  <!-- izquierda -->
+  <div class="absolute left-12 top-[130px] w-[540px]">
+    <div class="flex items-center gap-3"><span class="badge w-11 h-11 bg-[#EF4444] text-white"><i data-lucide="triangle-alert" class="w-6 h-6"></i></span><div><div class="font-title font-extrabold text-[22px] text-slate-700">QR genérico / estático</div><div class="text-[13px] font-semibold text-[#EF4444]">Como un libro impreso</div></div></div>
+    <div class="flex gap-5 mt-4 items-center">
+      <div class="shrink-0 bg-white rounded-2xl p-3 shadow-lg" style="filter:grayscale(1)"><div data-box="qr" data-plain="1" style="width:170px"></div></div>
+      <div class="mono text-[11px] text-slate-500 bg-white rounded-lg p-3 break-all">http://mi-laboratorio.com/prospecto.pdf<div class="text-[#EF4444] font-bold mt-1">URL fija · no editable</div></div>
+    </div>
+    <ul class="mt-5 space-y-2.5 text-[14px] text-slate-700 font-medium">
+      <li class="flex gap-2"><i data-lucide="x-circle" class="w-5 h-5 text-[#EF4444] shrink-0"></i>La URL queda fija una vez impreso el empaque.</li>
+      <li class="flex gap-2"><i data-lucide="x-circle" class="w-5 h-5 text-[#EF4444] shrink-0"></i>No sirve para pasar por caja ni sistemas hospitalarios.</li>
+      <li class="flex gap-2"><i data-lucide="x-circle" class="w-5 h-5 text-[#EF4444] shrink-0"></i>Si cambia la normativa sanitaria, se desecha el material de empaque.</li>
+    </ul>
+  </div>
+  <!-- derecha -->
+  <div class="absolute left-[690px] top-[130px] w-[540px] text-white">
+    <div class="flex items-center gap-3"><span class="badge w-11 h-11 bg-[#10B981] text-white"><i data-lucide="badge-check" class="w-6 h-6"></i></span><div><div class="font-title font-extrabold text-[22px]">QR GS1 Digital Link</div><div class="text-[13px] font-semibold text-[#10B981]">Como un televisor inteligente · Sello GS1 Venezuela</div></div></div>
+    <div class="flex gap-5 mt-4 items-center">
+      <div class="shrink-0 bg-white rounded-2xl p-3 shadow-lg border-4 border-[#10B981]"><div data-box="qr" data-plain="1" style="width:170px"></div></div>
+      <div class="flex-1 rounded-xl border-2 border-white/30 p-3 bg-black/25"><div class="tag text-[#1CA9C9]">Cambiar el canal</div><div class="mono text-[11px] mt-1 text-white/80">dl.gs1ve.org/01/0759…</div><div class="flex gap-1.5 mt-2"><span class="badge w-7 h-7 bg-[#F26334] text-xs">1</span><span class="badge w-7 h-7 bg-[#1CA9C9] text-xs">2</span><span class="badge w-7 h-7 bg-[#EF4444] text-xs">3</span></div></div>
+    </div>
+    <div class="mt-4 space-y-2.5 text-[13px]">
+      <div class="flex gap-3 bg-white/10 rounded-xl p-3"><span class="badge w-8 h-8 bg-[#F26334] shrink-0 text-sm">1</span><span><b>Farmacia / Hospital:</b> lectura de GTIN, lote y vencimiento en el punto de dispensación.</span></div>
+      <div class="flex gap-3 bg-white/10 rounded-xl p-3"><span class="badge w-8 h-8 bg-[#1CA9C9] shrink-0 text-sm">2</span><span><b>Paciente:</b> prospecto digital (e-PIL), video de aplicación y validación de originalidad.</span></div>
+      <div class="flex gap-3 bg-white/10 rounded-xl p-3"><span class="badge w-8 h-8 bg-[#EF4444] shrink-0 text-sm">3</span><span><b>Emergencia sanitaria:</b> alerta de farmacovigilancia o retiro de lote (<i>Recall</i>) inmediata.</span></div>
+    </div>
+  </div>
+  <div class="absolute left-1/2 -translate-x-1/2 top-[330px] badge w-14 h-14 bg-[#F26334] text-white text-lg shadow-2xl border-4 border-white z-10">VS</div>
+  <div class="absolute bottom-3 left-12 right-12 flex justify-between items-center text-[11px] font-semibold"><span class="text-slate-500">Comité Salud GS1 · 5 Nov 2026</span><span data-logo="dark" data-mini="1"></span></div>
+</section>
+
+<!-- ============ 7. CASOS 1 ============ -->
+<section class="slide" data-title="Casos de éxito: NHS, UE y EE. UU." data-footer="light">
+  <div class="absolute left-12 top-8 w-[950px]">
+    <div class="tag text-[#F26334]">Casos de éxito internacionales · Parte 1</div>
+    <h2 class="font-title font-extrabold text-[34px] leading-tight mt-1">Reino Unido, Europa y EE. UU.: <span class="text-[#1CA9C9]">estándares que salvan vidas</span></h2>
+  </div>
+  <div class="card absolute left-12 top-[125px] w-[740px] h-[500px] p-6 overflow-hidden">
+    <div class="absolute top-0 inset-x-0 h-1.5 bg-[#002C6C]"></div>
+    <div class="flex items-center gap-3"><span class="badge w-10 h-10 bg-[#002C6C] text-white text-xs">UK</span><div><div class="font-title font-extrabold text-[20px]">NHS Inglaterra · Scan4Safety</div><div class="text-[12px] text-slate-500">Adopción integral de estándares GS1 en hospitales</div></div></div>
+    <div class="flex gap-2 mt-3 mono text-[12px] font-bold"><span class="px-3 py-1 rounded-full bg-[#F26334]/10 text-[#F26334]">GTIN · productos</span><span class="px-3 py-1 rounded-full bg-[#1CA9C9]/10 text-[#0097B2]">GLN · ubicaciones</span><span class="px-3 py-1 rounded-full bg-[#002C6C]/10 text-[#002C6C]">GSRN · pacientes/personal</span></div>
+    <div class="grid grid-cols-3 gap-4 mt-4">
+      <div class="rounded-2xl bg-[#F8FAFC] p-3 text-center"><div class="font-title font-black text-[48px] text-[#F26334] leading-none">76%</div><div class="text-[11.5px] text-slate-600 mt-1 leading-snug">menos errores de medicación y de selección de implantes quirúrgicos</div></div>
+      <div class="rounded-2xl bg-[#F8FAFC] p-4 text-center"><div class="font-title font-black text-[34px] text-[#F26334] leading-[48px]">+140.000</div><div class="text-[11.5px] text-slate-600 mt-1 leading-snug">horas de enfermería liberadas de conteos manuales para cuidado directo</div></div>
+      <div class="rounded-2xl bg-[#F8FAFC] p-4 text-center"><div class="font-title font-black text-[40px] text-[#F26334] leading-none">&lt;30 min</div><div class="text-[11.5px] text-slate-600 mt-1 leading-snug">para retirar lotes defectuosos (<i>recalls</i>), antes tomaba días</div></div>
+    </div>
+    <div class="photo absolute rounded-2xl left-6 bottom-6" style="width:688px;height:120px" data-img="1519494026892-80bbd2d6fd0d" data-icon="hospital"></div>
+  </div>
+  <div class="card absolute left-[812px] top-[125px] w-[420px] h-[500px] p-6 overflow-hidden">
+    <div class="absolute top-0 inset-x-0 h-1.5 bg-[#1CA9C9]"></div>
+    <div class="flex items-center gap-3"><span class="badge w-10 h-10 bg-[#1CA9C9] text-white text-xs">UE·US</span><div class="font-title font-extrabold text-[18px] leading-tight">Directiva FMD (UE)<br>y DSCSA (EE. UU.)</div></div>
+    <div class="flex justify-center my-5"><div data-box="dm" style="width:200px"></div></div>
+    <ul class="space-y-3 text-[13px] text-slate-700">
+      <li class="flex gap-2"><i data-lucide="scan-barcode" class="w-5 h-5 text-[#F26334] shrink-0"></i><span>Verificación <b>unitaria</b> de cajas con <b>GS1 DataMatrix</b> serializado antes de dispensar.</span></li>
+      <li class="flex gap-2"><i data-lucide="file-text" class="w-5 h-5 text-[#F26334] shrink-0"></i><span><b>e-PIL</b> (prospecto electrónico) mediante <b>GS1 Digital Link</b>.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 8. CASOS 2 ============ -->
+<section class="slide" data-title="Casos de éxito: América Latina" data-footer="light">
+  <div class="absolute left-12 top-8 w-[950px]">
+    <div class="tag text-[#F26334]">Casos de éxito internacionales · Parte 2</div>
+    <h2 class="font-title font-extrabold text-[34px] leading-tight mt-1">Referentes en <span class="text-[#1CA9C9]">América Latina</span></h2>
+  </div>
+  <div class="absolute left-12 right-12 top-[125px] grid grid-cols-3 gap-6">
+    <div class="card overflow-hidden h-[500px] flex flex-col">
+      <div class="photo h-[130px]" data-img="1579684385127-1ef15d508118" data-icon="flask-conical"></div>
+      <div class="p-5 flex-1">
+        <div class="flex items-center gap-2"><span class="inline-flex flex-col w-9 h-6 rounded overflow-hidden shadow"><i class="flex-1 bg-[#74ACDF]"></i><i class="flex-1 bg-white"></i><i class="flex-1 bg-[#74ACDF]"></i></span><div class="font-title font-extrabold text-[19px]">Argentina</div></div>
+        <div class="text-[12px] font-semibold text-[#0097B2]">Sistema Nacional de Trazabilidad · ANMAT</div>
+        <div class="mono font-bold text-[12px] mt-3 text-[#F26334]">GTIN + Serie + GLN</div>
+        <p class="text-[13px] text-slate-600 mt-2 leading-snug">Cada movimiento se reporta en tiempo real, del laboratorio a la administración al paciente.</p>
+        <div class="mt-3 rounded-xl bg-[#10B981]/10 text-[#047857] text-[13px] font-bold p-3 flex gap-2"><i data-lucide="shield-check" class="w-5 h-5 shrink-0"></i>Erradicó medicamentos robados o falsificados en el canal hospitalario y obras sociales.</div>
+      </div>
+    </div>
+    <div class="card overflow-hidden h-[500px] flex flex-col">
+      <div class="photo h-[130px]" data-img="1551076805-e1869033e561" data-icon="hospital"></div>
+      <div class="p-5 flex-1">
+        <div class="flex items-center gap-2"><span class="inline-flex w-9 h-6 rounded bg-[#009C3B] items-center justify-center shadow"><i class="block w-5 h-3 bg-[#FFDF00] rotate-45 scale-75"></i></span><div class="font-title font-extrabold text-[19px]">Brasil</div></div>
+        <div class="text-[12px] font-semibold text-[#0097B2]">ANVISA · Sírio-Libanês / Albert Einstein</div>
+        <div class="font-title font-black text-[52px] text-[#F26334] leading-none mt-3">99.9%</div>
+        <div class="text-[12px] text-slate-500 font-semibold">trazabilidad en oncológicos y alto costo</div>
+        <p class="text-[13px] text-slate-600 mt-2 leading-snug">Farmacias hospitalarias automatizadas: dosis unitarias con <b>GS1 DataMatrix</b> e IA para control de dispensación robótica.</p>
+      </div>
+    </div>
+    <div class="card overflow-hidden h-[500px] flex flex-col">
+      <div class="photo h-[130px]" data-img="1582719478250-c89cae4dc85b" data-icon="microscope"></div>
+      <div class="p-5 flex-1">
+        <div class="flex items-center gap-2"><span class="inline-flex flex-col w-9 h-6 rounded overflow-hidden shadow"><i class="flex-[2] bg-[#FCD116]"></i><i class="flex-1 bg-[#003893]"></i><i class="flex-1 bg-[#CE1126]"></i></span><div class="font-title font-extrabold text-[19px]">Colombia</div></div>
+        <div class="text-[12px] font-semibold text-[#0097B2]">Pilotos GS1 Healthcare · Unidosis</div>
+        <div class="font-title font-black text-[52px] text-[#F26334] leading-none mt-3">−40%</div>
+        <div class="text-[12px] text-slate-500 font-semibold">discrepancias en órdenes de compra y facturación</div>
+        <p class="text-[13px] text-slate-600 mt-2 leading-snug">Catálogos electrónicos sincronizados (<b>GDSN</b>) entre laboratorios y clínicas privadas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9. CONTROL REMOTO QR ============ -->
+<section class="slide" data-title="Control Remoto QR en Venezuela" data-footer="light">
+  <div class="absolute left-12 top-8 w-[950px]">
+    <div class="tag text-[#F26334]">Aplicación práctica en Venezuela</div>
+    <h2 class="font-title font-extrabold text-[34px] leading-tight mt-1">“Control Remoto QR” para el <span class="text-[#1CA9C9]">sector salud</span></h2>
+  </div>
+  <div class="absolute left-12 top-[130px] w-[400px] space-y-4">
+    <div class="card p-4 flex gap-4"><span class="badge w-11 h-11 bg-[#F26334] text-white text-lg shrink-0">1</span><div><b class="font-title text-[16px]">Registra el GTIN <span class="mono text-[#F26334]">0759…</span></b><p class="text-[12.5px] text-slate-600 mt-1 leading-snug">Vinculación automática con el catálogo de GS1 Venezuela.</p></div></div>
+    <div class="card p-4 flex gap-4"><span class="badge w-11 h-11 bg-[#F26334] text-white text-lg shrink-0">2</span><div><b class="font-title text-[16px]">Configura la experiencia sanitaria</b><p class="text-[12.5px] text-slate-600 mt-1 leading-snug">Redirección inteligente, <i>landing page</i> aprobada por dirección médica o <b>Pasaporte Digital del Producto (DPP)</b>.</p></div></div>
+    <div class="card p-4 flex gap-4"><span class="badge w-11 h-11 bg-[#F26334] text-white text-lg shrink-0">3</span><div><b class="font-title text-[16px]">Analítica en tiempo real</b><p class="text-[12.5px] text-slate-600 mt-1 leading-snug">Escaneos por estado, tasa de verificación de autenticidad y grupos terapéuticos.</p></div></div>
+  </div>
+  <!-- dashboard -->
+  <div class="absolute left-[480px] top-[125px] w-[752px] h-[500px] rounded-2xl bg-white shadow-2xl shadow-blue-900/15 border border-slate-200 overflow-hidden">
+    <div class="h-9 bg-slate-100 flex items-center gap-2 px-4"><i class="w-3 h-3 rounded-full bg-[#EF4444]"></i><i class="w-3 h-3 rounded-full bg-[#FBBF24]"></i><i class="w-3 h-3 rounded-full bg-[#10B981]"></i><span class="mono text-[11px] text-slate-500 ml-3 bg-white rounded-full px-3 py-0.5">app.gs1digitallink.lat</span></div>
+    <div class="p-4">
+      <div class="grid grid-cols-4 gap-3">
+        <div class="rounded-xl bg-[#002C6C] text-white p-3"><div class="text-[10px] opacity-70">Escaneos totales</div><div class="font-title font-extrabold text-[24px]">48.213</div></div>
+        <div class="rounded-xl bg-[#F8FAFC] border p-3"><div class="text-[10px] text-slate-500">Verificados</div><div class="font-title font-extrabold text-[24px] text-[#10B981]">100%</div><div class="text-[9px] font-bold text-[#10B981]">✔ Verified</div></div>
+        <div class="rounded-xl bg-[#F8FAFC] border p-3"><div class="text-[10px] text-slate-500">GTIN activos</div><div class="font-title font-extrabold text-[24px] text-[#1CA9C9]">126</div></div>
+        <div class="rounded-xl bg-[#F8FAFC] border p-3"><div class="text-[10px] text-slate-500">Alertas lote</div><div class="font-title font-extrabold text-[24px] text-[#F26334]">0</div></div>
+      </div>
+      <div class="grid grid-cols-5 gap-3 mt-3">
+        <div class="col-span-3 rounded-xl border p-3"><div class="text-[11px] font-bold mb-2">Tendencia de escaneos (30 días)</div>
+          <svg viewBox="0 0 300 100" class="w-full h-[100px]"><defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1CA9C9" stop-opacity=".4"/><stop offset="1" stop-color="#1CA9C9" stop-opacity="0"/></linearGradient></defs><path d="M0 80L30 70L60 74L90 55L120 60L150 40L180 46L210 28L240 34L270 15L300 20V100H0Z" fill="url(#g1)"/><path d="M0 80L30 70L60 74L90 55L120 60L150 40L180 46L210 28L240 34L270 15L300 20" fill="none" stroke="#1CA9C9" stroke-width="3" stroke-linejoin="round"/><circle cx="270" cy="15" r="5" fill="#F26334"/></svg></div>
+        <div class="col-span-2 rounded-xl border p-3"><div class="text-[11px] font-bold mb-2">Escaneos por estado</div>
+          <div class="space-y-1.5 text-[10px] font-semibold">
+            <div class="flex items-center gap-2"><span class="w-14">Caracas</span><i class="h-2.5 rounded-full bg-[#002C6C]" style="width:90px"></i></div>
+            <div class="flex items-center gap-2"><span class="w-14">Miranda</span><i class="h-2.5 rounded-full bg-[#1CA9C9]" style="width:62px"></i></div>
+            <div class="flex items-center gap-2"><span class="w-14">Carabobo</span><i class="h-2.5 rounded-full bg-[#00A79D]" style="width:44px"></i></div>
+            <div class="flex items-center gap-2"><span class="w-14">Zulia</span><i class="h-2.5 rounded-full bg-[#F26334]" style="width:36px"></i></div>
+          </div></div>
+      </div>
+      <div class="rounded-xl border p-3 mt-3"><div class="text-[11px] font-bold mb-2">Grupos terapéuticos</div>
+        <div class="grid grid-cols-4 gap-2 text-[11px] font-bold">
+          <div class="rounded-lg bg-[#1CA9C9]/10 text-[#0097B2] p-2 flex items-center gap-2"><i data-lucide="pill" class="w-4 h-4"></i>Analgésicos</div>
+          <div class="rounded-lg bg-[#F26334]/10 text-[#F26334] p-2 flex items-center gap-2"><i data-lucide="bug" class="w-4 h-4"></i>Antibióticos</div>
+          <div class="rounded-lg bg-[#002C6C]/10 text-[#002C6C] p-2 flex items-center gap-2"><i data-lucide="snowflake" class="w-4 h-4"></i>Cadena de frío</div>
+          <div class="rounded-lg bg-[#00A79D]/10 text-[#00A79D] p-2 flex items-center gap-2"><i data-lucide="syringe" class="w-4 h-4"></i>Disp. médicos</div>
+        </div></div>
+      <div class="text-[9px] text-slate-400 mt-2">* Datos ilustrativos de maqueta.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10. GS1 NEWS ============ -->
+<section class="slide dark" data-title="GS1 News 2026–2027" data-footer="dark">
+  <div class="absolute left-12 top-9 w-[1000px]">
+    <div class="tag text-[#F26334]">GS1 News</div>
+    <h2 class="font-title font-extrabold text-[38px] leading-tight mt-1">Novedades globales y <span class="text-[#1CA9C9]">hoja de ruta 2026–2027</span></h2>
+  </div>
+  <div class="absolute left-12 right-12 top-[205px]">
+    <div class="relative h-1 bg-gradient-to-r from-[#1CA9C9] via-[#00A79D] to-[#F26334] rounded-full mt-6"></div>
+    <div class="absolute left-[6%] -top-0.5 flex w-[88%] justify-between" style="margin-top:12px">
+      <span class="badge w-10 h-10 bg-[#F26334] text-white ring-8 ring-[#F26334]/20 -mt-[10px]">1</span><span class="badge w-10 h-10 bg-[#1CA9C9] text-white ring-8 ring-[#1CA9C9]/20 -mt-[10px]">2</span><span class="badge w-10 h-10 bg-[#00A79D] text-white ring-8 ring-[#00A79D]/20 -mt-[10px]">3</span><span class="badge w-10 h-10 bg-[#F26334] text-white ring-8 ring-[#F26334]/20 -mt-[10px]">4</span>
+    </div>
+  </div>
+  <div class="absolute left-12 right-12 top-[270px] grid grid-cols-4 gap-5">
+    <div class="dcard p-5 h-[330px]"><i data-lucide="sunrise" class="w-8 h-8 text-[#F26334]"></i><div class="font-title font-bold text-[17px] mt-3 leading-tight">Rumbo a GS1 Sunrise 2027</div><div class="font-title font-black text-[40px] text-[#1CA9C9] leading-none mt-3">48</div><div class="text-[12px] text-slate-300">países en pilotos activos (88% del PIB mundial)</div><p class="text-[12.5px] text-slate-300 mt-3 leading-snug">Puntos de venta y farmacias avanzan hacia la lectura nativa de códigos 2D.</p></div>
+    <div class="dcard p-5 h-[330px]"><i data-lucide="qr-code" class="w-8 h-8 text-[#1CA9C9]"></i><div class="font-title font-bold text-[17px] mt-3 leading-tight">Plataforma GS1 Digital Link Latam</div><p class="text-[12.5px] text-slate-300 mt-3 leading-snug">Disponible para afiliados de GS1 Venezuela.</p><div class="mono text-[11px] text-[#1CA9C9] mt-2 break-all">app.gs1digitallink.lat</div><div class="flex flex-wrap gap-1.5 mt-3 mono text-[11px] font-bold"><span class="px-2 py-1 rounded bg-white/10">SVG</span><span class="px-2 py-1 rounded bg-white/10">PNG</span><span class="px-2 py-1 rounded bg-white/10">PDF</span><span class="px-2 py-1 rounded bg-white/10">EPS</span></div><p class="text-[12px] text-slate-300 mt-3 leading-snug">Arte para QR Digital Link y GS1 DataMatrix.</p></div>
+    <div class="dcard p-5 h-[330px]"><i data-lucide="share-2" class="w-8 h-8 text-[#00A79D]"></i><div class="font-title font-bold text-[17px] mt-3 leading-tight">EPCIS 2.0 e interoperabilidad con IA</div><p class="text-[12.5px] text-slate-300 mt-3 leading-snug">Nuevo estándar global para compartir eventos de visibilidad en cadenas de suministro de salud con máxima ciberseguridad.</p></div>
+    <div class="dcard p-5 h-[330px]"><i data-lucide="graduation-cap" class="w-8 h-8 text-[#F26334]"></i><div class="font-title font-bold text-[17px] mt-3 leading-tight">Formación y acompañamiento técnico</div><p class="text-[12.5px] text-slate-300 mt-3 leading-snug">Consultoría del Departamento de Estándares de GS1 Venezuela para adecuar líneas de empaque y catalogación.</p></div>
+  </div>
+</section>
+
+<!-- ============ 11. RONDA ABIERTA ============ -->
+<section class="slide" data-title="Ronda Abierta" data-footer="light">
+  <div class="absolute left-12 top-8 w-[800px]">
+    <div class="tag text-[#F26334]">Mesa de trabajo del Comité Salud GS1</div>
+    <h2 class="font-title font-extrabold text-[38px] leading-tight mt-1">Ronda <span class="text-[#1CA9C9]">Abierta</span></h2>
+  </div>
+  <div class="photo circ absolute" style="left:1000px;top:40px;width:130px;height:130px;border-width:6px" data-img="1522071820081-009f0129c71c" data-icon="users"></div>
+  <div class="absolute left-12 right-12 top-[160px] grid grid-cols-2 gap-6">
+    <div class="card p-6 h-[215px] border-t-4 !border-t-[#002C6C] flex gap-4"><span class="badge w-12 h-12 bg-[#002C6C] text-white text-xl shrink-0">1</span><div><div class="font-title font-extrabold text-[19px]">Retos en empaque primario y secundario</div><p class="text-[14px] text-slate-600 mt-2 leading-snug">¿Cómo preparan los laboratorios nacionales sus líneas de impresión para códigos 2D variables (lote / vencimiento)?</p></div></div>
+    <div class="card p-6 h-[215px] border-t-4 !border-t-[#1CA9C9] flex gap-4"><span class="badge w-12 h-12 bg-[#1CA9C9] text-white text-xl shrink-0">2</span><div><div class="font-title font-extrabold text-[19px]">Integración con farmacias y clínicas</div><p class="text-[14px] text-slate-600 mt-2 leading-snug">Homologación de lectores ópticos 2D y de sistemas ERP / HIS en Venezuela.</p></div></div>
+    <div class="card p-6 h-[215px] border-t-4 !border-t-[#F26334] flex gap-4"><span class="badge w-12 h-12 bg-[#F26334] text-white text-xl shrink-0">3</span><div><div class="font-title font-extrabold text-[19px]">Educación al médico y al paciente</div><p class="text-[14px] text-slate-600 mt-2 leading-snug">Estrategias conjuntas para impulsar el escaneo de verificación de autenticidad y la lectura del prospecto digital.</p></div></div>
+    <div class="card p-6 h-[215px] border-t-4 !border-t-[#00A79D] flex gap-4"><span class="badge w-12 h-12 bg-[#00A79D] text-white text-xl shrink-0">4</span><div><div class="font-title font-extrabold text-[19px]">Próximos pilotos 2026–2027</div><p class="text-[14px] text-slate-600 mt-2 leading-snug">Definición de las mesas técnicas de trabajo del Comité Salud.</p></div></div>
+  </div>
+</section>
+
+<!-- ============ 12. CIERRE ============ -->
+<section class="slide" data-title="Cierre y contacto">
+  <svg class="absolute inset-0" width="1280" height="720" viewBox="0 0 1280 720" fill="none">
+    <path d="M0 0H420C330 40 250 100 200 170C150 240 80 270 0 280Z" fill="#1CA9C9"/>
+    <path d="M0 0H300C230 30 160 80 120 130C80 180 40 200 0 205Z" fill="#002C6C"/>
+    <path d="M1280 720H760C880 650 1040 610 1280 585Z" fill="#1CA9C9"/>
+    <path d="M1280 720H900C990 680 1120 650 1280 640Z" fill="#002C6C"/>
+  </svg>
+  <div class="absolute left-[520px] top-9" data-logo="light"></div>
+  <div class="absolute left-[520px] top-[110px]">
+    <h2 class="font-title font-black text-[44px] leading-tight">Únete al <span class="text-[#1CA9C9]">Comité Salud GS1</span></h2>
+    <p class="text-[15px] text-slate-600 mt-1">Solicita tu acceso a la plataforma Digital Link.</p>
+  </div>
+  <div class="absolute" style="left:130px;top:250px;width:300px;height:300px">
+    <div class="absolute inset-0 bg-white rounded-3xl shadow-2xl p-6"><div data-box="qr" data-plain="1" data-seed="12" style="width:100%"></div></div>
+    <svg class="absolute -inset-3" viewBox="0 0 324 324" width="324" height="324" fill="none" stroke-width="10" stroke-linecap="round"><path d="M5 60V20Q5 5 20 5H60" stroke="#002C6C"/><path d="M264 5H304Q319 5 319 20V60" stroke="#1CA9C9"/><path d="M5 264V304Q5 319 20 319H60" stroke="#1CA9C9"/><path d="M319 264V304Q319 319 304 319H264" stroke="#002C6C"/></svg>
+    <div class="absolute left-1/2 -translate-x-1/2 -bottom-16 text-center w-[320px] tag text-[#F26334]">Escanea · Solicita acceso</div>
+  </div>
+  <div class="absolute left-[520px] top-[215px] w-[690px] grid grid-cols-1 gap-3 text-[14px]">
+    <div class="card px-5 py-3 flex gap-3 items-center"><i data-lucide="map-pin" class="w-5 h-5 text-[#F26334] shrink-0"></i><span><b>Oficina GS1 Venezuela.</b> Los Ruices, Calle Los Laboratorios, Edf. Quorum, Piso 1, Oficina K, Caracas, Venezuela.</span></div>
+    <div class="card px-5 py-3 flex gap-3 items-center"><i data-lucide="phone" class="w-5 h-5 text-[#F26334] shrink-0"></i><span class="mono font-bold">+58 414-2771877 &nbsp;/&nbsp; +58 412-628-3276</span></div>
+    <div class="card px-5 py-3 flex gap-3 items-start"><i data-lucide="mail" class="w-5 h-5 text-[#F26334] shrink-0 mt-0.5"></i><span class="mono font-bold text-[13px] leading-relaxed">Solicituddecodigo@gs1ve.org<br>Glabrador@gs1ve.org · Acastro@gs1ve.org</span></div>
+    <div class="card px-5 py-3 flex gap-3 items-center"><i data-lucide="globe" class="w-5 h-5 text-[#F26334] shrink-0"></i><span class="font-bold">www.gs1ve.org &nbsp;·&nbsp; Instagram @GS1Venezuela &nbsp;·&nbsp; RIF J-00336360-0</span></div>
+  </div>
+  <div class="absolute left-[520px] bottom-[110px] font-title font-extrabold text-[22px] text-[#002C6C]">Datos estándar, <span class="text-[#F26334]">decisiones seguras.</span></div>
+</section>
+
+</div>
+
+<div id="bar">
+  <button id="prev" title="Anterior"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+  <span id="count" class="mono px-1">01 / 12</span>
+  <button id="next" title="Siguiente"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+  <select id="jump" title="Ir a lámina"></select>
+  <button id="fs" title="Pantalla completa"><i data-lucide="maximize" class="w-4 h-4"></i></button>
+  <button id="pdf" title="Imprimir / Guardar PDF"><i data-lucide="printer" class="w-4 h-4"></i>PDF</button>
+</div>
+
+<script>
+/* ---------- generadores SVG ---------- */
+function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function qrInner(seed){const n=29,r=rng(seed);let o='';const fin=(x,y)=>`<rect x="${x}" y="${y}" width="7" height="7" fill="#0B132B"/><rect x="${x+1}" y="${y+1}" width="5" height="5" fill="#fff"/><rect x="${x+2}" y="${y+2}" width="3" height="3" fill="#0B132B"/>`;
+ for(let y=0;y<n;y++)for(let x=0;x<n;x++){const inF=(x<9&&y<9)||(x>n-10&&y<9)||(x<9&&y>n-10);if(inF)continue;if(r()>.52)o+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="#0B132B"/>`}
+ return{n,inner:o+fin(0,0)+fin(n-7,0)+fin(0,n-7)+`<rect x="${n-9}" y="${n-9}" width="5" height="5" fill="#1CA9C9"/><rect x="${n-8}" y="${n-8}" width="3" height="3" fill="#fff"/>`}}
+function dmInner(seed){const n=22,r=rng(seed);let o='';
+ for(let y=0;y<n;y++)for(let x=0;x<n;x++){let on;if(x===0||y===n-1)on=true;else if(y===0)on=x%2===0;else if(x===n-1)on=y%2===1;else on=r()>.5;if(on)o+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="#0B132B"/>`}
+ return{n,inner:o}}
+function eanInner(){let o='',x=0;const r=rng(7);while(x<92){const w=1+Math.floor(r()*3);if(r()>.4)o+=`<rect x="${x}" y="0" width="${w}" height="${(x<4||x>86||(x>44&&x<48))?58:50}" fill="#0B132B"/>`;x+=w+(r()>.5?1:0)}
+ return{w:95,inner:o+`<text x="0" y="68" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#0B132B">7 591196 014853</text>`}}
+function codeSvg(kind,seed){if(kind==='qr'){const q=qrInner(seed||5);return`<svg viewBox="-2 -2 ${q.n+4} ${q.n+4}" width="100%">${q.inner}</svg>`}
+ if(kind==='dm'){const q=dmInner(seed||9);return`<svg viewBox="-1 -1 ${q.n+2} ${q.n+2}" width="100%">${q.inner}</svg>`}
+ const e=eanInner();return`<svg viewBox="-2 -2 99 74" width="100%">${e.inner}</svg>`}
+function boxSvg(kind,seed){
+ let code;if(kind==='qr'){const q=qrInner(seed||5);code=`<svg x="116" y="112" width="48" height="48" viewBox="-1 -1 ${q.n+2} ${q.n+2}"><rect x="-1" y="-1" width="${q.n+2}" height="${q.n+2}" fill="#fff"/>${q.inner}</svg>`}
+ else if(kind==='dm'){const q=dmInner(seed||9);code=`<svg x="116" y="112" width="48" height="48" viewBox="-1 -1 ${q.n+2} ${q.n+2}"><rect x="-1" y="-1" width="${q.n+2}" height="${q.n+2}" fill="#fff"/>${q.inner}</svg>`}
+ else{const e=eanInner();code=`<rect x="100" y="116" width="66" height="46" rx="3" fill="#fff"/><svg x="104" y="119" width="58" height="40" viewBox="-2 -2 99 74">${e.inner}</svg>`}
+ return`<svg viewBox="0 0 250 200" width="100%" style="filter:drop-shadow(0 14px 14px rgba(0,44,108,.25))">
+ <polygon points="30,34 76,12 228,12 182,34" fill="#E8F7FB"/>
+ <polygon points="182,34 228,12 228,162 182,184" fill="#0097B2"/>
+ <rect x="30" y="34" width="152" height="150" fill="#fff" stroke="#cbd5e1"/>
+ <rect x="30" y="34" width="152" height="22" fill="#002C6C"/><text x="40" y="49" font-family="Montserrat" font-weight="800" font-size="10" fill="#fff">Rx · USO ORAL</text>
+ <text x="40" y="78" font-family="Montserrat" font-weight="800" font-size="16" fill="#002C6C">Acetaminofén</text>
+ <text x="40" y="102" font-family="Montserrat" font-weight="900" font-size="22" fill="#1CA9C9">500 mg</text>
+ <text x="40" y="118" font-family="Inter" font-weight="600" font-size="9" fill="#475569">10 Tabletas</text>
+ <rect x="30" y="170" width="152" height="5" fill="#F26334"/><rect x="40" y="130" width="46" height="20" rx="10" fill="#00A79D"/><text x="63" y="143" text-anchor="middle" font-family="Inter" font-weight="800" font-size="8" fill="#fff">GS1 VE</text>
+ ${code}
+ <text x="205" y="105" transform="rotate(-90 205 105)" font-family="Montserrat" font-weight="800" font-size="12" fill="#fff" text-anchor="middle">Acetaminofén 500 mg</text></svg>`}
+function logoSvg(dark,mini){const t=dark?'#fff':'#002C6C';const s=mini?30:54;
+ return`<div style="display:flex;align-items:center;gap:${mini?7:11}px"><svg width="${s}" height="${s}" viewBox="0 0 60 60"><circle cx="30" cy="30" r="29" fill="${dark?'#1CA9C9':'#002C6C'}"/><g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 36C20 24 40 24 48 36"/><path d="M18 42C25 33 35 33 42 42"/><path d="M24 48C28 43 32 43 36 48"/></g><circle cx="30" cy="20" r="4" fill="#F26334"/></svg><div style="line-height:1"><div style="font-family:Montserrat;font-weight:900;font-size:${mini?16:28}px;color:${t}">GS1</div><div style="font-family:Montserrat;font-weight:800;font-size:${mini?9:14}px;color:#F26334;margin-top:1px">Venezuela</div></div></div>`}
+
+/* ---------- construcción ---------- */
+const slides=[...document.querySelectorAll('.slide')];
+document.querySelectorAll('[data-logo]').forEach(e=>e.innerHTML=logoSvg(e.dataset.logo==='dark',e.dataset.mini));
+document.querySelectorAll('[data-box]').forEach(e=>{const k=e.dataset.box,seed=+e.dataset.seed||undefined;
+ e.innerHTML=e.dataset.plain?codeSvg(k,seed):boxSvg(k,seed)});
+document.querySelectorAll('[data-img]').forEach(e=>{
+ e.insertAdjacentHTML('beforeend',`<div class="fb"><i data-lucide="${e.dataset.icon||'heart-pulse'}"></i></div><img alt="" loading="lazy" referrerpolicy="no-referrer" src="https://images.unsplash.com/photo-${e.dataset.img}?auto=format&fit=crop&w=900&q=80" onerror="this.remove()">`)});
+slides.forEach((s,i)=>{const f=s.dataset.footer;
+ if(f){const d=f==='dark';
+  s.insertAdjacentHTML('beforeend',`<div style="position:absolute;left:0;right:0;bottom:0;height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 48px;font:600 11px Inter;color:${d?'#94a3b8':'#64748b'}">${logoSvg(d,1)}<span>Comité Salud GS1 · 5 Nov 2026 · www.gs1ve.org</span><span class="mono" style="color:#F26334;font-weight:700">${String(i+1).padStart(2,'0')}</span></div>`);
+  s.insertAdjacentHTML('afterbegin',`<svg style="position:absolute;right:0;top:0" width="190" height="86" viewBox="0 0 190 86"><path d="M190 0V86C140 70 100 40 80 0Z" fill="#1CA9C9" opacity="${d?.5:1}"/><path d="M190 0V56C160 46 130 26 118 0Z" fill="#002C6C" ${d?'fill-opacity=".9" stroke="#1CA9C9" stroke-opacity=".4"':''}/></svg>`)}
+});
+document.getElementById('jump').innerHTML=slides.map((s,i)=>`<option value="${i}">${String(i+1).padStart(2,'0')} · ${s.dataset.title}</option>`).join('');
+lucide.createIcons();
+
+/* ---------- motor ---------- */
+let cur=0;const stage=document.getElementById('stage');
+function fit(){const sc=Math.min(innerWidth/1280,innerHeight/720);stage.style.transform=`translate(${(innerWidth-1280*sc)/2}px,${(innerHeight-720*sc)/2}px) scale(${sc})`}
+function go(n){cur=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+ document.getElementById('count').textContent=String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+ document.getElementById('prog').style.width=((cur+1)/slides.length*100)+'%';document.getElementById('jump').value=cur;try{history.replaceState(null,'','#'+(cur+1))}catch(e){}}
+document.getElementById('prev').onclick=()=>go(cur-1);
+document.getElementById('next').onclick=()=>go(cur+1);
+document.getElementById('jump').onchange=e=>go(+e.target.value);
+document.getElementById('pdf').onclick=()=>window.print();
+document.getElementById('fs').onclick=()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{})};
+addEventListener('keydown',e=>{if(e.target.tagName==='SELECT')return;
+ if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(cur+1)}
+ else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();go(cur-1)}
+ else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);else if(e.key==='f'||e.key==='F')document.getElementById('fs').click()});
+let tx=null;addEventListener('touchstart',e=>tx=e.touches[0].clientX);addEventListener('touchend',e=>{if(tx===null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50)go(cur+(d<0?1:-1));tx=null});
+addEventListener('resize',fit);fit();go((parseInt(location.hash.slice(1))||1)-1);
+</script>
+</body>
+</html>
