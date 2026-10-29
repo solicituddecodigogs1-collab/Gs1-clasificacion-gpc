@@ -460,9 +460,12 @@ function boxSvg(kind,seed){
  <rect x="30" y="170" width="152" height="5" fill="#F26334"/><rect x="40" y="130" width="46" height="20" rx="10" fill="#00A79D"/><text x="63" y="143" text-anchor="middle" font-family="Inter" font-weight="800" font-size="8" fill="#fff">GS1 VE</text>
  ${code}
  <text x="205" y="105" transform="rotate(-90 205 105)" font-family="Montserrat" font-weight="800" font-size="12" fill="#fff" text-anchor="middle">Acetaminofén 500 mg</text></svg>`}
-function logoSvg(dark,mini){const t=dark?'#fff':'#002C6C';const s=mini?30:54;
+function logoFallback(dark,mini){const t=dark?'#fff':'#002C6C';const s=mini?30:54;
  return`<div style="display:flex;align-items:center;gap:${mini?7:11}px"><svg width="${s}" height="${s}" viewBox="0 0 60 60"><circle cx="30" cy="30" r="29" fill="${dark?'#1CA9C9':'#002C6C'}"/><g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 36C20 24 40 24 48 36"/><path d="M18 42C25 33 35 33 42 42"/><path d="M24 48C28 43 32 43 36 48"/></g><circle cx="30" cy="20" r="4" fill="#F26334"/></svg><div style="line-height:1"><div style="font-family:Montserrat;font-weight:900;font-size:${mini?16:28}px;color:${t}">GS1</div><div style="font-family:Montserrat;font-weight:800;font-size:${mini?9:14}px;color:#F26334;margin-top:1px">Venezuela</div></div></div>`}
 
+const LOGO_URL='https://gs1ve.org/wp-content/uploads/2022/05/Logo-GS1.png';
+function logoSvg(dark,mini){const h=mini?30:54;const bg=dark?'background:#fff;border-radius:10px;padding:4px 8px;':'';
+ return`<img src="${LOGO_URL}" alt="GS1 Venezuela" style="height:${h}px;width:auto;display:block;${bg}" onerror="this.outerHTML=logoFallback(${!!dark},${!!mini})">`}
 /* ---------- construcción ---------- */
 const slides=[...document.querySelectorAll('.slide')];
 document.querySelectorAll('[data-logo]').forEach(e=>e.innerHTML=logoSvg(e.dataset.logo==='dark',e.dataset.mini));

@@ -45,6 +45,14 @@ async function icon(name,color){const k=name+color;if(iconCache[k])return iconCa
 (async()=>{
 const IMG={};
 IMG.logoL=await png(logoSvg(false));IMG.logoD=await png(logoSvg(true));IMG.logoMiniL=await png(logoSvg(false));IMG.logoMiniD=await png(logoSvg(true));
+if(process.env.LOGO_PNG){ // logo oficial: LOGO_PNG=/ruta/Logo-GS1.png
+ const src=await sharp(process.env.LOGO_PNG).trim().toBuffer();
+ const fit=async(bg,pad)=>{const W=800,Hh=224;const inner=await sharp(src).resize(W-pad*2,Hh-pad*2,{fit:'contain',background:{r:0,g:0,b:0,alpha:0}}).png().toBuffer();
+  let img=sharp({create:{width:W,height:Hh,channels:4,background:bg}}).composite([{input:inner,gravity:'center'}]);
+  if(pad){const m=Buffer.from(`<svg width="${W}" height="${Hh}"><rect width="${W}" height="${Hh}" rx="40" fill="#fff"/></svg>`);img=sharp(await img.png().toBuffer()).composite([{input:m,blend:'dest-in'}])}
+  return 'image/png;base64,'+(await img.png().toBuffer()).toString('base64')};
+ IMG.logoL=IMG.logoMiniL=await fit({r:0,g:0,b:0,alpha:0},0);
+ IMG.logoD=IMG.logoMiniD=await fit({r:255,g:255,b:255,alpha:1},16);}
 IMG.wCover=await png(wavesCover);IMG.wClose=await png(wavesClose);IMG.wCL=await png(wavesCorner(false));IMG.wCD=await png(wavesCorner(true));IMG.bgDark=await png(bgDark);
 IMG.box={};for(const [k,s] of [['ean'],['qr',5],['dm',9]])IMG.box[k]=await png(boxSvg(k,s));
 IMG.qrGray=await png(codeSvg('qr',5,'#6b7280'));IMG.qr=await png(codeSvg('qr',5));IMG.qr12=await png(codeSvg('qr',12));IMG.qrDm=await png(codeSvg('dm',9));
