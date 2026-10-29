@@ -2,6 +2,8 @@ const pptxgen=require('pptxgenjs'),sharp=require('sharp'),React=require('react')
 const SK='/root/.claude/skills/synced/e17759f6-d5fa-40c2-941f-c3e91756f2fa_cf038d14-8b9f-4054-925d-160651d6e840/pptx/scripts/apply_theme.js';
 const {applyTheme}=require(SK);
 const OUT=process.argv[2];
+process.env.LOGO_PNG=process.env.LOGO_PNG||'/tmp/claude-0/vendor/logo_poster.png';
+const fs=require('fs');const b64=f=>'image/png;base64,'+fs.readFileSync(f).toString('base64');
 const THEME={name:'GS1 Healthcare',headFontFace:'Arial',bodyFontFace:'Calibri',colors:{dk1:'0B132B',lt1:'FFFFFF',dk2:'002C6C',lt2:'F8FAFC',accent1:'1CA9C9',accent2:'F26334',accent3:'00A79D',accent4:'10B981',accent5:'EF4444',accent6:'0097B2',hlink:'0097B2',folHlink:'002C6C'}};
 const H={navy:'002C6C',cyan:'1CA9C9',cyan2:'0097B2',orange:'F26334',teal:'00A79D',dark:'0B132B',ok:'10B981',bad:'EF4444',white:'FFFFFF'};
 const pres=new pptxgen();pres.layout='LAYOUT_WIDE';pres.theme={headFontFace:THEME.headFontFace,bodyFontFace:THEME.bodyFontFace};
@@ -46,12 +48,12 @@ async function icon(name,color){const k=name+color;if(iconCache[k])return iconCa
 const IMG={};
 IMG.logoL=await png(logoSvg(false));IMG.logoD=await png(logoSvg(true));IMG.logoMiniL=await png(logoSvg(false));IMG.logoMiniD=await png(logoSvg(true));
 if(process.env.LOGO_PNG){ // logo oficial: LOGO_PNG=/ruta/Logo-GS1.png
- const src=await sharp(process.env.LOGO_PNG).trim().toBuffer();
- const fit=async(bg,pad)=>{const W=800,Hh=224;const inner=await sharp(src).resize(W-pad*2,Hh-pad*2,{fit:'contain',background:{r:0,g:0,b:0,alpha:0}}).png().toBuffer();
+ const src=await sharp(process.env.LOGO_PNG).trim({threshold:45}).toBuffer();
+ const fit=async(bg,pad,W=800,Hh=224)=>{const inner=await sharp(src).resize(W-pad*2,Hh-pad*2,{fit:'contain',background:{r:0,g:0,b:0,alpha:0}}).png().toBuffer();
   let img=sharp({create:{width:W,height:Hh,channels:4,background:bg}}).composite([{input:inner,gravity:'center'}]);
   if(pad){const m=Buffer.from(`<svg width="${W}" height="${Hh}"><rect width="${W}" height="${Hh}" rx="40" fill="#fff"/></svg>`);img=sharp(await img.png().toBuffer()).composite([{input:m,blend:'dest-in'}])}
   return 'image/png;base64,'+(await img.png().toBuffer()).toString('base64')};
- IMG.logoL=IMG.logoMiniL=await fit({r:0,g:0,b:0,alpha:0},0);
+ IMG.logoL=await fit({r:255,g:255,b:255,alpha:1},0,600,300);IMG.logoMiniL=await fit({r:248,g:250,b:252,alpha:1},0);
  IMG.logoD=IMG.logoMiniD=await fit({r:255,g:255,b:255,alpha:1},16);}
 IMG.wCover=await png(wavesCover);IMG.wClose=await png(wavesClose);IMG.wCL=await png(wavesCorner(false));IMG.wCD=await png(wavesCorner(true));IMG.bgDark=await png(bgDark);
 IMG.box={};for(const [k,s] of [['ean'],['qr',5],['dm',9]])IMG.box[k]=await png(boxSvg(k,s));
@@ -85,12 +87,13 @@ async function photo(s,x,y,w,h,o={}){ // marcador de foto editable (clic derecho
  const sz=Math.min(w,h)*.38;await ic(s,o.icon||'HeartPulse','FFFFFF',x+w/2-sz/2,y+h/2-sz/2,sz);
  if(o.rot){/* el icono no rota */}
  T(s,'Insertar foto: '+(o.label||''),x+8,y+h-26,w-16,16,{sz:8,c:col.white,al:'center',name:'Etiqueta foto'})}
+function pimg(s,f,x,y,w,h,rot,name){s.addImage({data:b64(f),x:p(x),y:p(y),w:p(w),h:p(h),rotate:rot,altText:name})}
 function line(s,x1,y1,x2,y2,color,w=1,o={}){const dx=x2-x1,dy=y2-y1;s.addShape(pres.ShapeType.line,{x:p(Math.min(x1,x2)),y:p(Math.min(y1,y2)),w:p(Math.abs(dx)),h:p(Math.abs(dy)),flipV:dx*dy<0,line:{color,width:w,transparency:o.tr,dashType:o.dash}})}
 
 /* ===== 1 PORTADA ===== */
 let s=pres.addSlide({masterName:'GS1_LIBRE'});
 s.addImage({data:IMG.wCover,x:0,y:0,w:p(1280),h:p(720),altText:'Ondas corporativas'});
-s.addImage({data:IMG.logoL,x:p(56),y:p(34),w:p(200),h:p(56),altText:'Logo GS1 Venezuela'});
+s.addImage({data:IMG.logoL,x:p(48),y:p(20),w:p(168),h:p(84),altText:'Logo GS1 Venezuela'});
 T(s,'COMITÉ',56,108,620,100,{sz:69,b:true,c:col.navy,h:true,name:'Título'});
 T(s,'Salud GS1',56,206,620,90,{sz:58,b:true,c:col.cyan,h:true});
 const ag=[['BrainCircuit',H.navy,'Rastreo Inteligente: IA Aplicada a la Trazabilidad Médica.'],['ShieldPlus',H.cyan,'Seguridad del paciente, eficiencia de la cadena de suministro y trazabilidad de medicamentos.'],['Newspaper',H.navy,'GS1 News.'],['MessagesSquare',H.cyan,'Ronda Abierta.']];
@@ -100,8 +103,8 @@ await ic(s,'CalendarDays','FFFFFF',80,590,22);T(s,'5 Noviembre, 2026',110,588,20
 await ic(s,'Clock','FFFFFF',80,628,18);T(s,'8:30 am – 10:00 am',110,626,200,22,{sz:12,b:true,c:col.white});
 line(s,330,592,330,668,'FFFFFF',1,{tr:50});
 await ic(s,'MapPin','FFFFFF',350,594,22);T(s,[R('Oficina GS1 Venezuela. ',col.white,{bold:true}),R('Los Ruices, Calle Los Laboratorios, Edf. Quorum, Piso 1, Oficina K (Caracas).',col.white)],380,590,330,78,{sz:11,va:'middle'});
-await photo(s,850,150,260,420,{rot:6,fill:col.cyan2,icon:'Stethoscope',label:'atención médica'});
-await photo(s,740,318,230,230,{circ:true,fill:col.navy,icon:'User',label:'médico'});
+pimg(s,'/tmp/claude-0/vendor/photo_capsula.png',835,150,276,446,6,'Médico y paciente');
+pimg(s,'/tmp/claude-0/vendor/photo_circulo.png',730,318,250,250,0,'Médico con iconos de salud y protección');
 circle(s,935,285,58,col.white,{line:H.cyan,lw:3,sh:true});T(s,'+',935,285,58,58,{sz:34,b:true,c:col.cyan,al:'center',va:'middle'});
 await ibadge(s,1090,130,48,col.orange,'ShieldCheck');
 await ic(s,'Phone','FFFFFF',1010,664,16);T(s,'+58 414 2771877',1032,662,200,20,{sz:11,b:true,c:col.white});
@@ -154,8 +157,8 @@ await ic(s,'Hourglass',H.cyan,722,548,22);T(s,[R('Gestión de vencimientos ',col
 s=pres.addSlide({masterName:'GS1_CLARO'});
 kicker(s,'Agenda · Punto 2');title(s,[R('Seguridad del paciente: los ',col.navy),R('5 Correctos',col.cyan),R(' (BCMA)',col.navy)]);
 T(s,'Escaneo a pie de cama — Bedside Barcode Medication Administration',48,112,800,20,{sz:11,i:true,c:'64748B'});
-await photo(s,60,160,250,400,{rot:-4,icon:'HeartPulse',label:'enfermera escaneando brazalete',fill:col.navy});
-await photo(s,190,450,180,180,{circ:true,icon:'ScanLine',label:'brazalete',fill:col.cyan2});
+pimg(s,'/tmp/claude-0/vendor/photo_capsula.png',60,160,250,404,-4,'Médico sosteniendo la mano del paciente');
+pimg(s,'/tmp/claude-0/vendor/photo_circulo.png',190,440,190,190,0,'Médico con iconos de salud y protección');
 const fc=[['1',H.navy,'Paciente correcto','Escaneo del código GS1 del brazalete de identificación hospitalaria.','GSRN',H.cyan2],['2',H.cyan,'Medicamento correcto','Validación instantánea del GTIN contra la prescripción médica electrónica.','GTIN',H.orange],['3',H.navy,'Dosis correcta','Confirma la concentración (500 mg vs 1000 mg) y evita errores LASA (Look-Alike, Sound-Alike).','LASA','64748B'],['4',H.cyan,'Vía y hora correctas','Registro automático en la Historia Clínica Electrónica.','HCE',H.teal],['5',H.ok,'Vigencia garantizada','El sistema bloquea la dosis si (17) indica vencido o si el lote (10) tiene alerta de retiro.','',H.bad]];
 for(let i=0;i<5;i++){const y=160+i*92,f=fc[i];card(s,410,y,822,80,{line:i===4?H.ok:'E2E8F0'});badge(s,430,y+17,46,f[1],f[0],14);T(s,f[2],496,y+10,560,22,{sz:13.5,b:true,c:col.navy,h:true});T(s,f[3],496,y+36,600,40,{sz:11,c:'475569'});
  if(f[4]){s.addShape(pres.ShapeType.roundRect,{x:p(1120),y:p(y+26),w:p(88),h:p(28),rectRadius:.5,fill:{color:'F1F5F9'},line:{type:'none'},objectName:'Etiqueta '+f[4]});T(s,f[4],1120,y+26,88,28,{sz:10,b:true,c:f[5],al:'center',va:'middle',mono:true})}
@@ -231,7 +234,7 @@ for(let i=0;i<4;i++){const x=48+(i%2)*606,y=176+Math.floor(i/2)*226;card(s,x,y,5
 /* ===== 12 CIERRE ===== */
 s=pres.addSlide({masterName:'GS1_LIBRE'});
 s.addImage({data:IMG.wClose,x:0,y:0,w:p(1280),h:p(720),altText:'Ondas corporativas'});
-s.addImage({data:IMG.logoL,x:p(520),y:p(34),w:p(200),h:p(56),altText:'Logo GS1 Venezuela'});
+s.addImage({data:IMG.logoL,x:p(512),y:p(20),w:p(168),h:p(84),altText:'Logo GS1 Venezuela'});
 T(s,[R('Únete al ',col.navy),R('Comité Salud GS1',col.cyan)],520,104,720,56,{sz:33,b:true,h:true,name:'Título'});
 T(s,'Solicita tu acceso a la plataforma Digital Link.',520,164,700,22,{sz:12.5,c:'475569'});
 card(s,130,250,300,300,{r:.25});s.addImage({data:IMG.qr12,x:p(154),y:p(274),w:p(252),h:p(252),altText:'Código QR ilustrativo'});
