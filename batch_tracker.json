@@ -2119,5 +2119,18 @@
     "output_path": "Output_Clasificado/clasificado_Consolidado_2007_Parte_5.xlsx",
     "num_errors_in_batch": 0,
     "num_codes_blocked": 1
+  },
+  {
+    "batch_id": "msgbatch_014eEtMjH2ZdPxYzkqkQRdm8",
+    "source_file": "no_match_2007.xlsx (rescate anticipado Sonnet 5.5 (2007))",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/no_match_historico/no_match_2007.xlsx",
+    "model": "claude-sonnet-5-5",
+    "status": "ended",
+    "num_requests": 7683,
+    "created_at": "2026-11-05T18:27:59.816101+00:00",
+    "retrieved": true,
+    "output_path": "Output_Clasificado/no_match_2007_rescate_sonnet.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   }
 ]
