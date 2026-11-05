@@ -2132,5 +2132,55 @@
     "output_path": "Output_Clasificado/no_match_2007_rescate_sonnet.xlsx",
     "num_errors_in_batch": 0,
     "num_codes_blocked": 0
+  },
+  {
+    "batch_id": "msgbatch_01MHYhhtuGLYxtMPybTfBb1h",
+    "source_file": "Consolidado_2006_Parte_1.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2006/Consolidado_2006_Parte_1.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 8080,
+    "created_at": "2026-11-05T18:43:36.344370+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_01KxNJPjSqDMoDP1dG3FMbHV",
+    "source_file": "Consolidado_2006_Parte_2.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2006/Consolidado_2006_Parte_2.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 7602,
+    "created_at": "2026-11-05T18:44:52.998606+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_017EomDMiMUxQh9JQ1U3Evv4",
+    "source_file": "Consolidado_2006_Parte_3.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2006/Consolidado_2006_Parte_3.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 7542,
+    "created_at": "2026-11-05T18:46:07.861927+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_013CB45Sbwpa2aaM1k8R3Qf2",
+    "source_file": "Consolidado_2006_Parte_4.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2006/Consolidado_2006_Parte_4.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 7851,
+    "created_at": "2026-11-05T18:47:31.049540+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_0134NbifvjGq9JjD8iVKQTya",
+    "source_file": "Consolidado_2006_Parte_5.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_2006/Consolidado_2006_Parte_5.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 7709,
+    "created_at": "2026-11-05T18:48:48.901046+00:00",
+    "retrieved": false
   }
 ]
