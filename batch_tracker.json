@@ -1963,5 +1963,18 @@
     "output_path": "Output_Clasificado/clasificado_Consolidado_2009_Parte_5.xlsx",
     "num_errors_in_batch": 0,
     "num_codes_blocked": 2
+  },
+  {
+    "batch_id": "msgbatch_0188jd229ns7br5kjUE93gZ5",
+    "source_file": "no_match_2009.xlsx (rescate anticipado Sonnet 5.5 (2009))",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/no_match_historico/no_match_2009.xlsx",
+    "model": "claude-sonnet-5-5",
+    "status": "ended",
+    "num_requests": 23072,
+    "created_at": "2026-11-05T16:59:40.132333+00:00",
+    "retrieved": true,
+    "output_path": "Output_Clasificado/no_match_2009_rescate_sonnet.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 1
   }
 ]
