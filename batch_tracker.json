@@ -3217,9 +3217,12 @@
     "source_file": "no_match_1993.xlsx (rescate anticipado Sonnet 5.5 (1993))",
     "source_path": "/home/user/Gs1-clasificacion-gpc/no_match_historico/no_match_1993.xlsx",
     "model": "claude-sonnet-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 2707,
     "created_at": "2026-11-06T21:01:07.126566+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "/home/user/Gs1-clasificacion-gpc/Output_Clasificado/no_match_1993_rescate_sonnet.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   }
 ]
