@@ -531,11 +531,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 # Alias de nombres de columna vistos en formatos de años más antiguos
 # (p. ej. 2017: "Nombre"/"EAN13"/"Clasificación Global del Producto" en
-# vez de "DESCRIPCION"/"GTIN"/"CLASIFICACION"). Claves y valores ya
-# normalizados (sin acentos, minúsculas) — ver _normalize_col_key.
+# vez de "DESCRIPCION"/"GTIN"/"CLASIFICACION"; 2003: "gt in" con un
+# espacio espurio en vez de "GTIN"). Claves y valores ya normalizados
+# (sin acentos, minúsculas) — ver _normalize_col_key.
 COLUMN_ALIASES: dict[str, list[str]] = {
     "descripcion": ["nombre"],
-    "gtin": ["ean13", "ean-13", "ean 13"],
+    "gtin": ["ean13", "ean-13", "ean 13", "gt in"],
     "clasificacion": ["clasificacion global del producto"],
 }
 
