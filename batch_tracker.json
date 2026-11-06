@@ -2840,49 +2840,64 @@
     "source_file": "Parte_1_1997.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_1997/Parte_1_1997.xlsx",
     "model": "claude-haiku-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 3137,
     "created_at": "2026-11-06T19:23:24.463197+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Parte_1_1997.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   },
   {
     "batch_id": "msgbatch_01V17ojdw5hpcdH9yCt5HyiZ",
     "source_file": "Parte_2_1997.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_1997/Parte_2_1997.xlsx",
     "model": "claude-haiku-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 3088,
     "created_at": "2026-11-06T19:23:56.775789+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Parte_2_1997.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   },
   {
     "batch_id": "msgbatch_01LjPkG9Rtnu3hXe7MHj9dKz",
     "source_file": "Parte_3_1997.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_1997/Parte_3_1997.xlsx",
     "model": "claude-haiku-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 3149,
     "created_at": "2026-11-06T19:24:29.812433+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Parte_3_1997.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   },
   {
     "batch_id": "msgbatch_01G5DcGGKCscqpuubdgVQNNj",
     "source_file": "Parte_4_1997.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_1997/Parte_4_1997.xlsx",
     "model": "claude-haiku-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 3149,
     "created_at": "2026-11-06T19:25:01.931371+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Parte_4_1997.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   },
   {
     "batch_id": "msgbatch_0194ZwsbRi2eanMYvcXkK9rB",
     "source_file": "Parte_5_1997.xlsx",
     "source_path": "/home/user/Gs1-clasificacion-gpc/input_1997/Parte_5_1997.xlsx",
     "model": "claude-haiku-5-5",
-    "status": "in_progress",
+    "status": "ended",
     "num_requests": 3097,
     "created_at": "2026-11-06T19:25:32.549800+00:00",
-    "retrieved": false
+    "retrieved": true,
+    "output_path": "Output_Clasificado/clasificado_Parte_5_1997.xlsx",
+    "num_errors_in_batch": 0,
+    "num_codes_blocked": 0
   }
 ]
