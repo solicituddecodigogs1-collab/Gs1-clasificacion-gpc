@@ -2912,5 +2912,55 @@
     "output_path": "/home/user/Gs1-clasificacion-gpc/Output_Clasificado/no_match_1997_rescate_sonnet.xlsx",
     "num_errors_in_batch": 0,
     "num_codes_blocked": 1
+  },
+  {
+    "batch_id": "msgbatch_01KYg6FeyHogWtegeLSRjWxa",
+    "source_file": "Parte_1_1996.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_1996/Parte_1_1996.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 2113,
+    "created_at": "2026-11-06T19:44:04.842155+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_01FmYE4dWHvKG8Bv5snyDGNN",
+    "source_file": "Parte_2_1996.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_1996/Parte_2_1996.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 2122,
+    "created_at": "2026-11-06T19:44:25.992354+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_011iUxqstg23ZMULn8QjCPUE",
+    "source_file": "Parte_3_1996.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_1996/Parte_3_1996.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 2127,
+    "created_at": "2026-11-06T19:44:51.425448+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_011QkuCAeT5apWFvCp1Dg5Ht",
+    "source_file": "Parte_4_1996.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_1996/Parte_4_1996.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 2126,
+    "created_at": "2026-11-06T19:45:13.208409+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_013YZMJkFtFhMxCfyqtHRAR6",
+    "source_file": "Parte_5_1996.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_1996/Parte_5_1996.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 2108,
+    "created_at": "2026-11-06T19:45:34.664041+00:00",
+    "retrieved": false
   }
 ]
