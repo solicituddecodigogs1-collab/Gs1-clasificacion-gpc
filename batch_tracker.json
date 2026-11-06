@@ -2708,5 +2708,25 @@
     "num_requests": 7276,
     "created_at": "2026-11-06T18:33:18.975674+00:00",
     "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_01JrfwMbHwWRznawWhTotojL",
+    "source_file": "Parte_4_1999.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_1999/Parte_4_1999.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 6603,
+    "created_at": "2026-11-06T18:34:31.725015+00:00",
+    "retrieved": false
+  },
+  {
+    "batch_id": "msgbatch_01UgZq4xbDKtjjzwvuhbmEPj",
+    "source_file": "Parte_5_1999.xlsx",
+    "source_path": "/home/user/Gs1-clasificacion-gpc/input_1999/Parte_5_1999.xlsx",
+    "model": "claude-haiku-5-5",
+    "status": "in_progress",
+    "num_requests": 6988,
+    "created_at": "2026-11-06T18:35:41.588033+00:00",
+    "retrieved": false
   }
 ]
