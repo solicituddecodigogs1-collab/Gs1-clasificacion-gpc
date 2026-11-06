@@ -45,6 +45,26 @@ YEAR_GLOBS = {
 SOURCE_SUFFIX = " (rescate anticipado Sonnet 5.5 (2001))"
 
 
+def build_rescue_lookup(path: Path) -> dict[str, dict]:
+    if not path.exists():
+        return {}
+    df = pd.read_excel(path)
+    if df.empty:
+        return {}
+    descripcion_col, marca_col = rb.resolve_descripcion_marca_columns(df)
+    rescued = df[df["nivel_asignado"].astype(str).str.upper() != "NO_MATCH"]
+    lookup = {}
+    for _, row in rescued.iterrows():
+        key = sb.make_custom_id(row[marca_col], row[descripcion_col])
+        lookup[key] = {
+            "gpc_code": row["gpc_code"],
+            "nivel_asignado": row["nivel_asignado"],
+            "gpc_description": row["gpc_description"],
+            "confidence_score": row["confidence_score"],
+        }
+    return lookup
+
+
 def is_unresolved(df: pd.DataFrame, catalog_lookup: dict) -> pd.Series:
     nivel = df["nivel_asignado"].astype(str).str.strip().str.upper()
     codigo = df["gpc_code"].astype(str).str.strip()
