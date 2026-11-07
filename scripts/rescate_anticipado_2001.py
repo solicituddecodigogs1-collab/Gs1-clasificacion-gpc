@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Rescate anticipado de 2000 (copia scoped de rescate_anticipado_2002.py):
-consolida TODO el NO_MATCH de 2000 y lo somete a Sonnet 5.5 + regla de
+"""Rescate anticipado de 2001 (copia scoped de rescate_anticipado_2002.py):
+consolida TODO el NO_MATCH de 2001 y lo somete a Sonnet 5.5 + regla de
 rescate (submit_batches_rescate.py) vía Batch API.
 
 Deliberadamente NO aplica la capa de heurística/preclasificación (FASE 6 en
@@ -8,10 +8,10 @@ Deliberadamente NO aplica la capa de heurística/preclasificación (FASE 6 en
 "hasta el parche con Sonnet" y el residual que Sonnet no resuelva queda
 como NO_MATCH real, sin heurística Marca->Segment ni regex/lookup empresa.
 
-Parcha los archivos principales Output_Clasificado/clasificado_Parte_N_2000.xlsx
+Parcha los archivos principales Output_Clasificado/clasificado_Parte_N_2001.xlsx
 solo con el rescate Sonnet.
 
-Deliberadamente scoped SOLO a 2000 — nunca toca ni re-envía nada de
+Deliberadamente scoped SOLO a 2001 — nunca toca ni re-envía nada de
 no_match_historico/no_match_residual de otros años.
 
 Script independiente: reutiliza las funciones de
@@ -26,23 +26,26 @@ from pathlib import Path
 
 import pandas as pd
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "lib"))
 import submit_batches as sb
 import submit_batches_rescate as sbr
 import retrieve_batches as rb
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-logger = logging.getLogger("rescate_anticipado_2000")
+logger = logging.getLogger("rescate_anticipado_2001")
 
 OUTPUT_DIR = Path("Output_Clasificado")
 NO_MATCH_HIST_DIR = Path("no_match_historico")
 NO_MATCH_RESIDUAL_DIR = Path("no_match_residual")
 TRACKER_FILE = Path("batch_tracker.json")
 
-YEARS = [2000]
+YEARS = [2001]
 YEAR_GLOBS = {
-    2000: "clasificado_Parte_*_2000.xlsx",
+    2001: "clasificado_Parte_*_2001.xlsx",
 }
-SOURCE_SUFFIX = " (rescate anticipado Sonnet 5.5 (2000))"
+SOURCE_SUFFIX = " (rescate anticipado Sonnet 5.5 (2001))"
 
 
 def build_rescue_lookup(path: Path) -> dict[str, dict]:
@@ -84,10 +87,10 @@ def main() -> int:
     NO_MATCH_RESIDUAL_DIR.mkdir(parents=True, exist_ok=True)
 
     # ======================================================================
-    # FASE 1 — Exportar NO_MATCH histórico de 2000
+    # FASE 1 — Exportar NO_MATCH histórico de 2001
     # ======================================================================
     print("=" * 78)
-    print("FASE 1 — Consolidando NO_MATCH de 2000 en no_match_historico/")
+    print("FASE 1 — Consolidando NO_MATCH de 2001 en no_match_historico/")
     print("=" * 78)
     for year in YEARS:
         files = sorted(OUTPUT_DIR.glob(YEAR_GLOBS[year]))
@@ -252,10 +255,10 @@ def main() -> int:
         print(f"  {year}: {len(residual)} filas residuales -> {out_path}")
 
     # ======================================================================
-    # FASE 6 — Reporte final de recuperación 2000
+    # FASE 6 — Reporte final de recuperación 2001
     # ======================================================================
     print("\n" + "=" * 78)
-    print("REPORTE DE RECUPERACIÓN — 2000 (post Sonnet, sin heurística)")
+    print("REPORTE DE RECUPERACIÓN — 2001 (post Sonnet, sin heurística)")
     print("=" * 78)
     print(f"{'Año':<8}{'Total':<10}{'Asignados':<14}{'% Asignado':<13}{'NO_MATCH':<12}{'% NO_MATCH':<12}")
     print("-" * 78)

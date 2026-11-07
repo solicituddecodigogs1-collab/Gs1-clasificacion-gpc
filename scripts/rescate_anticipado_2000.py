@@ -1,28 +1,24 @@
 #!/usr/bin/env python3
-"""Rescate anticipado de 2004 (copia scoped de rescate_anticipado_2010.py):
-consolida TODO el NO_MATCH de 2004 y lo somete a las mismas 2 capas de
-rescate ya usadas en 2010-2025:
+"""Rescate anticipado de 2000 (copia scoped de rescate_anticipado_2002.py):
+consolida TODO el NO_MATCH de 2000 y lo somete a Sonnet 5.5 + regla de
+rescate (submit_batches_rescate.py) vía Batch API.
 
-  1. Sonnet 5.5 + regla de rescate (submit_batches_rescate.py), vía
-     Batch API, sobre el NO_MATCH completo del año.
-  2. Heurística Marca->Segment (misma lógica de
-     rescate_marca_segment.py) sobre lo que Sonnet deje sin resolver.
+Deliberadamente NO aplica la capa de heurística/preclasificación (FASE 6 en
+2002+): por decisión explícita del usuario (2026-11-06), se procesa
+"hasta el parche con Sonnet" y el residual que Sonnet no resuelva queda
+como NO_MATCH real, sin heurística Marca->Segment ni regex/lookup empresa.
 
-Parcha los archivos principales
-Output_Clasificado/clasificado_Consolidado_2004_Parte_N.xlsx con AMBAS
-capas, porque el objetivo es cerrar el reporte 2004-2025 con un match
-rate real y consistente en todo el rango.
+Parcha los archivos principales Output_Clasificado/clasificado_Parte_N_2000.xlsx
+solo con el rescate Sonnet.
 
-Deliberadamente scoped SOLO a 2004 — nunca toca ni re-envía nada de
-no_match_historico/no_match_residual de otros años (evita el tipo de
-reenvío duplicado que ya ocurrió una vez con 2013).
+Deliberadamente scoped SOLO a 2000 — nunca toca ni re-envía nada de
+no_match_historico/no_match_residual de otros años.
 
 Script independiente: reutiliza las funciones de
 submit_batches.py / submit_batches_rescate.py / retrieve_batches.py
 sin modificarlas.
 """
 
-import json
 import logging
 import sys
 import time
@@ -30,37 +26,26 @@ from pathlib import Path
 
 import pandas as pd
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "lib"))
 import submit_batches as sb
 import submit_batches_rescate as sbr
 import retrieve_batches as rb
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-logger = logging.getLogger("rescate_anticipado_2004")
+logger = logging.getLogger("rescate_anticipado_2000")
 
 OUTPUT_DIR = Path("Output_Clasificado")
 NO_MATCH_HIST_DIR = Path("no_match_historico")
 NO_MATCH_RESIDUAL_DIR = Path("no_match_residual")
 TRACKER_FILE = Path("batch_tracker.json")
 
-YEARS = [2004]
+YEARS = [2000]
 YEAR_GLOBS = {
-    2004: "clasificado_Consolidado_2004_Parte_*.xlsx",
+    2000: "clasificado_Parte_*_2000.xlsx",
 }
-SOURCE_SUFFIX = " (rescate anticipado Sonnet 5.5 (2004))"
-
-# Heurística Marca->Segment (igual que rescate_marca_segment.py).
-HAIKU_MODEL = "claude-haiku-5-5"
-CHUNK_SIZE = 150
-HEURISTIC_CONFIDENCE = 40
-MAX_RETRIES = 3
-PROMPT_TEMPLATE = (
-    "Actúa como clasificador GS1. Para cada marca o proveedor de esta lista, "
-    "identifica su industria principal y asígnale el código exacto de 8 "
-    "dígitos del Segmento GPC (Segment) correspondiente (ej. 50000000 para "
-    "Alimentos). Devuelve EXCLUSIVAMENTE un objeto JSON válido donde la clave "
-    "sea el nombre de la marca y el valor sea el código GPC.\n\n"
-    "Marcas:\n{marcas}"
-)
+SOURCE_SUFFIX = " (rescate anticipado Sonnet 5.5 (2000))"
 
 
 def build_rescue_lookup(path: Path) -> dict[str, dict]:
@@ -92,43 +77,6 @@ def is_unresolved(df: pd.DataFrame, catalog_lookup: dict) -> pd.Series:
     return es_no_match | vacio | invalido
 
 
-def build_segment_lookup() -> dict[str, str]:
-    df = pd.read_csv(sb.CATALOG_FILE, dtype=str)
-    segments = df[df["nivel"] == "Segment"]
-    return dict(zip(segments["codigo"], segments["titulo"]))
-
-
-def parse_json_response(text: str) -> dict:
-    import re
-
-    text = text.strip()
-    match = re.search(r"\{.*\}", text, re.DOTALL)
-    if match:
-        text = match.group(0)
-    return json.loads(text)
-
-
-def call_haiku_chunk(client, brands_chunk: list[str]) -> dict[str, str]:
-    marcas_text = "\n".join(f"- {b}" for b in brands_chunk)
-    prompt = PROMPT_TEMPLATE.format(marcas=marcas_text)
-    for attempt in range(1, MAX_RETRIES + 1):
-        try:
-            resp = client.messages.create(
-                model=HAIKU_MODEL,
-                max_tokens=4096,
-                thinking={"type": "disabled"},
-                messages=[{"role": "user", "content": prompt}],
-            )
-            text_parts = [b.text for b in resp.content if getattr(b, "type", None) == "text"]
-            return parse_json_response("".join(text_parts))
-        except Exception as exc:
-            logger.warning(f"  [reintento {attempt}/{MAX_RETRIES}] error en chunk heurística: {exc}")
-            if attempt == MAX_RETRIES:
-                return {}
-            time.sleep(3 * attempt)
-    return {}
-
-
 def main() -> int:
     import anthropic
 
@@ -139,10 +87,10 @@ def main() -> int:
     NO_MATCH_RESIDUAL_DIR.mkdir(parents=True, exist_ok=True)
 
     # ======================================================================
-    # FASE 1 — Exportar NO_MATCH histórico de 2004
+    # FASE 1 — Exportar NO_MATCH histórico de 2000
     # ======================================================================
     print("=" * 78)
-    print("FASE 1 — Consolidando NO_MATCH de 2004 en no_match_historico/")
+    print("FASE 1 — Consolidando NO_MATCH de 2000 en no_match_historico/")
     print("=" * 78)
     for year in YEARS:
         files = sorted(OUTPUT_DIR.glob(YEAR_GLOBS[year]))
@@ -162,14 +110,39 @@ def main() -> int:
     tracker = sbr.load_tracker()
     batch_ids_by_year: dict[int, str] = {}
 
+    TERMINAL_FAILED = {"failed", "canceled", "expired", "errored"}
     for year in YEARS:
         file_path = NO_MATCH_HIST_DIR / f"no_match_{year}.xlsx"
         file_name = file_path.name
+        suffixed_name = f"{file_name}{SOURCE_SUFFIX}"
+
+        # already_submitted() de submit_batches_rescate compara contra el
+        # nombre SIN sufijo, pero esta misma FASE renombra la entrada del
+        # tracker con SOURCE_SUFFIX justo después de crearla -- así que al
+        # reanudar el script (p.ej. tras un kill) nunca la reconocería y
+        # reenviaría un batch duplicado. Se busca primero la entrada ya
+        # renombrada antes de llamar a submit_batch_for_file.
+        existing = next(
+            (
+                e
+                for e in tracker
+                if e.get("source_file") == suffixed_name and e.get("status") not in TERMINAL_FAILED
+            ),
+            None,
+        )
+        if existing is not None:
+            batch_ids_by_year[year] = existing["batch_id"]
+            logger.info(
+                f"{year}: ya existe un batch enviado ({existing['batch_id']}, "
+                f"status={existing.get('status')}), se omite reenvío"
+            )
+            continue
+
         before = len(tracker)
         sbr.submit_batch_for_file(client, str(file_path), tracker, catalog)
         new_entries = tracker[before:]
         for entry in new_entries:
-            entry["source_file"] = f"{file_name}{SOURCE_SUFFIX}"
+            entry["source_file"] = suffixed_name
             batch_ids_by_year[year] = entry["batch_id"]
         sbr.save_tracker(tracker)
 
@@ -282,107 +255,10 @@ def main() -> int:
         print(f"  {year}: {len(residual)} filas residuales -> {out_path}")
 
     # ======================================================================
-    # FASE 6 — Heurística Marca->Segment sobre el residual 2004
+    # FASE 6 — Reporte final de recuperación 2000
     # ======================================================================
     print("\n" + "=" * 78)
-    print("FASE 6 — Heurística Marca->Segment (Haiku 5.5, llamada directa)")
-    print("=" * 78)
-    segment_lookup = build_segment_lookup()
-    valid_codes = set(segment_lookup.keys())
-
-    brand_display: dict[str, str] = {}
-    for year, residual, descripcion_col, marca_col in residual_info:
-        if residual.empty:
-            continue
-        vals = residual[marca_col].dropna().astype(str).str.strip()
-        vals = vals[vals.str.len() >= 3]
-        for v in vals:
-            key = v.upper()
-            if key not in brand_display:
-                brand_display[key] = v
-
-    brands = sorted(brand_display.keys())
-    print(f"Marcas únicas detectadas en el residual (>=3 caracteres): {len(brands)}")
-
-    chunks = [brands[i : i + CHUNK_SIZE] for i in range(0, len(brands), CHUNK_SIZE)]
-    brand_to_code: dict[str, str] = {}
-    invalid_codes = 0
-    for i, chunk in enumerate(chunks, 1):
-        display_chunk = [brand_display[k] for k in chunk]
-        result = call_haiku_chunk(client, display_chunk)
-        for brand_raw, code in result.items():
-            key = str(brand_raw).strip().upper()
-            code_clean = "".join(ch for ch in str(code) if ch.isdigit())
-            if code_clean in valid_codes:
-                brand_to_code[key] = code_clean
-            else:
-                invalid_codes += 1
-        print(f"  [{i}/{len(chunks)}] recibidas {len(result)} marcas, acumulado válido={len(brand_to_code)}")
-
-    print(f"Marcas con Segment válido asignado: {len(brand_to_code)} / {len(brands)}")
-    print(f"Códigos inválidos descartados: {invalid_codes}")
-
-    # Parchar no_match_residual/ (snapshot) y los archivos principales.
-    heuristic_summary = []
-    for year, residual, descripcion_col, marca_col in residual_info:
-        residual_path = NO_MATCH_RESIDUAL_DIR / f"no_match_residual_{year}.xlsx"
-        patched_residual = 0
-        heuristic_lookup: dict[str, dict] = {}
-        if not residual.empty:
-            for idx in residual.index:
-                marca_val = residual.at[idx, marca_col]
-                if pd.isna(marca_val):
-                    continue
-                key = str(marca_val).strip().upper()
-                if len(key) < 3:
-                    continue
-                code = brand_to_code.get(key)
-                if code is None:
-                    continue
-                residual.at[idx, "gpc_code"] = code
-                residual.at[idx, "nivel_asignado"] = "Segment"
-                residual.at[idx, "gpc_description"] = segment_lookup[code]
-                residual.at[idx, "confidence_score"] = HEURISTIC_CONFIDENCE
-                patched_residual += 1
-                join_key = sb.make_custom_id(marca_val, residual.at[idx, descripcion_col])
-                heuristic_lookup[join_key] = {
-                    "gpc_code": code,
-                    "nivel_asignado": "Segment",
-                    "gpc_description": segment_lookup[code],
-                    "confidence_score": HEURISTIC_CONFIDENCE,
-                }
-            residual.to_excel(residual_path, index=False)
-
-        # Parchar también los archivos principales del año.
-        patched_main = 0
-        files = sorted(OUTPUT_DIR.glob(YEAR_GLOBS[year]))
-        for f in files:
-            df = pd.read_excel(f)
-            descripcion_col_m, marca_col_m = rb.resolve_descripcion_marca_columns(df)
-            is_no_match = df["nivel_asignado"].astype(str).str.upper() == "NO_MATCH"
-            file_patched = 0
-            for idx in df[is_no_match].index:
-                key = sb.make_custom_id(df.at[idx, marca_col_m], df.at[idx, descripcion_col_m])
-                hit = heuristic_lookup.get(key)
-                if hit is None:
-                    continue
-                df.at[idx, "gpc_code"] = hit["gpc_code"]
-                df.at[idx, "nivel_asignado"] = hit["nivel_asignado"]
-                df.at[idx, "gpc_description"] = hit["gpc_description"]
-                df.at[idx, "confidence_score"] = hit["confidence_score"]
-                file_patched += 1
-            if file_patched:
-                df.to_excel(f, index=False)
-            patched_main += file_patched
-
-        heuristic_summary.append({"anio": year, "rescatados_heuristica": patched_main})
-        print(f"  {year}: {patched_main} filas rescatadas por heurística (residual: {patched_residual})")
-
-    # ======================================================================
-    # FASE 7 — Reporte final de recuperación 2004
-    # ======================================================================
-    print("\n" + "=" * 78)
-    print("REPORTE DE RECUPERACIÓN — 2004 (post Sonnet + heurística)")
+    print("REPORTE DE RECUPERACIÓN — 2000 (post Sonnet, sin heurística)")
     print("=" * 78)
     print(f"{'Año':<8}{'Total':<10}{'Asignados':<14}{'% Asignado':<13}{'NO_MATCH':<12}{'% NO_MATCH':<12}")
     print("-" * 78)

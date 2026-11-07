@@ -1,23 +1,20 @@
 #!/usr/bin/env python3
-"""Rescate anticipado del sub-bloque 2011-2014 (NO esperar al cierre de
-la década 2004-2014): consolida TODO el NO_MATCH de estos 4 años y lo
-somete a las mismas 2 capas de rescate ya usadas en 2015-2025:
+"""Rescate anticipado de 2004 (copia scoped de rescate_anticipado_2010.py):
+consolida TODO el NO_MATCH de 2004 y lo somete a las mismas 2 capas de
+rescate ya usadas en 2010-2025:
 
   1. Sonnet 5.5 + regla de rescate (submit_batches_rescate.py), vía
-     Batch API, sobre el NO_MATCH completo de cada año.
+     Batch API, sobre el NO_MATCH completo del año.
   2. Heurística Marca->Segment (misma lógica de
      rescate_marca_segment.py) sobre lo que Sonnet deje sin resolver.
 
-A diferencia de 2015-2025 (donde la heurística solo tocó los archivos
-de no_match_residual/, pendiente de la consolidación final de década),
-aquí SÍ se parchan los archivos principales
-Output_Clasificado/clasificado_Consolidado_<año>_Parte_N.xlsx con
-AMBAS capas, porque el objetivo es un número de match rate accionable
-AHORA (decidir si seguir con 2010 hacia atrás), no un archivo de
-auditoría para después.
+Parcha los archivos principales
+Output_Clasificado/clasificado_Consolidado_2004_Parte_N.xlsx con AMBAS
+capas, porque el objetivo es cerrar el reporte 2004-2025 con un match
+rate real y consistente en todo el rango.
 
-Deliberadamente scoped SOLO a 2011-2014 — nunca toca ni re-envía nada
-de no_match_historico/no_match_residual de 2015-2025 (evita el tipo de
+Deliberadamente scoped SOLO a 2004 — nunca toca ni re-envía nada de
+no_match_historico/no_match_residual de otros años (evita el tipo de
 reenvío duplicado que ya ocurrió una vez con 2013).
 
 Script independiente: reutiliza las funciones de
@@ -33,26 +30,26 @@ from pathlib import Path
 
 import pandas as pd
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "lib"))
 import submit_batches as sb
 import submit_batches_rescate as sbr
 import retrieve_batches as rb
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-logger = logging.getLogger("rescate_anticipado_2011_2014")
+logger = logging.getLogger("rescate_anticipado_2004")
 
 OUTPUT_DIR = Path("Output_Clasificado")
 NO_MATCH_HIST_DIR = Path("no_match_historico")
 NO_MATCH_RESIDUAL_DIR = Path("no_match_residual")
 TRACKER_FILE = Path("batch_tracker.json")
 
-YEARS = [2011, 2012, 2013, 2014]
+YEARS = [2004]
 YEAR_GLOBS = {
-    2011: "clasificado_Consolidado_2011_Parte_*.xlsx",
-    2012: "clasificado_Consolidado_2012_Parte_*.xlsx",
-    2013: "clasificado_Consolidado_2013_Parte_*.xlsx",
-    2014: "clasificado_Consolidado_2014_Parte_*.xlsx",
+    2004: "clasificado_Consolidado_2004_Parte_*.xlsx",
 }
-SOURCE_SUFFIX = " (rescate anticipado Sonnet 5.5)"
+SOURCE_SUFFIX = " (rescate anticipado Sonnet 5.5 (2004))"
 
 # Heurística Marca->Segment (igual que rescate_marca_segment.py).
 HAIKU_MODEL = "claude-haiku-5-5"
@@ -145,10 +142,10 @@ def main() -> int:
     NO_MATCH_RESIDUAL_DIR.mkdir(parents=True, exist_ok=True)
 
     # ======================================================================
-    # FASE 1 — Exportar NO_MATCH histórico de 2011-2014
+    # FASE 1 — Exportar NO_MATCH histórico de 2004
     # ======================================================================
     print("=" * 78)
-    print("FASE 1 — Consolidando NO_MATCH de 2011-2014 en no_match_historico/")
+    print("FASE 1 — Consolidando NO_MATCH de 2004 en no_match_historico/")
     print("=" * 78)
     for year in YEARS:
         files = sorted(OUTPUT_DIR.glob(YEAR_GLOBS[year]))
@@ -288,7 +285,7 @@ def main() -> int:
         print(f"  {year}: {len(residual)} filas residuales -> {out_path}")
 
     # ======================================================================
-    # FASE 6 — Heurística Marca->Segment sobre el residual 2011-2014
+    # FASE 6 — Heurística Marca->Segment sobre el residual 2004
     # ======================================================================
     print("\n" + "=" * 78)
     print("FASE 6 — Heurística Marca->Segment (Haiku 5.5, llamada directa)")
@@ -385,10 +382,10 @@ def main() -> int:
         print(f"  {year}: {patched_main} filas rescatadas por heurística (residual: {patched_residual})")
 
     # ======================================================================
-    # FASE 7 — Reporte final de recuperación 2011-2014
+    # FASE 7 — Reporte final de recuperación 2004
     # ======================================================================
     print("\n" + "=" * 78)
-    print("REPORTE DE RECUPERACIÓN — Sub-bloque 2011-2014 (post Sonnet + heurística)")
+    print("REPORTE DE RECUPERACIÓN — 2004 (post Sonnet + heurística)")
     print("=" * 78)
     print(f"{'Año':<8}{'Total':<10}{'Asignados':<14}{'% Asignado':<13}{'NO_MATCH':<12}{'% NO_MATCH':<12}")
     print("-" * 78)

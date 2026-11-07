@@ -26,6 +26,9 @@ from pathlib import Path
 
 import pandas as pd
 
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "lib"))
 import submit_batches as sb
 import submit_batches_rescate as sbr
 import retrieve_batches as rb
