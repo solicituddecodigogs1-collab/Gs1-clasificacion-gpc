@@ -184,8 +184,11 @@ Después de las pasadas 1 y 2 (secciones 3–4), siempre queda un residual en `N
 ese residual, en vez de intentar una tercera pasada de LLM puro, conviene un método en
 **capas en cascada**, cada una recibiendo solo lo que la anterior no resolvió. Esto fue
 exactamente lo que se usó para rescatar el residual 1993–2007 de este proyecto, con éxito del
-100 % (ver `INFORME_TECNICO.md`, sección 8). El script de referencia completo está en
-`scripts_referencia/clasificar_nomatch_1993_2007.py` de esta carpeta.
+100 % (ver `INFORME_TECNICO.md`, sección 8). El script de referencia, ya adaptado al contexto
+argentino (prefijo GS1 779/778, CUIT en vez de RIF, catálogo CSV incluido en este paquete),
+está en `scripts_referencia/clasificar_nomatch_plantilla_argentina.py` de esta carpeta. Las
+reglas de negocio de la capa 1 (8.1) son placeholders — reemplázalas por las de tu propia MO
+antes de usarlo; ningún dato real de empresas venezolanas viaja en este archivo.
 
 ### 8.1 Capa 1 — reglas por empresa/afiliado
 

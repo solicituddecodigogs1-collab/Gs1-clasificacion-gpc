@@ -1,17 +1,30 @@
 #!/usr/bin/env python3
-"""Clasificación del NO_MATCH histórico 1993-2007 contra GPC Mayo 2026 (MX, es).
+"""PLANTILLA adaptada para GS1 Argentina — rescate de NO_MATCH residual en capas.
 
-Entrada : Output_NoMatch/NoMatch_<año>.xlsx
-Esquema : catalogo/GPC as of May 2026 v20260520 MX.xlsx (hoja 'Schema')
+Basado en el script real que usó GS1 Venezuela (scripts/clasificar_nomatch_1993_2007.py
+en la rama principal del repo), con dos tipos de cambio:
+
+  (a) Lo estructural y verificable, ya adaptado aquí: prefijo GS1 de Argentina
+      (778/779, en vez de 759 de Venezuela) y formato de identificador fiscal
+      (CUIT de 11 dígitos, en vez del RIF venezolano).
+  (b) Las reglas de negocio reales (capa 1: qué empresa/marca produce qué tipo
+      de producto) NO pueden adaptarse sin datos reales de Argentina. Las ~19
+      reglas reales de empresas venezolanas (con sus RIF) se REEMPLAZARON por
+      3 ejemplos ilustrativos con CUIT y marca ficticios — bórralos y pon las
+      reglas reales de tu propia MO antes de correr esto.
+
+Entrada : Output_NoMatch/NoMatch_<año>.xlsx (tu propia carpeta de NO_MATCH)
+Esquema : catalogo/gpc_catalogo_oficial.csv (o el .xlsx oficial con hoja 'Schema')
 Salida  : Output_Clasificado/NoMatch_Clasificado/NoMatch_<año>_CLASIFICADO.xlsx
 
 Capas:
-  1. Reglas de afiliados históricos dominantes (RIF / marca) -> código fijo.
+  1. Reglas de afiliados históricos dominantes (CUIT / marca) -> código fijo.
+     *** EJEMPLO ILUSTRATIVO — reemplazar con las reglas reales de tu MO ***
   2. Patrones técnicos y abreviaturas históricas (texto expandido).
   3. Consenso de cohorte por prefijo con lo ya clasificado con alta confianza
-     (Output_Asignados 1993-2025), solo cohortes homogéneas.
+     (Output_Asignados), solo cohortes homogéneas.
   4. LLM en dos etapas SIEMPRE restringido a códigos del esquema oficial:
-       etapa A: elige Class entre las 938 del esquema;
+       etapa A: elige Class entre las del esquema;
        etapa B: elige Brick entre los bricks de ese Class (o 0 = queda en Class).
   5. Respaldos: moda de la cohorte (prefijo) ya resuelta, y reintento.
 
@@ -36,26 +49,48 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
-SCHEMA_XLSX = ROOT / "catalogo" / "GPC as of May 2026 v20260520 MX.xlsx"
+# Apunta al catalogo/gpc_catalogo_oficial.csv incluido en este mismo paquete
+# (formato largo: nivel,codigo,titulo,segment_code,family_code,class_code).
+# Si tu MO usa el .xlsx oficial completo (hoja 'Schema', con mas columnas
+# como BrickDefinition_Includes), cambia load_schema() para leerlo con
+# pandas.read_excel en vez de read_csv -- la logica de abajo es la misma.
+SCHEMA_CSV = ROOT / "catalogo" / "gpc_catalogo_oficial.csv"
 IN_DIR = ROOT / "Output_NoMatch"
 OUT_DIR = ROOT / "Output_Clasificado" / "NoMatch_Clasificado"
 ASIG_DIR = ROOT / "Output_Asignados"
 CACHE_DIR = Path(os.environ.get("GPC_CACHE_DIR", ROOT / ".cache_gpc"))
 MODEL_A = os.environ.get("GPC_MODEL_A", "claude-sonnet-5-5")
 MODEL_B = os.environ.get("GPC_MODEL_B", "claude-sonnet-5-5")
-YEARS = list(range(1993, 2008))
+YEARS = list(range(1993, 2008))  # *** AJUSTAR *** al rango real de tu NO_MATCH residual
 
 # ----------------------------------------------------------------- esquema
 def load_schema():
+    """Construye la misma estructura (BRICKS, CODES) que el script original
+    de Venezuela, pero a partir del CSV largo (nivel,codigo,titulo,
+    segment_code,family_code,class_code) en vez del .xlsx con hoja 'Schema'
+    -- es el formato del catalogo/gpc_catalogo_oficial.csv incluido aqui."""
     pk = CACHE_DIR / "schema_bricks.pkl"
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     if pk.exists():
         b = pd.read_pickle(pk)
     else:
-        cols = ["SegmentCode", "SegmentTitle", "FamilyCode", "FamilyTitle", "ClassCode",
-                "ClassTitle", "BrickCode", "BrickTitle", "BrickDefinition_Includes"]
-        s = pd.read_excel(SCHEMA_XLSX, sheet_name="Schema", usecols=cols, dtype=str)
-        b = s.drop_duplicates("BrickCode").reset_index(drop=True)
+        raw = pd.read_csv(SCHEMA_CSV, dtype=str)
+        titulo = dict(zip(raw["codigo"], raw["titulo"]))
+        bricks = raw[raw["nivel"] == "Brick"].copy()
+        bricks["class_code"] = bricks["class_code"].fillna("").str.replace(r"\.0$", "", regex=True)
+        bricks["family_code"] = bricks["family_code"].fillna("").str.replace(r"\.0$", "", regex=True)
+        bricks["segment_code"] = bricks["segment_code"].fillna("")
+        b = pd.DataFrame({
+            "SegmentCode": bricks["segment_code"],
+            "SegmentTitle": bricks["segment_code"].map(titulo),
+            "FamilyCode": bricks["family_code"],
+            "FamilyTitle": bricks["family_code"].map(titulo),
+            "ClassCode": bricks["class_code"],
+            "ClassTitle": bricks["class_code"].map(titulo),
+            "BrickCode": bricks["codigo"],
+            "BrickTitle": bricks["titulo"],
+            "BrickDefinition_Includes": "",  # no viene en el CSV corto
+        }).drop_duplicates("BrickCode").reset_index(drop=True)
         b.to_pickle(pk)
     codes = {}  # code -> (nivel, titulo, brick, class, family)
     for r in b.itertuples(index=False):
@@ -141,20 +176,27 @@ def expand(t: str) -> str:
 
 
 # ------------------------------------------------------------------ datos
-RIF_RE = re.compile(r"gs1_afiliado_([JGVEPC])(\d{8})(\d)_", re.I)
+# Argentina: CUIT de 11 dígitos (tipo de 2 dígitos + 8 dígitos + 1 verificador),
+# ej. 30-12345678-9. Ajusta el regex si tu fuente guarda el CUIT en otro campo
+# o formato -- esto asume que viene embebido en un identificador de afiliado
+# con un patrón similar al que usaba Venezuela (gs1_afiliado_<cuit>_...).
+CUIT_RE = re.compile(r"gs1_afiliado_(\d{2})(\d{8})(\d)_", re.I)
 
 
-def rif_from_afiliado(a) -> str:
-    m = RIF_RE.search(str(a))
-    return f"{m.group(1).upper()}-{m.group(2)}-{m.group(3)}" if m else ""
+def cuit_from_afiliado(a) -> str:
+    m = CUIT_RE.search(str(a))
+    return f"{m.group(1)}-{m.group(2)}-{m.group(3)}" if m else ""
 
 
 def prefijo_from_ean(ean) -> str:
+    """Prefijo GS1 de empresa dentro del EAN/GTIN. Argentina usa el rango de
+    país 778-779 (Venezuela usaba 759 -- ajustado aquí). Verifica el largo
+    real del prefijo de empresa de tu MO en gs1.org/prefixes antes de usar
+    esto en producción: GS1 asigna un prefijo de empresa de largo variable
+    dentro del rango de país, no siempre el mismo recorte de dígitos."""
     e = re.sub(r"\D", "", str(ean))
     e = e.lstrip("0") if len(e) > 13 else e
-    if e.startswith("759400") and len(e) >= 9:
-        return e[:9]
-    return e[:7] if e[:3] in ("759",) and len(e) >= 7 else ""
+    return e[:7] if e[:3] in ("778", "779") and len(e) >= 7 else ""
 
 
 def load_year(y: int) -> pd.DataFrame:
@@ -167,7 +209,7 @@ def load_year(y: int) -> pd.DataFrame:
     d["Afiliado/id"] = d["Afiliado/id"].fillna("")
     d["Rif"] = d["Rif"].fillna("")
     miss = d["Rif"].astype(str).str.strip().isin(["", "nan"])
-    d.loc[miss, "Rif"] = d.loc[miss, "Afiliado/id"].map(rif_from_afiliado)
+    d.loc[miss, "Rif"] = d.loc[miss, "Afiliado/id"].map(cuit_from_afiliado)
     d["Prefijo"] = d["Prefijo"].fillna("").astype(str).str.replace(r"\.0$", "", regex=True)
     miss = d["Prefijo"].str.strip().isin(["", "nan"])
     d.loc[miss, "Prefijo"] = d.loc[miss, "EAN13"].map(prefijo_from_ean)
@@ -181,40 +223,22 @@ def row_text(r) -> str:
 
 
 # --------------------------------------------------- capa 1: afiliados
-# (rifs, regex marca/texto, código) -- códigos verificados contra el esquema.
+# *** PLACEHOLDER *** -- estas son reglas de EJEMPLO con CUIT y marcas
+# ficticias, solo para mostrar el patrón. GS1 Venezuela tenía aquí ~19 reglas
+# reales (RIF real de empresa + su marca -> código verificado), que NO se
+# pueden reutilizar para Argentina: dependen por completo de qué empresas
+# afiliadas a TU MO producen qué, dato que solo tu equipo tiene. Bórralas y
+# construye las tuyas a partir de tu propio Output_Asignados (qué empresa,
+# identificada por CUIT, concentra qué código con alta confianza).
 L1_RULES = [
-    ({"J-07001018-5"}, r"paramount|pier paolo|stefano zini|arrow", "10001352"),
-    ({"J-31208358-1"}, r"lanitas|capone", "10001352"),
-    ({"J-00074598-6"}, r"curex", "10001352"),
-    ({"J-30311302-8"}, r"aloha", "10001077"),
-    ({"J-30216913-5"}, r"wipeout", "10001077"),
-    ({"J-31347928-4"}, r"favenca", "10001077"),
-    ({"J-30703828-4"}, r"erreuno", "10001077"),
-    ({"J-00075421-7"}, r"\bkex\b", "10008422"),
-    ({"J-30294429-5"}, r"kiefer", "10008422"),
-    ({"J-00340111-0"}, r"canet", None),  # se decide por texto (calcetín/muñequera)
-    ({"J-00181165-6"}, r"jetbag", None),  # morral/lonchera/chola por texto
-    ({"J-00105613-0"}, r"santillana|alfaguara|altea", "10000926"),
-    ({"J-00057320-4"}, r"legislacion economica", "10000926"),
-    ({"J-00023530-9"}, r"alpes", "10005893"),
-    ({"J-00009097-1"}, r"henkel|ipacoll", "10003207"),
-    ({"J-31143482-8"}, r"eco-?fil", "77013800"),
-    ({"J-30638328-0"}, r"avtek", "78020600"),
-    ({"J-00223173-4"}, r"genius", "78020600"),
-    ({"J-31370946-8"}, r"guru", None),   # velones / lociones por texto
+    ({"30-00000001-0"}, r"marca-ejemplo-uno", "10001352"),  # ejemplo ilustrativo
+    ({"30-00000002-9"}, r"marca-ejemplo-dos", None),  # ejemplo: se decide por texto
 ]
 L1_MARCA = [
-    (r"\b(arlequin|educor)\b", "10000926"),
-    (r"\b(ocean drive|el universal|novios magazine|autotur|desafio de la historia)\b", "10000928"),
-    (r"\b(anes records|foca records|tempo primo|sonografica|rodven)\b", "10001459"),
-    (r"\b(venoco|castrol|gulf|ultralub)\b", "10005267"),
-    (r"\b(cavp|pinco|montana|cebra)\b", "83010400"),
-    (r"\b(freeze corp|esber)\b", "78020600"),
+    (r"\b(marca-ejemplo-tres|marca-ejemplo-cuatro)\b", "10000926"),  # ejemplo ilustrativo
 ]
-L1_TEXT = {  # decisiones por texto para afiliados mixtos
-    "canet": [(r"calcet|media", "10001348"), (r"munequ", "10001909")],
-    "jetbag": [(r"morral|mochila", "10001100"), (r"lonchera", "10007238"), (r"chola|sandalia", "10001077")],
-    "guru": [(r"velon|vela|veladora", "10000555"), (r"locion|perfume|colonia", "10000365")],
+L1_TEXT = {  # decisiones por texto para afiliados con mas de una linea de producto
+    "marca-ejemplo-dos": [(r"calcet|media", "10001348"), (r"munequ", "10001909")],
 }
 L1_RULES = [(r, rx, c) for r, rx, c in L1_RULES]
 for _, _, c in L1_RULES:
@@ -331,8 +355,15 @@ def parse_json(t: str):
         return []
 
 
+# *** AJUSTAR *** -- el texto de abreviaturas/convenciones de abajo describe
+# cómo Venezuela truncaba y abreviaba sus descripciones históricas (1993-2007).
+# Tu catálogo tendrá sus propias convenciones (otro largo de truncado, otras
+# abreviaturas locales): reemplaza este párrafo observando una muestra real
+# de TU catálogo antes de correr esto, o el modelo asumirá convenciones que
+# no aplican a tus datos.
 CONTEXT = (
-    "Eres clasificador GS1 Venezuela (GPC Mayo 2026, español). Productos registrados entre 1993 y 2007; "
+    "Eres clasificador GS1 Argentina (GPC, español). "  # <- ajustado (era "GS1 Venezuela")
+    "[EJEMPLO -- reemplazar con las convenciones reales de tu catálogo:] "
     "los textos vienen truncados a 40 caracteres, en mayúsculas, con abreviaturas (CAB.=caballero en textil/calzado pero CABLE en material eléctrico, D/ o DAM.=dama, "
     "M/C manga corta, M/L manga larga, CJTO/CONJ=conjunto, PANT=pantalón, ALG=algodón, T/ o TAM=talla, "
     "FCO=frasco, AMP=ampolla, TAB/TBL=tabletas, CAPS=cápsulas, SUSP=suspensión, JBE=jarabe, INY=inyectable, "

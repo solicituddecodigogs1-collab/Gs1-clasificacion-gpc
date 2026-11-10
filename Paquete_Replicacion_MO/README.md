@@ -47,6 +47,12 @@ Paquete_Replicacion_MO/
     ├── submit_batches.py              (pasada 1 — Claude Haiku 5.5)
     ├── submit_batches_rescate.py      (pasada 2 — Claude Sonnet 5.5, rescate de NO_MATCH)
     ├── retrieve_batches.py            (recuperación y fusión de resultados del lote)
-    └── clasificar_nomatch_1993_2007.py (procedimiento complementario de 5 capas, sección 8
-                                          del manual — rescate del NO_MATCH residual)
+    └── clasificar_nomatch_plantilla_argentina.py (procedimiento complementario de 5 capas,
+                                          sección 8 del manual — rescate del NO_MATCH residual.
+                                          Ya adaptado: prefijo GS1 779/778 y CUIT en vez de
+                                          759/RIF. Las reglas de negocio de la capa 1 son
+                                          PLACEHOLDERS — reemplázalas por las tuyas antes de
+                                          correrlo. El original real de GS1 Venezuela, con sus
+                                          datos de afiliados, se queda en la rama principal del
+                                          repo, no en este paquete)
 ```

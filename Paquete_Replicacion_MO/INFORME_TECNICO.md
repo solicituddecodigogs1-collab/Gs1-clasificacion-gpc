@@ -187,7 +187,10 @@ restante**, validado estrictamente contra el esquema oficial GPC "Mayo 2026" ant
 
 Dos diferencias metodológicas notables frente al método de las secciones 4 y 7, ambas
 deliberadas y documentadas en el propio script (`scripts/clasificar_nomatch_1993_2007.py`,
-ya incluido en esta rama):
+ya incluido en esta rama — **ese archivo, el real, tiene datos de empresas afiliadas a GS1
+Venezuela y no forma parte de este paquete**; la copia que sí va en
+`Paquete_Replicacion_MO/scripts_referencia/clasificar_nomatch_plantilla_argentina.py` tiene esas
+reglas reemplazadas por placeholders, ver sección 8.1 del manual de procedimientos):
 
 - Las capas L1–L3 y L5 usan reglas y consenso de datos históricos, no al modelo — son
   heurísticas, pero a diferencia de la heurística Marca→Segmento de la sección 6.1, quedan
