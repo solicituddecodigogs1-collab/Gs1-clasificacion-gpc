@@ -14,7 +14,7 @@
 
 GS1 Venezuela construyó un pipeline que clasifica automáticamente un catálogo de productos
 bajo el estándar **GPC (Global Product Classification)** de GS1, usando dos modelos de Claude
-vía la Batch API de Anthropic. Logró clasificar el 86,47 % de 1.428.900 productos (33 años de
+vía la Batch API de Anthropic. Logró clasificar el 90,20 % de 1.428.900 productos (33 años de
 catálogo histórico) por un costo real de $1.050 USD, sin ninguna heurística de atajo — el
 resultado es 100 % decisión de los modelos.
 

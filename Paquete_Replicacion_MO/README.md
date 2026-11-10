@@ -9,7 +9,7 @@ No depende de nada fuera de esta carpeta: cópiala entera a donde la vayas a usa
 ## Orden de uso recomendado
 
 1. **`INFORME_TECNICO.md`** — léelo primero. Qué se hizo, cuánto, cuándo, los resultados
-   reales (86,47 % de efectividad, $1.050 USD de costo) y las limitaciones ya conocidas.
+   reales (90,20 % de efectividad, $1.050 USD de costo) y las limitaciones ya conocidas.
    Incluye también (sección 8) un segundo método, complementario, de clasificación en capas
    usado para rescatar el `NO_MATCH` residual de 1993-2007 con 100 % de éxito.
 2. **`CONTEXTO_PARA_CLAUDE.md`** — este es el archivo que le das directamente a tu propia

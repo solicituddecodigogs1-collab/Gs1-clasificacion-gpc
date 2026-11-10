@@ -11,7 +11,7 @@ pipeline de clasificación automática de su catálogo histórico de productos b
 la Batch API.
 
 **Resultado final:** 1.428.900 productos procesados, correspondientes a **33 años** de catálogo
-(1993–2025), con una **efectividad general de asignación del 86,47 %** y un costo real de
+(1993–2025), con una **efectividad general de asignación del 90,20 %** y un costo real de
 **$1.050 USD**.
 
 Este documento describe qué se hizo, cuánto se hizo, cuándo se hizo y qué se aprendió, como
@@ -47,6 +47,7 @@ hacia el más antiguo, refinando el método en el camino.
 | 5–6 nov 2026 | Tramo más intensivo: procesamiento de la mayoría de los años restantes (2010–2023 y gran parte de 1993–2009), más de 100 commits en dos días. |
 | 7 nov 2026 | Cierre de 2010–2025, reorganización completa del repositorio en carpetas, primer informe consolidado. |
 | 9–10 nov 2026 | Eliminación de la heurística Marca→Segmento de los años que la tenían, compactación de archivos fragmentados en `Final_<año>.xlsx`, empaquetado para replicación. |
+| 10 nov 2026 | Fusión del rescate en capas del `NO_MATCH` residual 1993–2007 (sección 8) a esta rama. |
 
 Duración total: **~3 semanas**, con 165 commits registrados en el repositorio.
 
@@ -83,22 +84,25 @@ El detalle técnico completo (prompts exactos, parámetros, estructura de column
 |---|---|
 | Años cubiertos | 33 (1993–2025) |
 | Productos procesados | 1.428.900 |
-| Asignados (con código GPC) | 1.235.558 |
-| **Efectividad general** | **86,47 %** |
-| Sin coincidencia (`NO_MATCH`) | 193.342 (13,53 %) |
+| Asignados (con código GPC) | 1.288.799 |
+| **Efectividad general** | **90,20 %** |
+| Sin coincidencia (`NO_MATCH`) | 140.101 (9,80 %) |
+
+Incluye ya el rescate en capas del `NO_MATCH` residual 1993–2007, descrito y fusionado en la
+sección 8.
 
 ### 5.2 Efectividad por periodo
 
 | Periodo | Productos | % Asignado |
 |---|---|---|
-| 1993–1999 | 119.712 | 85,41 % |
-| 2000–2009 | 337.691 | 82,84 % |
+| 1993–1999 | 119.712 | **100,00 %** |
+| 2000–2009 | 337.691 | 93,43 % |
 | 2010–2017 | 503.847 | 80,39 % |
-| 2018–2025 | 467.650 | **95,92 %** |
+| 2018–2025 | 467.650 | 95,92 % |
 
-La efectividad sube notablemente en los años recientes, principalmente porque los datos de
-entrada (descripciones de producto) son de mejor calidad y más completos en los años más
-nuevos del catálogo.
+1993–1999 y 2000–2009 ya reflejan el rescate de la sección 8: 1993–1999 queda en 100 % porque
+todo su `NO_MATCH` residual fue resuelto por ese método. 2010–2017 sigue siendo, por ahora, el
+periodo con menor efectividad — sería el siguiente candidato natural para un rescate similar.
 
 ---
 
@@ -160,11 +164,11 @@ de caché).
 
 ## 8. Proceso adicional — rescate del NO_MATCH residual 1993-2007 (clasificación en capas)
 
-Paralelamente, el 10 de noviembre de 2026, en otra sesión de trabajo sobre este mismo
-repositorio (rama `claude/wonderful-bohr-i6stoh` — **aún no fusionada** a la rama principal
-de este paquete), se abordó específicamente el **residual que dejaron las pasadas Haiku +
-Sonnet** para los años 1993–2007: los 53.241 productos que quedaron en `NO_MATCH` tras el
-método descrito en las secciones 4 y 7.
+El 10 de noviembre de 2026, en otra sesión de trabajo sobre este mismo repositorio (rama
+`claude/wonderful-bohr-i6stoh`), se abordó específicamente el **residual que dejaron las
+pasadas Haiku + Sonnet** para los años 1993–2007: los 53.241 productos que quedaron en
+`NO_MATCH` tras el método descrito en las secciones 4 y 7. **Este resultado ya está fusionado**
+a la rama principal de este paquete y a los totales de la sección 5.
 
 En vez de repetir una tercera pasada de LLM puro, se diseñó un método de **5 capas en
 cascada**, donde cada capa solo recibe lo que la anterior no pudo resolver:
@@ -183,7 +187,7 @@ restante**, validado estrictamente contra el esquema oficial GPC "Mayo 2026" ant
 
 Dos diferencias metodológicas notables frente al método de las secciones 4 y 7, ambas
 deliberadas y documentadas en el propio script (`scripts/clasificar_nomatch_1993_2007.py`,
-disponible en esa rama):
+ya incluido en esta rama):
 
 - Las capas L1–L3 y L5 usan reglas y consenso de datos históricos, no al modelo — son
   heurísticas, pero a diferencia de la heurística Marca→Segmento de la sección 6.1, quedan
@@ -194,21 +198,21 @@ disponible en esa rama):
   distinto, pensado específicamente para texto histórico muy truncado (descripciones de hasta
   40 caracteres, con abreviaturas de los años 90 y codificación de caracteres dañada).
 
-**Impacto potencial sobre el resultado global:** esta corrida vive en una rama separada y
-**no está incorporada** a los totales de la sección 5 de este informe. Si se fusionara con el
-resultado principal, la efectividad general subiría de 86,47 % a aproximadamente **90,19 %**
-(1.288.799 de 1.428.900 productos asignados), ya que resuelve exactamente el 27,5 % del
-`NO_MATCH` total del proyecto (53.241 de 193.342 filas). Antes de fusionar, se recomienda
-revisar con el equipo si las capas 1–3 (reglas por empresa específicas de Venezuela) deben
-generalizarse o excluirse al adaptar este método a otra MO.
+**Impacto sobre el resultado global:** esta corrida ya está incorporada a los totales de la
+sección 5 — es lo que subió la efectividad general de 86,47 % a **90,20 %**
+(1.288.799 de 1.428.900 productos asignados), resolviendo el 27,5 % del `NO_MATCH` que tenía
+el proyecto antes de esta fusión (53.241 de 193.342 filas). Al adaptar este método a otra MO,
+se recomienda revisar con el equipo si las capas 1–3 (reglas por empresa específicas de
+Venezuela) deben generalizarse o excluirse.
 
 ## 9. Conclusión
 
 El método — catálogo oficial como única fuente de verdad, preselección léxica local gratuita,
-dos pasadas de modelos de Claude de capacidad creciente, sin heurísticas de atajo — logró
-clasificar automáticamente el 86,47 % de 33 años de catálogo histórico por un costo total de
-$1.050 USD. Es **replicable por cualquier otra oficina de GS1** sin más dependencia de los
-datos venezolanos que el catálogo oficial GPC, que ya es global.
+dos pasadas de modelos de Claude de capacidad creciente, sin heurísticas de atajo, más el
+rescate en capas del residual (sección 8) — logró clasificar automáticamente el 90,20 % de 33
+años de catálogo histórico por un costo total de $1.050 USD. Es **replicable por cualquier
+otra oficina de GS1** sin más dependencia de los datos venezolanos que el catálogo oficial
+GPC, que ya es global.
 
 El resto de esta carpeta (`Paquete_Replicacion_MO/`) contiene todo lo necesario para que otra
 MO, con su propio equipo técnico y su propia sesión de Claude, construya su propia versión
