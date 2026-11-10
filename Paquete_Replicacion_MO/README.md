@@ -35,7 +35,7 @@ Paquete_Replicacion_MO/
 ├── README.md                          (este archivo)
 ├── INFORME_TECNICO.md / .docx         (qué se hizo, resultados, costos, lecciones aprendidas)
 ├── MANUAL_PROCEDIMIENTOS.md / .docx   (el método, paso a paso, con el prompt exacto)
-├── CONTEXTO_PARA_CLAUDE.md            (el mensaje para darle a tu propia sesión de Claude)
+├── CONTEXTO_PARA_CLAUDE.md / .docx    (el mensaje para darle a tu propia sesión de Claude)
 ├── catalogo/
 │   └── gpc_catalogo_oficial.csv       (catálogo oficial GPC — global, sin adaptar)
 ├── ejemplos/
