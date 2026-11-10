@@ -10,6 +10,8 @@ No depende de nada fuera de esta carpeta: cópiala entera a donde la vayas a usa
 
 1. **`INFORME_TECNICO.md`** — léelo primero. Qué se hizo, cuánto, cuándo, los resultados
    reales (86,47 % de efectividad, $1.050 USD de costo) y las limitaciones ya conocidas.
+   Incluye también (sección 8) un segundo método, complementario, de clasificación en capas
+   usado para rescatar el `NO_MATCH` residual de 1993-2007 con 100 % de éxito.
 2. **`CONTEXTO_PARA_CLAUDE.md`** — este es el archivo que le das directamente a tu propia
    sesión de Claude (pégalo como primer mensaje, o úsalo como `CLAUDE.md` del repositorio
    nuevo). Está escrito para que Claude lo lea y empiece a trabajar con tu equipo.
@@ -38,10 +40,13 @@ Paquete_Replicacion_MO/
 │   └── gpc_catalogo_oficial.csv       (catálogo oficial GPC — global, sin adaptar)
 ├── ejemplos/
 │   ├── ejemplo_prompt_real.md         (caso real: prompt + respuesta + fila antes/después)
-│   └── ejemplo_candidatos_completo.txt (el bloque de candidatos completo de ese caso)
+│   ├── ejemplo_candidatos_completo.txt (el bloque de candidatos completo de ese caso)
+│   └── auditoria_1993_2007.csv        (resultado real del rescate en capas, 100% resuelto)
 └── scripts_referencia/                (código real de GS1 Venezuela, como referencia de lectura)
     ├── preclasificador.py             (catálogo + búsqueda léxica de candidatos)
     ├── submit_batches.py              (pasada 1 — Claude Haiku 5.5)
     ├── submit_batches_rescate.py      (pasada 2 — Claude Sonnet 5.5, rescate de NO_MATCH)
-    └── retrieve_batches.py            (recuperación y fusión de resultados del lote)
+    ├── retrieve_batches.py            (recuperación y fusión de resultados del lote)
+    └── clasificar_nomatch_1993_2007.py (procedimiento complementario de 5 capas, sección 8
+                                          del manual — rescate del NO_MATCH residual)
 ```

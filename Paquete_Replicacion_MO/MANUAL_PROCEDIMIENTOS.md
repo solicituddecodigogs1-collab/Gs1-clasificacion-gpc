@@ -175,3 +175,75 @@ muestra pequeña: tokens de entrada promedio por producto × número de producto
 deduplicación, más el output fijo (45 tokens tope), a los precios vigentes de la Batch API.
 Ver `scripts_referencia/submit_batches.py`, función `run_dry_run` / flag `--dry-run`, para la
 implementación de referencia de este cálculo.
+
+---
+
+## 8. Procedimiento complementario — rescate del `NO_MATCH` residual con clasificación en capas
+
+Después de las pasadas 1 y 2 (secciones 3–4), siempre queda un residual en `NO_MATCH`. Para
+ese residual, en vez de intentar una tercera pasada de LLM puro, conviene un método en
+**capas en cascada**, cada una recibiendo solo lo que la anterior no resolvió. Esto fue
+exactamente lo que se usó para rescatar el residual 1993–2007 de este proyecto, con éxito del
+100 % (ver `INFORME_TECNICO.md`, sección 8). El script de referencia completo está en
+`scripts_referencia/clasificar_nomatch_1993_2007.py` de esta carpeta.
+
+### 8.1 Capa 1 — reglas por empresa/afiliado
+
+Si tu catálogo tiene un identificador de empresa (RIF, razón social, u otro) y puedes
+verificar que cierta empresa/marca produce consistentemente un tipo de producto, codifica esa
+regla explícitamente: `(identificador de empresa, patrón de marca o texto) -> código oficial`.
+**Verifica cada código contra el esquema oficial antes de usarlo** (un `assert` simple en el
+arranque del script, como hace el de referencia, evita typos silenciosos). Confianza fija
+alta (ej. 95): es una regla de negocio verificada, no una inferencia del modelo.
+
+### 8.2 Capa 2 — patrones técnicos de alta precisión
+
+Expresiones regulares para abreviaturas o notaciones técnicas inequívocas en tu dominio (ej.
+"10W-40" siempre es aceite de motor, "B.E.S." siempre es bebida espirituosa). Úsalo solo
+cuando el patrón sea realmente inequívoco — si hay ambigüedad, esa fila debe pasar a la
+siguiente capa, no forzarse aquí.
+
+### 8.3 Capa 3 — consenso de cohorte
+
+Si ya tienes una buena cantidad de productos clasificados con alta confianza (del resultado
+de las pasadas 1–2), agrupa por un campo compartido (en este proyecto, el prefijo de código
+de barras de la empresa) y, si una cohorte es suficientemente grande (ej. mínimo 8 productos)
+y suficientemente homogénea (ej. ≥ 90 % comparte el mismo código), aplica ese código por
+consenso a los productos sin clasificar de esa misma cohorte.
+
+### 8.4 Capa 4 — LLM en dos etapas, restringido al esquema oficial
+
+En vez de mandar al modelo una lista preseleccionada de candidatos (como en la pasada 1–2),
+para texto históricamente truncado o de mala calidad conviene separar en dos preguntas más
+simples:
+
+1. **Etapa A:** con la lista completa de Class oficiales del esquema (ej. las 938 del
+   catálogo GPC), pedir al modelo que elija el Class más específico y correcto.
+2. **Etapa B:** ya sabiendo el Class, pedir al modelo que elija el Brick exacto dentro de los
+   Bricks de ese Class (permitiendo "ninguno aplica" como respuesta válida, en cuyo caso el
+   producto queda clasificado a nivel Class).
+
+Ventajas de este enfoque frente a una sola llamada con todos los candidatos: cada pregunta es
+más simple y acotada, y es más fácil validar que la respuesta esté dentro del universo
+permitido en cada etapa. Si tu texto de entrada viene con abreviaturas históricas o
+codificación de caracteres dañada (ej. una ñ guardada como "?" o "#"), inclúyelo explícitamente
+en el contexto del system prompt — el script de referencia trae un diccionario de expansión de
+abreviaturas y una función de reparación de codificación como ejemplo.
+
+Usa caché en disco por texto único (no por fila — muchos productos comparten descripción) para
+poder reanudar sin recostar llamadas ya hechas, y procesa en paralelo con un pool de workers.
+
+### 8.5 Capa 5 — respaldo final
+
+Si incluso la capa 4 no resuelve algo, un último respaldo razonable es la moda (el valor más
+común) de lo que ya se resolvió en el mismo lote para el mismo grupo/cohorte, a una confianza
+deliberadamente más baja que las capas anteriores.
+
+### 8.6 Validación antes de exportar
+
+Antes de guardar el resultado final, validar automáticamente que:
+
+- Todo `gpc_code` exportado existe en el esquema oficial (ninguna capa puede inventar un
+  código, ni siquiera el LLM — su respuesta se valida contra el diccionario antes de aceptarse).
+- Ninguna fila quedó a un nivel más genérico que Class (si tu estándar de calidad lo exige).
+- El rango de confianza reportado es coherente con lo que cada capa puede garantizar.

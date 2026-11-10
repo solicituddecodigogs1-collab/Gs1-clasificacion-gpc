@@ -158,7 +158,51 @@ de caché).
 
 ---
 
-## 8. Conclusión
+## 8. Proceso adicional — rescate del NO_MATCH residual 1993-2007 (clasificación en capas)
+
+Paralelamente, el 10 de noviembre de 2026, en otra sesión de trabajo sobre este mismo
+repositorio (rama `claude/wonderful-bohr-i6stoh` — **aún no fusionada** a la rama principal
+de este paquete), se abordó específicamente el **residual que dejaron las pasadas Haiku +
+Sonnet** para los años 1993–2007: los 53.241 productos que quedaron en `NO_MATCH` tras el
+método descrito en las secciones 4 y 7.
+
+En vez de repetir una tercera pasada de LLM puro, se diseñó un método de **5 capas en
+cascada**, donde cada capa solo recibe lo que la anterior no pudo resolver:
+
+| Capa | Método | Filas resueltas | Confianza asignada |
+|---|---|---|---|
+| L1 — Afiliado | Reglas explícitas por RIF/empresa y marca, verificadas contra el esquema oficial | 7.502 (14,1 %) | 95 (fija) |
+| L2 — Patrón | Patrones técnicos de alta precisión en el texto (ej. "B.E.S." = bebida espirituosa seca, grados de aceite "10W-40") | 155 (0,3 %) | 92 (fija) |
+| L3 — Cohorte | Consenso por prefijo de empresa con lo ya clasificado con confianza ≥ 80 (mínimo 8 productos, ≥ 90 % de acuerdo) | 1.038 (1,9 %) | 90 (fija) |
+| L4 — LLM en dos etapas | Claude Sonnet 5.5: etapa A elige el Class entre las 938 oficiales, etapa B elige el Brick dentro de ese Class (o se queda en Class) | 44.546 (83,7 %) | 85–90 (según certeza propia del modelo) |
+| L5 — Respaldo | Moda del Class ya resuelto en el mismo lote, mismo prefijo de empresa (solo si L1-L4 no resolvieron nada) | 0 en esta corrida | 85 (fija) |
+
+**Resultado: 53.241 de 53.241 filas resueltas (100 %), 0 códigos inventados, 0 `NO_MATCH`
+restante**, validado estrictamente contra el esquema oficial GPC "Mayo 2026" antes de exportar
+(todo código debe existir en el esquema; ninguna fila puede quedar a nivel Segment).
+
+Dos diferencias metodológicas notables frente al método de las secciones 4 y 7, ambas
+deliberadas y documentadas en el propio script (`scripts/clasificar_nomatch_1993_2007.py`,
+disponible en esa rama):
+
+- Las capas L1–L3 y L5 usan reglas y consenso de datos históricos, no al modelo — son
+  heurísticas, pero a diferencia de la heurística Marca→Segmento de la sección 6.1, quedan
+  **registradas de forma explícita y auditable** en una columna `capa_clasificacion` por fila,
+  y cada código usado está verificado contra el esquema oficial antes de aplicarse.
+- La capa L4 restringe al modelo en dos etapas (primero Class, luego Brick dentro de ese
+  Class) en vez de darle los 25 Bricks candidatos de un preclasificador léxico — un enfoque
+  distinto, pensado específicamente para texto histórico muy truncado (descripciones de hasta
+  40 caracteres, con abreviaturas de los años 90 y codificación de caracteres dañada).
+
+**Impacto potencial sobre el resultado global:** esta corrida vive en una rama separada y
+**no está incorporada** a los totales de la sección 5 de este informe. Si se fusionara con el
+resultado principal, la efectividad general subiría de 86,47 % a aproximadamente **90,19 %**
+(1.288.799 de 1.428.900 productos asignados), ya que resuelve exactamente el 27,5 % del
+`NO_MATCH` total del proyecto (53.241 de 193.342 filas). Antes de fusionar, se recomienda
+revisar con el equipo si las capas 1–3 (reglas por empresa específicas de Venezuela) deben
+generalizarse o excluirse al adaptar este método a otra MO.
+
+## 9. Conclusión
 
 El método — catálogo oficial como única fuente de verdad, preselección léxica local gratuita,
 dos pasadas de modelos de Claude de capacidad creciente, sin heurísticas de atajo — logró
