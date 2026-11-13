@@ -83,13 +83,5 @@ if not %errorlevel%==0 (
     exit /b 1
 )
 
-echo.
-echo Abriendo la app en tu navegador...
-start "" http://localhost:8000
-echo.
-echo NO CIERRES ESTA VENTANA mientras uses la app.
-echo Para cerrar la app, cierra esta ventana o presiona Ctrl+C.
-echo.
-
-python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
+python run_app.py
 pause

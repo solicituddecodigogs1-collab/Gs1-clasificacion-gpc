@@ -61,17 +61,4 @@ if ! python -c "import fastapi, uvicorn" >/dev/null 2>&1; then
   exit 1
 fi
 
-echo
-echo "Abriendo la app en tu navegador..."
-( sleep 2
-  if command -v open >/dev/null 2>&1; then open http://localhost:8000
-  elif command -v xdg-open >/dev/null 2>&1; then xdg-open http://localhost:8000
-  fi
-) &
-
-echo
-echo "NO CIERRES ESTA VENTANA mientras uses la app."
-echo "Para cerrar la app, presiona Ctrl+C."
-echo
-
-python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
+python run_app.py
