@@ -66,11 +66,19 @@ async function cargarPaises() {
 function elegirPais(p, el) {
   document.querySelectorAll(".pais-tarjeta").forEach((e) => e.classList.remove("activo"));
   el.classList.add("activo");
+  const campo = $("input-jerga");
+  // Solo autocompleta si el usuario no escribió nada propio todavía, o si lo
+  // que hay es la sugerencia de otro país que aún no tocó.
+  const eraSugerenciaAnterior = !campo.value.trim() || campo.dataset.sugerencia === campo.value;
   state.paisElegido = p;
   $("tarjeta-pais-detalle").style.display = "block";
   $("info-pais-nombre").textContent = p.nombre;
   $("info-pais-prefijo").textContent = `Prefijo GS1: ${p.prefijo_gs1}${p.prefijo_verificado ? "" : " (revisar)"}`;
   $("info-pais-fiscal").textContent = `ID fiscal: ${p.id_fiscal}`;
+  if (eraSugerenciaAnterior && p.jerga_sugerida) {
+    campo.value = p.jerga_sugerida;
+    campo.dataset.sugerencia = p.jerga_sugerida;
+  }
 }
 
 // --------------------------------------------------------------- flujo

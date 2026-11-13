@@ -32,6 +32,28 @@ def client_de(api_key: str | None) -> anthropic.Anthropic:
     return anthropic.Anthropic(api_key=api_key)
 
 
+def llamar_anthropic(fn, *args, **kwargs):
+    """Ejecuta una llamada al SDK de Anthropic traduciendo los errores más
+    comunes a un mensaje en español entendible, en vez de dejar que se
+    conviertan en un "Internal Server Error" genérico sin detalle."""
+    try:
+        return fn(*args, **kwargs)
+    except anthropic.AuthenticationError:
+        raise HTTPException(401, "La API key no es válida. Revisa que la copiaste completa y sin espacios.")
+    except anthropic.PermissionDeniedError:
+        raise HTTPException(403, "La cuenta de Anthropic no tiene permiso para usar la Batch API con esta key.")
+    except anthropic.RateLimitError:
+        raise HTTPException(429, "Se alcanzó el límite de uso de la cuenta de Anthropic. Intenta de nuevo en unos minutos.")
+    except anthropic.BadRequestError as e:
+        raise HTTPException(400, f"Anthropic rechazó la solicitud: {e.message}")
+    except anthropic.APIStatusError as e:
+        if e.status_code == 400 and "credit balance" in str(e).lower():
+            raise HTTPException(402, "La cuenta de Anthropic no tiene saldo suficiente. Agrega crédito en console.anthropic.com y vuelve a intentar.")
+        raise HTTPException(e.status_code, f"Error de Anthropic: {e.message}")
+    except anthropic.APIConnectionError:
+        raise HTTPException(503, "No se pudo conectar con Anthropic. Revisa tu conexión a internet e intenta de nuevo.")
+
+
 def requiere_proyecto(codigo: str) -> dict:
     d = core.proyecto_dir(codigo)
     if not (d / "estado.json").exists():
@@ -48,6 +70,7 @@ def listar_paises():
             "prefijo_gs1": PAISES[p].prefijo_gs1,
             "prefijo_verificado": PAISES[p].prefijo_verificado,
             "id_fiscal": PAISES[p].id_fiscal,
+            "jerga_sugerida": PAISES[p].jerga_sugerida,
         }
         for p in ORDEN_PAISES
     ]
@@ -136,7 +159,7 @@ def enviar_batch_haiku(codigo: str, x_api_key: str = Header(None)):
     requests, mapa = core.construir_requests(df, mapeo["marca"], mapeo["descripcion"], core.MODEL_HAIKU, system_prompt)
     (pdir / "mapa_haiku.json").write_text(__import__("json").dumps(mapa, ensure_ascii=False))
     (pdir / "system_prompt.txt").write_text(system_prompt, encoding="utf-8")
-    batch = client.messages.batches.create(requests=requests)
+    batch = llamar_anthropic(client.messages.batches.create, requests=requests)
     estado["batch_haiku_id"] = batch.id
     estado["paso"] = "esperar_haiku"
     core.guardar_estado(codigo, estado)
@@ -147,7 +170,7 @@ def enviar_batch_haiku(codigo: str, x_api_key: str = Header(None)):
 def estado_batch_haiku(codigo: str, x_api_key: str = Header(None)):
     client = client_de(x_api_key)
     estado = requiere_proyecto(codigo)
-    batch = client.messages.batches.retrieve(estado["batch_haiku_id"])
+    batch = llamar_anthropic(client.messages.batches.retrieve, estado["batch_haiku_id"])
     return {
         "status": batch.processing_status,
         "counts": batch.request_counts.model_dump() if hasattr(batch, "request_counts") else {},
@@ -163,7 +186,7 @@ def procesar_batch_haiku(codigo: str, x_api_key: str = Header(None)):
 
     df = pd.read_parquet(pdir / "catalogo.parquet")
     mapa = _json.loads((pdir / "mapa_haiku.json").read_text())
-    resultados = core.parse_batch_results(client, estado["batch_haiku_id"])
+    resultados = llamar_anthropic(core.parse_batch_results, client, estado["batch_haiku_id"])
 
     df["gpc_code"] = "NO_MATCH"
     df["nivel_asignado"] = "NO_MATCH"
@@ -198,7 +221,7 @@ def enviar_batch_sonnet(codigo: str, x_api_key: str = Header(None)):
         nomatch_df, mapeo["marca"], mapeo["descripcion"], core.MODEL_SONNET, system_prompt
     )
     (pdir / "mapa_sonnet.json").write_text(__import__("json").dumps(mapa, ensure_ascii=False))
-    batch = client.messages.batches.create(requests=requests)
+    batch = llamar_anthropic(client.messages.batches.create, requests=requests)
     estado["batch_sonnet_id"] = batch.id
     estado["paso"] = "esperar_sonnet"
     core.guardar_estado(codigo, estado)
@@ -217,7 +240,7 @@ def saltar_rescate(codigo: str):
 def estado_batch_sonnet(codigo: str, x_api_key: str = Header(None)):
     client = client_de(x_api_key)
     estado = requiere_proyecto(codigo)
-    batch = client.messages.batches.retrieve(estado["batch_sonnet_id"])
+    batch = llamar_anthropic(client.messages.batches.retrieve, estado["batch_sonnet_id"])
     return {
         "status": batch.processing_status,
         "counts": batch.request_counts.model_dump() if hasattr(batch, "request_counts") else {},
@@ -233,7 +256,7 @@ def procesar_batch_sonnet(codigo: str, x_api_key: str = Header(None)):
 
     df = pd.read_parquet(pdir / "catalogo_post_haiku.parquet")
     mapa = _json.loads((pdir / "mapa_sonnet.json").read_text())
-    resultados = core.parse_batch_results(client, estado["batch_sonnet_id"])
+    resultados = llamar_anthropic(core.parse_batch_results, client, estado["batch_sonnet_id"])
     df = core.fusionar_resultados(df, mapa, resultados)
     df.to_parquet(pdir / "catalogo_final.parquet")
     estado["paso"] = "final"

@@ -82,6 +82,7 @@ a { color: var(--navy); }
   margin-bottom: 4px;
 }
 .subtexto { color: var(--text-soft); font-size: 15px; line-height: 1.5; margin: 6px 0 20px; }
+.subtexto-chico { font-size: 13px; margin: 0 0 8px; }
 
 /* ---------------------------------------------------------------- tarjeta */
 .tarjeta {

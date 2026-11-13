@@ -121,11 +121,11 @@ App_GPC_Regional/
 
 ## Qué falta / limitaciones conocidas
 
-- **Prefijos GS1 por país**: varios están marcados "revisar" en
-  `backend/paises.py` — vienen del conocimiento general del modelo, no de una
-  verificación directa contra gs1.org/prefixes. Son solo informativos en la
-  interfaz, no afectan la clasificación — pero conviene corregirlos antes de
-  mostrarle la app a una MO.
+- **Prefijos GS1 por país**: los 19 se verificaron (13-nov-2026) contra
+  [la lista de códigos de país de GS1 en Wikipedia](https://en.wikipedia.org/wiki/List_of_GS1_country_codes).
+  Son solo informativos en la interfaz, no afectan la clasificación — si se
+  necesita validación estricta de GTIN, confirmar igual contra
+  gs1.org/standards/id-keys/company-prefix.
 - **Sin autenticación ni multiusuario real**: cualquiera con la URL y un
   código de proyecto puede ver/continuar ese proyecto. Suficiente para un
   piloto interno; no para una app pública sin control de acceso.
