@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clasificación GPC — GS1 LatAm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">GPC</span>
+      <span class="brand-text">Clasificación automática · GS1 LatAm</span>
+    </div>
+    <div id="chip-proyecto" class="chip chip-hidden"></div>
+  </div>
+  <div class="progreso"><div id="progreso-barra" class="progreso-barra"></div></div>
+</header>
+
+<main class="contenedor">
+
+  <!-- ============================================================ INICIO -->
+  <section id="paso-inicio" class="paso">
+    <div class="tarjeta tarjeta-centro">
+      <h1>Clasifica tu catálogo bajo GPC con IA</h1>
+      <p class="subtexto">
+        Sube tu catálogo de productos, usa tu propia API key de Anthropic, y obtén
+        el resultado clasificado bajo el estándar GPC de GS1 — sin costo para tu MO
+        más allá de lo que tú mismo consumas.
+      </p>
+      <div class="acciones-inicio">
+        <button class="btn btn-primario" id="btn-crear-proyecto">Empezar un proyecto nuevo</button>
+        <div class="continuar">
+          <input id="input-codigo-continuar" type="text" placeholder="O ingresa tu código de proyecto" maxlength="6">
+          <button class="btn btn-secundario" id="btn-continuar-proyecto">Continuar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================= PAÍS -->
+  <section id="paso-pais" class="paso oculto">
+    <h2>1. ¿Cuál es tu MO?</h2>
+    <p class="subtexto">Esto ajusta el contexto del modelo (prefijo GS1, identificador fiscal de referencia) a tu país.</p>
+    <div id="grid-paises" class="grid-paises"></div>
+
+    <div class="tarjeta" id="tarjeta-pais-detalle" style="display:none">
+      <div class="info-pais">
+        <span id="info-pais-nombre" class="info-pais-nombre"></span>
+        <span id="info-pais-prefijo" class="pill"></span>
+        <span id="info-pais-fiscal" class="pill pill-suave"></span>
+      </div>
+      <label for="input-jerga">Jerga / abreviaturas locales de tu catálogo (opcional, recomendado)</label>
+      <textarea id="input-jerga" rows="3" placeholder="Ej.: CAB.=caballero, M/C=manga corta, PQ.=paquete..."></textarea>
+      <button class="btn btn-primario" id="btn-guardar-pais">Continuar →</button>
+    </div>
+  </section>
+
+  <!-- =========================================================== API KEY -->
+  <section id="paso-apikey" class="paso oculto">
+    <h2>2. Tu API key de Anthropic</h2>
+    <p class="subtexto">
+      Vive solo en la memoria de tu navegador durante esta sesión — nunca se guarda en ningún servidor ni archivo.
+      Obtén una en <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>.
+      El costo lo factura Anthropic directo a tu cuenta.
+    </p>
+    <div class="tarjeta tarjeta-angosta">
+      <label for="input-apikey">API key</label>
+      <input id="input-apikey" type="password" placeholder="sk-ant-...">
+      <button class="btn btn-primario" id="btn-guardar-apikey">Continuar →</button>
+    </div>
+  </section>
+
+  <!-- ========================================================== CATÁLOGO -->
+  <section id="paso-subir" class="paso oculto">
+    <h2>3. Sube tu catálogo</h2>
+    <p class="subtexto">Archivo .xlsx o .csv con tus productos.</p>
+    <div class="tarjeta">
+      <div id="zona-drop" class="zona-drop">
+        <p>Arrastra tu archivo aquí, o</p>
+        <label class="btn btn-secundario" for="input-archivo">Elegir archivo</label>
+        <input id="input-archivo" type="file" accept=".xlsx,.csv" hidden>
+        <p id="nombre-archivo" class="nombre-archivo"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ MAPEO -->
+  <section id="paso-mapear" class="paso oculto">
+    <h2>4. Indica qué columna es cuál</h2>
+    <div class="tarjeta">
+      <div class="fila-mapeo">
+        <div class="campo-mapeo">
+          <label>Marca / empresa</label>
+          <select id="select-marca"></select>
+        </div>
+        <div class="campo-mapeo">
+          <label>Descripción del producto</label>
+          <select id="select-descripcion"></select>
+        </div>
+        <div class="campo-mapeo">
+          <label>Identificador único (GTIN/EAN/código)</label>
+          <select id="select-identificador"></select>
+        </div>
+      </div>
+      <p id="info-filas" class="subtexto"></p>
+      <div class="tabla-wrap">
+        <table id="tabla-preview"></table>
+      </div>
+      <button class="btn btn-primario" id="btn-guardar-mapeo">Continuar →</button>
+    </div>
+  </section>
+
+  <!-- ========================================================== ESTIMAR -->
+  <section id="paso-estimar" class="paso oculto">
+    <h2>5. Estimación de costo — pasada 1 (Haiku)</h2>
+    <div class="stats-fila">
+      <div class="stat"><span id="stat-total" class="stat-num">—</span><span class="stat-label">Filas totales</span></div>
+      <div class="stat"><span id="stat-unicos" class="stat-num">—</span><span class="stat-label">Productos únicos</span></div>
+      <div class="stat stat-acento"><span id="stat-costo" class="stat-num">—</span><span class="stat-label">Costo estimado</span></div>
+    </div>
+    <p class="subtexto">
+      Estimación basada en tokens promedio medidos sobre catálogos reales. El costo real puede
+      ser menor por el descuento de caché del system prompt.
+    </p>
+    <button class="btn btn-primario" id="btn-enviar-haiku">Confirmar y enviar →</button>
+  </section>
+
+  <!-- ===================================================== ESPERAR HAIKU -->
+  <section id="paso-esperar-haiku" class="paso oculto">
+    <h2>6. Pasada 1 en curso <span class="spinner"></span></h2>
+    <p class="subtexto">
+      Claude Haiku está clasificando tu catálogo. Los lotes pueden tardar desde minutos hasta
+      24 horas — puedes cerrar esta pestaña y volver luego con tu código de proyecto.
+    </p>
+    <div class="tarjeta tarjeta-angosta">
+      <p>Estado: <strong id="texto-estado-haiku">enviado</strong></p>
+      <button class="btn btn-secundario" id="btn-verificar-haiku">Verificar estado</button>
+    </div>
+  </section>
+
+  <!-- ===================================================== PROCESAR HAIKU -->
+  <section id="paso-procesar-haiku" class="paso oculto">
+    <div class="tarjeta tarjeta-centro">
+      <h2>✅ Pasada 1 lista</h2>
+      <button class="btn btn-primario" id="btn-procesar-haiku">Descargar y fusionar resultados</button>
+    </div>
+  </section>
+
+  <!-- ===================================================== OFRECER RESCATE -->
+  <section id="paso-rescate" class="paso oculto">
+    <h2>7. Pasada 2 — rescate con Sonnet</h2>
+    <div class="stats-fila">
+      <div class="stat"><span id="stat-nomatch" class="stat-num">—</span><span class="stat-label">Filas a reintentar</span></div>
+      <div class="stat stat-acento"><span id="stat-costo-sonnet" class="stat-num">—</span><span class="stat-label">Costo estimado</span></div>
+    </div>
+    <div class="acciones-fila">
+      <button class="btn btn-fantasma" id="btn-saltar-rescate">Saltar y terminar aquí</button>
+      <button class="btn btn-primario" id="btn-enviar-sonnet">Enviar pasada 2 →</button>
+    </div>
+  </section>
+
+  <!-- ==================================================== ESPERAR SONNET -->
+  <section id="paso-esperar-sonnet" class="paso oculto">
+    <h2>8. Pasada 2 en curso <span class="spinner"></span></h2>
+    <div class="tarjeta tarjeta-angosta">
+      <p>Estado: <strong id="texto-estado-sonnet">enviado</strong></p>
+      <button class="btn btn-secundario" id="btn-verificar-sonnet">Verificar estado</button>
+    </div>
+  </section>
+
+  <section id="paso-procesar-sonnet" class="paso oculto">
+    <div class="tarjeta tarjeta-centro">
+      <h2>✅ Pasada 2 lista</h2>
+      <button class="btn btn-primario" id="btn-procesar-sonnet">Descargar y fusionar</button>
+    </div>
+  </section>
+
+  <!-- ============================================================= FINAL -->
+  <section id="paso-final" class="paso oculto">
+    <h2>🎉 Terminado</h2>
+    <div class="stats-fila">
+      <div class="stat"><span id="final-total" class="stat-num">—</span><span class="stat-label">Total</span></div>
+      <div class="stat stat-acento"><span id="final-asignados" class="stat-num">—</span><span class="stat-label">Asignados</span></div>
+      <div class="stat"><span id="final-nomatch" class="stat-num">—</span><span class="stat-label">NO_MATCH</span></div>
+    </div>
+    <div class="acciones-fila">
+      <a class="btn btn-secundario" id="descargar-completo">⬇️ Completo</a>
+      <a class="btn btn-secundario" id="descargar-asignados">⬇️ Solo asignados</a>
+      <a class="btn btn-secundario" id="descargar-nomatch">⬇️ Solo NO_MATCH</a>
+    </div>
+    <button class="btn btn-fantasma" id="btn-nuevo-proyecto">Empezar un proyecto nuevo</button>
+  </section>
+
+</main>
+
+<div id="toast" class="toast oculto"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
