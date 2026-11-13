@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """Configuración por país para las 19 MO de GS1 en América Latina.
 
-IMPORTANTE — los 19 prefijos GS1 se verificaron el 13-nov-2026 contra
-https://en.wikipedia.org/wiki/List_of_GS1_country_codes (coincide con la
-lista oficial de rangos de GS1; confirmar ahí mismo o en
-https://www.gs1.org/standards/id-keys/company-prefix si se necesita para
-validación estricta de GTIN). Esto no bloquea el uso de la app: aquí son
-solo un dato de referencia que se le muestra al usuario, no se usan para
-rechazar ni aceptar códigos de barra.
+IMPORTANTE — los 19 prefijos GS1 se verificaron el 13-nov-2026 contra la
+tabla COMPLETA (144 filas, 001–019 a 990–999, sin truncar) de
+https://en.wikipedia.org/wiki/List_of_GS1_country_codes: cada uno de los
+19 países tiene exactamente un rango asignado ahí, sin rangos adicionales
+en otra parte de la tabla, y coincide con lo guardado aquí. Confirmar ahí
+mismo o en https://www.gs1.org/standards/id-keys/company-prefix si se
+necesita para validación estricta de GTIN. Esto no bloquea el uso de la
+app: aquí son solo un dato de referencia que se le muestra al usuario, no
+se usan para rechazar ni aceptar códigos de barra.
 
 El identificador fiscal es solo una ETIQUETA de referencia (para que el
 campo de la interfaz diga "CUIT" en vez de "RIF" según el país elegido),
