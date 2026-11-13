@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Lógica compartida del pipeline de clasificación GPC, sin interfaz.
 
-Reutiliza lib/submit_batches.py del repo principal (GpcCatalog, el system
-prompt, la construcción de prompts) en vez de reescribirla. Esta capa solo
-orquesta: arma los requests del batch, estima costo, fusiona resultados.
+Usa backend/submit_batches.py (GpcCatalog, el system prompt, la
+construcción de prompts) — una copia autocontenida del módulo del
+repo principal de GS1 Venezuela, para que esta carpeta (App_GPC_Regional)
+funcione sola, sin depender de estar dentro del repo completo. Esta
+capa solo orquesta: arma los requests del batch, estima costo, fusiona
+resultados.
 """
 from __future__ import annotations
 
@@ -14,11 +17,10 @@ from pathlib import Path
 import pandas as pd
 
 APP_DIR = Path(__file__).resolve().parent.parent
-ROOT = APP_DIR.parent
 PROYECTOS_DIR = APP_DIR / ".proyectos"
 PROYECTOS_DIR.mkdir(exist_ok=True)
 
-sys.path.insert(0, str(ROOT / "lib"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 import submit_batches as sb  # noqa: E402
 
 MODEL_HAIKU = sb.MODEL
@@ -31,7 +33,7 @@ _catalog: sb.GpcCatalog | None = None
 def get_catalog() -> sb.GpcCatalog:
     global _catalog
     if _catalog is None:
-        _catalog = sb.GpcCatalog(ROOT / sb.CATALOG_FILE)
+        _catalog = sb.GpcCatalog(APP_DIR / sb.CATALOG_FILE)
     return _catalog
 
 

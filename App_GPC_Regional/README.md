@@ -5,9 +5,12 @@ en la región suba su catálogo, clasifique sus productos bajo GPC con Claude, y
 descargue el resultado — usando su propia API key de Anthropic (cada MO paga su
 propio uso; GS1 Venezuela no factura nada).
 
-Reutiliza la lógica ya probada en `lib/submit_batches.py` del repo principal (el
-mismo catálogo oficial, el mismo system prompt, la misma selección de
-candidatos) — esto es una interfaz encima de esa lógica, no una reimplementación.
+Reutiliza la lógica ya probada en `lib/submit_batches.py` del repo principal de
+GS1 Venezuela (el mismo catálogo oficial, el mismo system prompt, la misma
+selección de candidatos) — pero esta carpeta trae su propia copia vendorizada
+(`backend/submit_batches.py` + `catalogo/gpc_catalogo_oficial.csv`), así que
+es 100% autocontenida: se puede copiar o descargar sola, sin el resto del
+repo, y funciona igual.
 
 ## Por qué no es un sitio 100% estático
 
@@ -102,13 +105,17 @@ App_GPC_Regional/
 ├── Iniciar_Windows.bat    (doble clic para arrancar en Windows, sin terminal)
 ├── Iniciar_Mac_Linux.sh   (doble clic / ./Iniciar_Mac_Linux.sh en Mac o Linux)
 ├── backend/
-│   ├── main.py       (API FastAPI: todos los endpoints)
-│   ├── core.py        (lógica del pipeline, sin interfaz — reusa lib/submit_batches.py)
-│   └── paises.py      (configuración de los 19 países)
+│   ├── main.py             (API FastAPI: todos los endpoints)
+│   ├── core.py             (lógica del pipeline, sin interfaz)
+│   ├── submit_batches.py   (copia autocontenida: catálogo TF-IDF, system prompt)
+│   └── paises.py           (configuración de los 19 países)
+├── catalogo/
+│   └── gpc_catalogo_oficial.csv  (copia local del catálogo oficial GPC)
 ├── frontend/
 │   ├── index.html     (las 12 pantallas del flujo, mostradas/ocultadas por JS)
 │   ├── style.css       (paleta GS1: navy + naranja, sin framework de CSS)
 │   └── app.js          (llama a la API, maneja el estado del navegador)
+├── run_app.py          (arranca el servidor y abre el navegador cuando está listo)
 └── requirements.txt
 ```
 
