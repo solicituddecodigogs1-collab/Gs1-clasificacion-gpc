@@ -43,16 +43,30 @@ def proyecto_dir(codigo: str) -> Path:
     return d
 
 
+def normalizar_columnas_texto(df: pd.DataFrame) -> pd.DataFrame:
+    """Un catálogo real suele traer columnas de texto con celdas mezcladas
+    (texto, vacías, algún número colado) — pandas las lee como dtype
+    "object" con tipos de Python mezclados (str/float NaN/int), y eso
+    revienta a .to_parquet() con un ArrowTypeError críptico. Esto fuerza
+    cada columna "object" a texto uniforme (NaN -> "") antes de guardar,
+    sin tocar las columnas que ya son numéricas de verdad."""
+    df = df.copy()
+    for col in df.columns:
+        if df[col].dtype == object:
+            df[col] = df[col].apply(lambda v: "" if pd.isna(v) else str(v))
+    return df
+
+
 def cargar_estado(codigo: str) -> dict:
     p = proyecto_dir(codigo) / "estado.json"
     if p.exists():
-        return json.loads(p.read_text())
+        return json.loads(p.read_text(encoding="utf-8"))
     return {"paso": "subir", "pais": None, "notas_jerga": "", "mapeo": {}}
 
 
 def guardar_estado(codigo: str, estado: dict) -> None:
     (proyecto_dir(codigo) / "estado.json").write_text(
-        json.dumps(estado, ensure_ascii=False, indent=2)
+        json.dumps(estado, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
 

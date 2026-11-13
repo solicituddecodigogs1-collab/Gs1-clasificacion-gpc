@@ -8,12 +8,13 @@ from __future__ import annotations
 
 import io
 import secrets
+import traceback
 
 import anthropic
 import pandas as pd
-from fastapi import FastAPI, File, Header, HTTPException, UploadFile
+from fastapi import FastAPI, File, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -24,6 +25,28 @@ app = FastAPI(title="Clasificación GPC — GS1 LatAm")
 app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
 )
+
+
+@app.exception_handler(Exception)
+async def manejar_error_inesperado(request: Request, exc: Exception):
+    """Red de seguridad: cualquier excepción que no se haya traducido ya a un
+    HTTPException con mensaje claro llega aquí. Sin esto, FastAPI devuelve
+    un "Internal Server Error" genérico sin ninguna pista — con esto, la
+    persona que usa la app ve el tipo y mensaje real del error, y queda un
+    traceback completo en logs/errores.log para poder diagnosticarlo."""
+    traceback.print_exc()
+    try:
+        log_path = core.APP_DIR / "logs"
+        log_path.mkdir(exist_ok=True)
+        with (log_path / "errores.log").open("a", encoding="utf-8") as f:
+            f.write(f"\n--- {request.method} {request.url.path} ---\n")
+            f.write(traceback.format_exc())
+    except Exception:
+        pass
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Error inesperado ({type(exc).__name__}): {exc}"},
+    )
 
 
 def client_de(api_key: str | None) -> anthropic.Anthropic:
@@ -118,6 +141,7 @@ async def subir_catalogo(codigo: str, archivo: UploadFile = File(...)):
     contenido = await archivo.read()
     buf = io.BytesIO(contenido)
     df = pd.read_excel(buf) if archivo.filename.endswith(".xlsx") else pd.read_csv(buf)
+    df = core.normalizar_columnas_texto(df)
     df.to_parquet(core.proyecto_dir(codigo) / "catalogo.parquet")
     estado["paso"] = "mapear"
     estado["n_filas"] = len(df)
@@ -157,7 +181,7 @@ def enviar_batch_haiku(codigo: str, x_api_key: str = Header(None)):
     mapeo = estado["mapeo"]
     system_prompt = core.system_prompt_para(estado["pais"], estado.get("notas_jerga", ""))
     requests, mapa = core.construir_requests(df, mapeo["marca"], mapeo["descripcion"], core.MODEL_HAIKU, system_prompt)
-    (pdir / "mapa_haiku.json").write_text(__import__("json").dumps(mapa, ensure_ascii=False))
+    (pdir / "mapa_haiku.json").write_text(__import__("json").dumps(mapa, ensure_ascii=False), encoding="utf-8")
     (pdir / "system_prompt.txt").write_text(system_prompt, encoding="utf-8")
     batch = llamar_anthropic(client.messages.batches.create, requests=requests)
     estado["batch_haiku_id"] = batch.id
@@ -185,7 +209,7 @@ def procesar_batch_haiku(codigo: str, x_api_key: str = Header(None)):
     import json as _json
 
     df = pd.read_parquet(pdir / "catalogo.parquet")
-    mapa = _json.loads((pdir / "mapa_haiku.json").read_text())
+    mapa = _json.loads((pdir / "mapa_haiku.json").read_text(encoding="utf-8"))
     resultados = llamar_anthropic(core.parse_batch_results, client, estado["batch_haiku_id"])
 
     df["gpc_code"] = "NO_MATCH"
@@ -220,7 +244,7 @@ def enviar_batch_sonnet(codigo: str, x_api_key: str = Header(None)):
     requests, mapa = core.construir_requests(
         nomatch_df, mapeo["marca"], mapeo["descripcion"], core.MODEL_SONNET, system_prompt
     )
-    (pdir / "mapa_sonnet.json").write_text(__import__("json").dumps(mapa, ensure_ascii=False))
+    (pdir / "mapa_sonnet.json").write_text(__import__("json").dumps(mapa, ensure_ascii=False), encoding="utf-8")
     batch = llamar_anthropic(client.messages.batches.create, requests=requests)
     estado["batch_sonnet_id"] = batch.id
     estado["paso"] = "esperar_sonnet"
@@ -255,7 +279,7 @@ def procesar_batch_sonnet(codigo: str, x_api_key: str = Header(None)):
     import json as _json
 
     df = pd.read_parquet(pdir / "catalogo_post_haiku.parquet")
-    mapa = _json.loads((pdir / "mapa_sonnet.json").read_text())
+    mapa = _json.loads((pdir / "mapa_sonnet.json").read_text(encoding="utf-8"))
     resultados = llamar_anthropic(core.parse_batch_results, client, estado["batch_sonnet_id"])
     df = core.fusionar_resultados(df, mapa, resultados)
     df.to_parquet(pdir / "catalogo_final.parquet")
