@@ -1,3 +1,4 @@
 .proyectos/
 __pycache__/
 *.pyc
+.venv/

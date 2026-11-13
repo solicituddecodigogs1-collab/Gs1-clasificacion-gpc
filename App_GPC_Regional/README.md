@@ -43,17 +43,36 @@ de Anthropic funcionan como se espera en este SDK/versión.
 
 ## Cómo correrla
 
+### Opción fácil — un solo doble clic (recomendada para una MO sin conocimientos técnicos)
+
+1. Descarga o clona esta carpeta (`App_GPC_Regional/`) completa.
+2. **Windows:** doble clic en `Iniciar_Windows.bat`.
+   **Mac / Linux:** doble clic en `Iniciar_Mac_Linux.sh` (si no abre al hacer
+   doble clic, clic derecho → Abrir con → Terminal, o desde una terminal:
+   `./Iniciar_Mac_Linux.sh`).
+3. La primera vez tarda 1-2 minutos preparando todo (instala lo necesario
+   solo, sin que el usuario haga nada más). Las siguientes veces arranca en
+   segundos.
+4. Se abre sola en el navegador en `http://localhost:8000`. Para cerrar la
+   app, se cierra esa ventana de la terminal.
+
+Si la computadora no tiene Python instalado, el script lo detecta y explica
+cómo instalarlo (un paso único, de una sola vez).
+
+### Opción manual (para quien prefiera la terminal)
+
 ```bash
 cd App_GPC_Regional
 pip install -r requirements.txt
 uvicorn backend.main:app --reload
 ```
 
-Abre `http://localhost:8000`. Cada proyecto se identifica con un código corto
-(ej. `A1B2C3`) que se genera al crear uno nuevo — se guarda en el navegador
-(`localStorage`) y también se puede volver a ingresar manualmente desde otro
-equipo, porque el estado vive en el servidor (`.proyectos/<código>/`), no solo
-en el navegador.
+### Sobre el código de proyecto
+
+Cada proyecto se identifica con un código corto (ej. `A1B2C3`) que se genera
+al crear uno nuevo — se guarda en el navegador (`localStorage`) y también se
+puede volver a ingresar manualmente desde otro equipo, porque el estado vive
+en el servidor (`.proyectos/<código>/`), no solo en el navegador.
 
 ## Qué hace, paso a paso
 
@@ -80,6 +99,8 @@ en el navegador.
 
 ```
 App_GPC_Regional/
+├── Iniciar_Windows.bat    (doble clic para arrancar en Windows, sin terminal)
+├── Iniciar_Mac_Linux.sh   (doble clic / ./Iniciar_Mac_Linux.sh en Mac o Linux)
 ├── backend/
 │   ├── main.py       (API FastAPI: todos los endpoints)
 │   ├── core.py        (lógica del pipeline, sin interfaz — reusa lib/submit_batches.py)
