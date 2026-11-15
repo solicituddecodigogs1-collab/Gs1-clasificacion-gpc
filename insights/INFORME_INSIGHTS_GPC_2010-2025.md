@@ -56,17 +56,17 @@
 Alimentos/Bebidas alcanzó su máximo peso relativo en 2020 (33.9% del año), más por la caída de otros segmentos que por crecimiento propio: sus GTIN bajaron de 16,917 (2019) a 13,928 (2020).
 
 ## 3. Anomalías explicadas por afiliado
-Los picos se explican por pocas empresas que cargan catálogos grandes de golpe. En los años anteriores a 2018 los nombres vienen anonimizados (`gs1_afiliado_<RIF>_<id>`), así que aparecen por su id.
+Los picos se explican por pocas empresas que cargan catálogos grandes de golpe. Por confidencialidad, este informe no menciona empresas: las describe por sector.
 
 | Año | Anomalía | Causa identificada |
 |---|---|---|
-| 2011 | Total 99,774; Belleza 26,345 (×9.7) | Un solo afiliado (id 1274) aporta **38,748 GTIN (38.8% del año)**, 22,597 de ellos en Belleza |
-| 2012 | Herramientas 8,916 (×5) | Un afiliado (id 3545) con 6,687 GTIN de herramientas |
-| 2015 | Prendas 26,297 (+162%) | Afiliado id 4382 con 12,253 GTIN de prendas, más otro con 4,899 |
-| 2016 | Comunicaciones 4,048 | Afiliado id 7767 con 3,975 |
-| 2019 | Salud 4,834 (×2.5) | Avexim de Venezuela aporta 2,500 GTIN, todos de Salud |
+| 2011 | Total 99,774; Belleza 26,345 (×9.7) | Una sola empresa aporta **38,748 GTIN (38.8% del año)**, 22,597 de ellos en Belleza |
+| 2012 | Herramientas 8,916 (×5) | Una empresa con 6,687 GTIN de herramientas |
+| 2015 | Prendas 26,297 (+162%) | Una empresa con 12,253 GTIN de prendas, más otra con 4,899 |
+| 2016 | Comunicaciones 4,048 | Una empresa con 3,975 |
+| 2019 | Salud 4,834 (×2.5) | Una empresa aporta 2,500 GTIN, todos de Salud |
 | 2023 | Duplicación de filas | Ver §1. Los GTIN únicos crecieron un 13.8% real (41,627 → 47,382) |
-| 2025 | Total +33% | **Textiles Gams** con 9,029 GTIN, concentrados en octubre (días 9, 13 y 14); **Distribuidora de Aluminio El Aluminiero** con 7,194; **Corporación Vettal** con 4,340, cargados en diciembre |
+| 2025 | Total +33% | Una empresa del sector textil con 9,029 GTIN, concentrados en octubre (días 9, 13 y 14); una distribuidora del sector construcción con 7,194; una empresa de fontanería y climatización con 4,340, cargados en diciembre |
 
 **Estacionalidad** (GTIN únicos, 2018–2025): mayo (9.9%), junio (9.6%) y octubre (10.8%) son los meses fuertes. Diciembre (6.0%) y enero (5.4%) son los más bajos.
 - **Día de la semana:** el lunes concentra el 25.0% de los registros, y sábado y domingo suman menos del 1%.
@@ -85,7 +85,7 @@ Los picos se explican por pocas empresas que cargan catálogos grandes de golpe.
 **Por afiliado:** concentración muy alta.
 - **117 prefijos (1.5% de 7,719) generan el 50% de todos los GTIN.** Los 10 mayores suman el 20.8% y el 1% superior suma el 44.4%.
 - Los afiliados con más de 1,000 filas históricas son 140 y concentran cerca del 52% del volumen; los 2,926 con 10 o menos suman alrededor del 1.5% (cifras sobre filas, sin depurar duplicados).
-- **El 25% de los GTIN de 2021–25 lo generan 10 empresas.** Entre ellas están Distribuidora Gimbo (calzado, 11,131), Coratex (prendas, 10,486), Textiles Gams (9,030), Distribuidora de Aluminio (7,194) y Crisvi (arte, 6,288).
+- **El 25% de los GTIN de 2021–25 lo generan 10 empresas.** Entre ellas hay empresas de calzado (11,131), prendas (10,486), textil (9,030), construcción (7,194) y arte (6,288).
 - En 2025 el top 5 de afiliados sumó el 35.3% del año, frente a 15.4% en 2022.
 - **Consecuencia:** un solo afiliado grande puede mover el total de un año o de un segmento. Por eso se justifica seguimiento de cuentas clave.
 
@@ -114,7 +114,7 @@ Los picos se explican por pocas empresas que cargan catálogos grandes de golpe.
 - **GTIN-14 (unidades logísticas):** representan entre el 28% y el 35% de los GTIN entre 2018 y 2024. En 2025 baja a 20.9%. En Fontanería/HVAC suben a 41% y en Salud a 36%. Conviene revisar si el cambio refleja un tipo de cargas distinto.
 - **Origen del registro** (desde 2021): Sistema de Gestión y Sistema de Solicitud suman casi todo. En 2025 aparecen `Sistema Odoo` (1,821) y `App` (755).
 - **Mercado exterior:** entre el 94.7% y el 100% de los registros comercializa en Venezuela. Solo el 1.9–5.3% declara otros países desde 2021.
-- **Marcas:** 53,081 marcas distintas. La más grande es GIGETTO (48,111, la carga de 2011). Entre 2021 y 2025 destacan Ovejita (9,030), Crisvi (5,571), Only Uniform (5,119) y Kavak (5,099).
+- **Marcas:** 53,081 marcas distintas. Por confidencialidad no se listan marcas, que identifican empresas.
 - **Estatus Retirado:** los datos de 2018–2020 sí lo registran (27.2%, 5.9% y 6.5%), pero desde 2021 es menor al 1%. No sirve para medir ciclo de vida porque depende del momento de la extracción.
 
 ## 8. Recomendaciones
