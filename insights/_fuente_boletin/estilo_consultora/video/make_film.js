@@ -7,7 +7,7 @@ const data = JSON.parse(fs.readFileSync(path.join(D, 'sector_year.json'), 'utf8'
 const serie = fs.readFileSync(path.join(D, 'captacion_afiliados_por_ano.csv'), 'utf8').replace(/^﻿/, '').trim().split('\n').slice(1).map((l) => l.split(',').map(Number));
 data.emp = serie.map((r) => r[2]);
 const b64 = (f) => fs.readFileSync(path.join(R, f)).toString('base64');
-const FPS = 24, DUR = 30, OUT = path.resolve(process.argv[2] || path.join(__dirname, 'treinta_anos_en_codigos.mp4'));
+const FPS = 24, DUR = 75, OUT = path.resolve(process.argv[2] || path.join(__dirname, 'treinta_anos_en_codigos.mp4'));
 const fontCss = [['Barlow', 400, 'Barlow-400-latin'], ['Barlow', 700, 'Barlow-700-latin'], ['Barlow Condensed', 700, 'BarlowCondensed-700-latin']]
   .map(([n, w, f]) => `@font-face{font-family:'${n}';font-weight:${w};src:url(data:font/woff2;base64,${b64('fonts/' + f + '.woff2')}) format('woff2')}`).join('');
 const html = `<!doctype html><html><head><meta charset="utf-8"><style>${fontCss}body{margin:0;background:#002C6C}canvas{display:block}</style></head><body><canvas id="c" width="1280" height="720"></canvas><img id="lg" style="display:none" src="data:image/png;base64,${b64('logo/logo.png')}"><script>
@@ -42,14 +42,18 @@ function race(t,T){ // T = progreso 0..1 sobre los 33 años
   let cap='';CAP.forEach(([y,s])=>{if(Math.abs(year-y)<1.6)cap=s});
   if(cap){const k=Math.max(0,1-Math.abs(year-parseInt(cap))/1.6);txt(cap,48,118+10*(rh+7)+36,'bold 26px Barlow',OR,'left',ease(k*2))}
 }
-function outro(t){x.fillStyle=NAVY;x.fillRect(0,0,1280,720);const a=ease(t/1);
+function outro(t){x.fillStyle=NAVY;x.fillRect(0,0,1280,720);
   const items=[['+1,6 M','códigos registrados'],['+3.500','empresas registradas'],['+30','años de historia'],['68.339','códigos en 2025']];
-  items.forEach(([n,s],i)=>{const al=ease((t-0.3-i*0.35)/0.6);txt(n,140+i*280,320,'bold 78px Barlow Condensed','#fff','left',al);txt(s,140+i*280,360,'400 24px Barlow','#C6D2EE','left',al)});
-  x.fillStyle=OR;x.fillRect(140,230,1000,4);
-  x.fillStyle='#fff';x.fillRect(140,470,210,92);x.drawImage(lg,150,478,190,76);
-  txt('Lo que no se codifica, no se mide.',380,505,'italic 32px Georgia','#fff','left',ease((t-1.5)/0.8));txt('gs1ve.org',380,550,'400 24px Barlow','#FFB59A','left',ease((t-2)/0.8));
+  items.forEach(([n,s],i)=>{const al=ease((t-0.3-i*0.5)/0.7);txt(n,140+i*260,165,'bold 78px Barlow Condensed','#fff','left',al);txt(s,140+i*260,205,'400 24px Barlow','#C6D2EE','left',al)});
+  x.fillStyle=OR;x.fillRect(140,70,1000,4);
+  const q=ease((t-3.5)/1.2);
+  txt('«Lo que no se codifica, no se mide;',140,340,'italic 54px Georgia','#fff','left',q);
+  txt('lo que no se mide no se controla.»',140,410,'italic 54px Georgia','#fff','left',ease((t-4.6)/1.2));
+  txt('Adaptación de Lord Kelvin',140,462,'400 26px Barlow','#FFB59A','left',ease((t-6)/1));
+  const fa=ease((t-7.5)/1);x.globalAlpha=fa;x.fillStyle='#fff';x.fillRect(140,540,210,92);x.drawImage(lg,150,548,190,76);x.globalAlpha=1;
+  txt('gs1ve.org',380,592,'700 30px Barlow','#fff','left',fa);
 }
-window.draw=function(t){if(t<4)intro(t);else if(t<25){race(t,ease((t-4)/21*1.0))}else outro(t-25)};
+window.draw=function(t){if(t<5)intro(t);else if(t<62){race(t,Math.min(1,(t-5)/57))}else outro(t-62)};
 </script></body></html>`;
 (async () => {
   const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'film-'));
