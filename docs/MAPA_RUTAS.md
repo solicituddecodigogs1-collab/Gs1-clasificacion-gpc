@@ -29,3 +29,16 @@ Reorganización hecha con `git mv`: `git log --follow <archivo>` conserva el his
 Se actualizaron las constantes de ruta (`Path("...")`, docstrings) de `lib/`, `scripts/` y
 `herramientas/`, y los `sys.path` de los scripts que bajaron un nivel. `App_GPC_Regional/` y
 `Paquete_Replicacion_MO/` no se modificaron.
+
+## Ramas integradas después
+
+| Antes (en su rama) | Ahora |
+|---|---|
+| `insights/{_fuente_boletin,_resumen,README.md,Boletin_*.pdf}` | `analisis/` |
+| `insights/<año>/Final_*`, `NO_MATCH_*_CLASIFICADO` (1993-2007, 2010-2025) | descartados (ya están en `datos/`) |
+| `insights/{2008,2009}/NO_MATCH_<año>_CLASIFICADO.xlsx` | `datos/no_match/clasificado/` |
+| `presentaciones/comite-salud-gs1/` | `docs/presentaciones/comite_salud_gs1/` |
+| `generar_comite_salud_gs1.py`, `utils/gs1_healthcare_pptx.py` | `herramientas/presentaciones/` |
+| `submit_batches_nueva_carga.py`, `retrieve_batches_nueva_carga.py`, `run_batch_gpc.py` | `scripts/nueva_carga/` |
+| `output_2024/` | `datos/piloto/output_2024/` |
+| `Manual_de_Procedimientos_Cuentas_por_Pagar.docx` | `docs/administracion/` |
