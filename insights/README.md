@@ -16,7 +16,8 @@ insights/
 │   ├── captacion_afiliados_por_ano.csv
 │   ├── calidad_clasificacion_por_ano.csv
 │   └── INFORME_2010-2025_version_anterior.md
-└── Boletin_insights_GS1_edicion_revista.pdf
+├── Boletin_insights_GS1_edicion_revista.pdf
+└── _fuente_boletin/             HTML editable del boletín + render.js para regenerar el PDF (ver LEEME.md)
 ```
 
 ## Cómo se cuentan los códigos

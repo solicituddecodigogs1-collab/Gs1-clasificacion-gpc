@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" width="960" height="320">
+<rect width="960" height="320" fill="#E9EEF7"/>
+<line x1="480" y1="30" x2="480" y2="290" stroke="#002C6C" stroke-width="3" stroke-dasharray="8 8"/>
+<g fill="#002C6C">
+<circle cx="70" cy="70" r="9"/><circle cx="110" cy="70" r="9"/><circle cx="150" cy="70" r="9"/><circle cx="190" cy="70" r="9"/><circle cx="230" cy="70" r="9"/><circle cx="270" cy="70" r="9"/><circle cx="310" cy="70" r="9"/><circle cx="350" cy="70" r="9"/><circle cx="390" cy="70" r="9"/><circle cx="430" cy="70" r="9"/>
+<circle cx="70" cy="115" r="9"/><circle cx="110" cy="115" r="9"/><circle cx="150" cy="115" r="9"/><circle cx="190" cy="115" r="9"/><circle cx="230" cy="115" r="9"/><circle cx="270" cy="115" r="9"/><circle cx="310" cy="115" r="9"/><circle cx="350" cy="115" r="9"/><circle cx="390" cy="115" r="9"/><circle cx="430" cy="115" r="9"/>
+<circle cx="70" cy="160" r="9"/><circle cx="110" cy="160" r="9"/><circle cx="150" cy="160" r="9"/><circle cx="190" cy="160" r="9"/><circle cx="230" cy="160" r="9"/><circle cx="270" cy="160" r="9"/><circle cx="310" cy="160" r="9"/><circle cx="350" cy="160" r="9"/><circle cx="390" cy="160" r="9"/><circle cx="430" cy="160" r="9"/>
+<circle cx="70" cy="205" r="9"/><circle cx="110" cy="205" r="9"/><circle cx="150" cy="205" r="9"/><circle cx="190" cy="205" r="9"/><circle cx="230" cy="205" r="9"/><circle cx="270" cy="205" r="9"/><circle cx="310" cy="205" r="9"/><circle cx="350" cy="205" r="9"/><circle cx="390" cy="205" r="9"/><circle cx="430" cy="205" r="9"/>
+<circle cx="70" cy="250" r="9"/><circle cx="110" cy="250" r="9"/><circle cx="150" cy="250" r="9"/><circle cx="190" cy="250" r="9"/><circle cx="230" cy="250" r="9"/><circle cx="270" cy="250" r="9"/><circle cx="310" cy="250" r="9"/><circle cx="350" cy="250" r="9"/><circle cx="390" cy="250" r="9"/><circle cx="430" cy="250" r="9"/>
+</g>
+<rect x="540" y="60" width="120" height="120" fill="#F26334"/><rect x="690" y="100" width="130" height="130" fill="#F26334"/><rect x="600" y="200" width="70" height="70" fill="#F26334"/><rect x="840" y="190" width="70" height="70" fill="#F26334"/>
+</svg>

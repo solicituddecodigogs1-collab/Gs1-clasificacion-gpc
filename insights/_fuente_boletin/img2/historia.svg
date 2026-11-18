@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" width="960" height="360">
+<rect width="960" height="360" fill="#E9EEF7"/>
+<rect x="60" y="300" width="840" height="6" fill="#002C6C"/>
+<rect x="90" y="150" width="40" height="150" fill="#002C6C"/><rect x="150" y="60" width="40" height="240" fill="#F26334"/><rect x="210" y="110" width="40" height="190" fill="#002C6C"/><rect x="270" y="160" width="40" height="140" fill="#002C6C"/><rect x="330" y="170" width="40" height="130" fill="#002C6C"/><rect x="390" y="130" width="40" height="170" fill="#F26334"/><rect x="450" y="150" width="40" height="150" fill="#002C6C"/><rect x="510" y="200" width="40" height="100" fill="#002C6C"/><rect x="570" y="190" width="40" height="110" fill="#002C6C"/><rect x="630" y="215" width="40" height="85" fill="#002C6C"/><rect x="690" y="215" width="40" height="85" fill="#002C6C"/><rect x="750" y="190" width="40" height="110" fill="#002C6C"/><rect x="810" y="130" width="40" height="170" fill="#F26334"/>
+<path d="M120 120 L330 80 L560 150 L830 70" fill="none" stroke="#5A78AD" stroke-width="5" stroke-dasharray="14 10"/>
+<path d="M812 62 L840 66 L826 90 Z" fill="#5A78AD"/>
+</svg>
