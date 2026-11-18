@@ -7,13 +7,13 @@ Script completamente independiente: no importa submit_batches.py ni
 retrieve_batches.py.
 
 Pasos:
-1. Crea la carpeta no_match_historico/ (si no existe).
-2. Para cada año, lee los archivos finales de Output_Clasificado/ y
+1. Crea la carpeta datos/no_match/historico/ (si no existe).
+2. Para cada año, lee los archivos finales de datos/salida/ y
    filtra estrictamente las filas donde nivel_asignado == "NO_MATCH"
    (ground-truth lock: toda fila NO_MATCH también tiene gpc_code ==
    "NO_MATCH" exacto; se verifican ambas columnas por si acaso).
 3. Exporta un Excel independiente por año a
-   no_match_historico/no_match_<año>.xlsx, conservando todas las
+   datos/no_match/historico/no_match_<año>.xlsx, conservando todas las
    columnas originales.
 4. Imprime un resumen en consola con el conteo por año y el total.
 """
@@ -23,8 +23,8 @@ from pathlib import Path
 
 import pandas as pd
 
-OUTPUT_DIR = Path("Output_Clasificado")
-NO_MATCH_DIR = Path("no_match_historico")
+OUTPUT_DIR = Path("datos/salida")
+NO_MATCH_DIR = Path("datos/no_match/historico")
 
 YEAR_GLOBS = {
     2015: "clasificado_Consolidado_2015_Parte_*.xlsx",

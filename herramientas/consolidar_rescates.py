@@ -27,7 +27,7 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "lib"))
 import submit_batches as sb
 import retrieve_batches as rb
 
-OUTPUT_DIR = Path("Output_Clasificado")
+OUTPUT_DIR = Path("datos/salida")
 
 # (año -> patrón de los archivos principales "Parte_N" de ese año)
 YEAR_GLOBS = {

@@ -2,7 +2,7 @@
 """Cierre oficial del primer bloque de 10 años (2015-2025): consolida
 todas las partes fragmentadas de cada año en un único archivo final por
 año, incorporando el rescate heurístico Marca->Segment aplicado sobre
-no_match_residual/, y los agrupa en Output_Clasificado/Lote_2015_2025/.
+datos/no_match/residual/, y los agrupa en datos/salida/Lote_2015_2025/.
 
 Fusión por año: concatena verticalmente las N partes de cada año (los
 mismos patrones YEAR_GLOBS usados en todo este pipeline para localizar
@@ -13,7 +13,7 @@ contiene el rescate heurístico de marca->Segment aplicado en el paso
 anterior) para traer esos datos al archivo final.
 
 No modifica ningún archivo de origen (ni las partes en
-Output_Clasificado/ ni no_match_residual/) — solo lee y escribe el
+datos/salida/ ni datos/no_match/residual/) — solo lee y escribe el
 nuevo archivo consolidado Final_<año>.xlsx.
 
 Script independiente (reutiliza solo funciones de
@@ -31,8 +31,8 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "lib"))
 import submit_batches as sb
 import retrieve_batches as rb
 
-OUTPUT_DIR = Path("Output_Clasificado")
-RESIDUAL_DIR = Path("no_match_residual")
+OUTPUT_DIR = Path("datos/salida")
+RESIDUAL_DIR = Path("datos/no_match/residual")
 LOTE_DIR = OUTPUT_DIR / "Lote_2015_2025"
 
 YEAR_GLOBS = {

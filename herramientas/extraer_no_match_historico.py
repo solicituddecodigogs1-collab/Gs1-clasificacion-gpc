@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Extrae el remanente NO_MATCH de los años ya procesados (aislados en
-Output_Historico/) para trabajarlos de forma separada, uno a uno.
+datos/final/) para trabajarlos de forma separada, uno a uno.
 
-Itera sobre TODOS los Excel dentro de Output_Historico/, los agrupa por
+Itera sobre TODOS los Excel dentro de datos/final/, los agrupa por
 año (detectado del nombre del archivo — un año puede tener 1 archivo ya
 consolidado, p. ej. Final_2025.xlsx, o varias partes, p. ej.
 clasificado_Consolidado_2010_Parte_1..5.xlsx), y extrae estricta y
@@ -11,11 +11,11 @@ filtro a códigos vacíos/inválidos, a diferencia de
 extraer_no_match_residual.py).
 
 Exporta un archivo independiente por año a
-Remanentes_NO_MATCH/NO_MATCH_<año>.xlsx, y termina con la tabla de
+datos/no_match/remanentes/NO_MATCH_<año>.xlsx, y termina con la tabla de
 métrica de control: SKUs originales, NO_MATCH extraídos y match rate
 por año.
 
-Script independiente, de solo lectura sobre Output_Historico/ (no
+Script independiente, de solo lectura sobre datos/final/ (no
 modifica ningún archivo de origen).
 """
 
@@ -25,8 +25,8 @@ from pathlib import Path
 
 import pandas as pd
 
-HIST_DIR = Path("Output_Historico")
-OUT_DIR = Path("Remanentes_NO_MATCH")
+HIST_DIR = Path("datos/final")
+OUT_DIR = Path("datos/no_match/remanentes")
 
 YEAR_RE = re.compile(r"(20\d{2})")
 
@@ -73,7 +73,7 @@ def main() -> int:
         )
 
     print("\n" + "=" * 70)
-    print("MÉTRICA DE CONTROL — Remanente NO_MATCH por año (Output_Historico/)")
+    print("MÉTRICA DE CONTROL — Remanente NO_MATCH por año (datos/final/)")
     print("=" * 70)
     print(f"{'Año':<8}{'Total SKUs':<14}{'NO_MATCH':<12}{'Match Rate':<12}")
     print("-" * 70)

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Recupera los resultados del reprocesamiento de rescate de NO_MATCH
-históricos (no_match_historico/no_match_<año>.xlsx, enviados con
+históricos (datos/no_match/historico/no_match_<año>.xlsx, enviados con
 submit_batches.py bajo claude-haiku-5-5) y exporta cada uno a
-Output_Clasificado/no_match_<año>_reprocesado_haiku55.xlsx — un archivo
+datos/salida/no_match_<año>_reprocesado_haiku55.xlsx — un archivo
 nuevo, independiente de los Excel originales por año ya existentes en la
 carpeta unificada de resultados (nunca los sobrescribe).
 
@@ -28,8 +28,8 @@ import retrieve_batches as rb
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("retrieve_no_match_rescue")
 
-NO_MATCH_DIR = Path("no_match_historico")
-OUTPUT_DIR = Path("Output_Clasificado")
+NO_MATCH_DIR = Path("datos/no_match/historico")
+OUTPUT_DIR = Path("datos/salida")
 TRACKER_FILE = Path("batch_tracker.json")
 
 YEARS = [2019, 2020, 2021, 2022, 2023, 2024, 2025]

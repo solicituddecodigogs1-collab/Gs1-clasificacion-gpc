@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Extrae los registros que definitivamente quedaron sin clasificar tras
 la consolidación de todos los rescates (Haiku 5.5 + Sonnet 5.5), los
-exporta agrupados por año a no_match_residual/, y proyecta el costo de
+exporta agrupados por año a datos/no_match/residual/, y proyecta el costo de
 un último intento con Opus 5.5 vía Batch API.
 
 Filtro de "no resuelto" (más estricto que solo nivel_asignado=="NO_MATCH"):
@@ -33,8 +33,8 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "lib"))
 import submit_batches as sb
 import retrieve_batches as rb
 
-OUTPUT_DIR = Path("Output_Clasificado")
-RESIDUAL_DIR = Path("no_match_residual")
+OUTPUT_DIR = Path("datos/salida")
+RESIDUAL_DIR = Path("datos/no_match/residual")
 
 YEAR_GLOBS = {
     2015: "clasificado_Consolidado_2015_Parte_*.xlsx",

@@ -26,7 +26,7 @@ from pathlib import Path as _Path
 _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "lib"))
 import preclasificador as pc
 
-HIST_DIR = Path("Output_Historico")
+HIST_DIR = Path("datos/final")
 CATALOG_FILE = Path("catalogo/gpc_catalogo_oficial.csv")
 OUT_FILE = Path("catalogo/empresa_giro_lookup.json")
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Envía los 11 archivos de no_match_historico/ (años 2015-2025) a la
+"""Envía los 11 archivos de datos/no_match/historico/ (años 2015-2025) a la
 Batch API bajo submit_batches_rescate.py (Sonnet 5.5 + regla de rescate),
 ignorando el guard de already_submitted() de submit_batches_rescate.py
 (que normalmente evita duplicar un envío si ya existe una entrada activa
@@ -26,7 +26,7 @@ import submit_batches_rescate as sbr
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("resubmit_rescate_sonnet")
 
-NO_MATCH_DIR = Path("no_match_historico")
+NO_MATCH_DIR = Path("datos/no_match/historico")
 
 
 def main() -> int:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Rescate heurístico de última instancia para el remanente NO_MATCH en
-no_match_residual/: en vez de clasificar por descripción de producto
+datos/no_match/residual/: en vez de clasificar por descripción de producto
 (como hace todo el resto del pipeline), infiere el Segment GPC a partir
 de la MARCA/PROVEEDOR del producto, vía una llamada directa (no Batch
 API) a Haiku 5.5.
@@ -46,7 +46,7 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "lib"))
 import submit_batches as sb
 import retrieve_batches as rb
 
-RESIDUAL_DIR = Path("no_match_residual")
+RESIDUAL_DIR = Path("datos/no_match/residual")
 MODEL = "claude-haiku-5-5"
 CHUNK_SIZE = 150
 HEURISTIC_CONFIDENCE = 40
@@ -125,7 +125,7 @@ def main() -> int:
     segment_lookup = build_segment_lookup()
     valid_codes = set(segment_lookup.keys())
 
-    print("Extrayendo marcas únicas de no_match_residual/ ...")
+    print("Extrayendo marcas únicas de datos/no_match/residual/ ...")
     brand_display, file_info = extract_unique_brands()
     brands = sorted(brand_display.keys())
     print(f"Marcas únicas detectadas (>=3 caracteres): {len(brands)}")
@@ -188,7 +188,7 @@ def main() -> int:
     pct_total = 100 * total_rows_patched / total_rows_residual if total_rows_residual else 0.0
     print(
         f"TOTAL: {total_rows_patched} / {total_rows_residual} registros residuales "
-        f"rescatados ({pct_total:.1f}%) y guardados en no_match_residual/"
+        f"rescatados ({pct_total:.1f}%) y guardados en datos/no_match/residual/"
     )
     print(
         "Nota: clasificación de alto nivel (Segment) basada en heurística de "

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Resumen global del estado actual del proyecto: combina cada archivo
-principal por año (Output_Clasificado/clasificado_*) con las rondas de
+principal por año (datos/salida/clasificado_*) con las rondas de
 rescate de NO_MATCH (Haiku 5.5 y/o Sonnet 5.5) para reportar, por año,
 cuántos productos quedaron asignados vs. NO_MATCH tras todo el pipeline
 hasta la fecha.
@@ -22,7 +22,7 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "lib"))
 import submit_batches as sb
 import retrieve_batches as rb
 
-OUTPUT_DIR = Path("Output_Clasificado")
+OUTPUT_DIR = Path("datos/salida")
 
 YEAR_GLOBS = {
     2015: "clasificado_Consolidado_2015_Parte_*.xlsx",

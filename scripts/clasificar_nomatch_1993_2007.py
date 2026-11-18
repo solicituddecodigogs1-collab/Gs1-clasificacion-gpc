@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Clasificación del NO_MATCH histórico 1993-2007 contra GPC Mayo 2026 (MX, es).
 
-Entrada : Output_NoMatch/NoMatch_<año>.xlsx
+Entrada : datos/no_match/extraido/NoMatch_<año>.xlsx
 Esquema : catalogo/GPC as of May 2026 v20260520 MX.xlsx (hoja 'Schema')
-Salida  : Output_Clasificado/NoMatch_Clasificado/NoMatch_<año>_CLASIFICADO.xlsx
+Salida  : datos/no_match/clasificado/NoMatch_<año>_CLASIFICADO.xlsx
 
 Capas:
   1. Reglas de afiliados históricos dominantes (RIF / marca) -> código fijo.
   2. Patrones técnicos y abreviaturas históricas (texto expandido).
   3. Consenso de cohorte por prefijo con lo ya clasificado con alta confianza
-     (Output_Asignados 1993-2025), solo cohortes homogéneas.
+     (datos/asignados 1993-2025), solo cohortes homogéneas.
   4. LLM en dos etapas SIEMPRE restringido a códigos del esquema oficial:
        etapa A: elige Class entre las 938 del esquema;
        etapa B: elige Brick entre los bricks de ese Class (o 0 = queda en Class).
@@ -37,9 +37,9 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMA_XLSX = ROOT / "catalogo" / "GPC as of May 2026 v20260520 MX.xlsx"
-IN_DIR = ROOT / "Output_NoMatch"
-OUT_DIR = ROOT / "Output_Clasificado" / "NoMatch_Clasificado"
-ASIG_DIR = ROOT / "Output_Asignados"
+IN_DIR = ROOT / "datos/no_match/extraido"
+OUT_DIR = ROOT / "datos" / "no_match" / "clasificado"
+ASIG_DIR = ROOT / "datos/asignados"
 CACHE_DIR = Path(os.environ.get("GPC_CACHE_DIR", ROOT / ".cache_gpc"))
 MODEL_A = os.environ.get("GPC_MODEL_A", "claude-sonnet-5-5")
 MODEL_B = os.environ.get("GPC_MODEL_B", "claude-sonnet-5-5")

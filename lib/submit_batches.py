@@ -2,7 +2,7 @@
 """Envía una muestra de trabajo de clasificación GPC (formato "Listado
 General 2024") a la Batch API de Anthropic.
 
-Toma archivos "Listado_General_2024_*.xlsx" de "input_2024/" (ver
+Toma archivos "Listado_General_2024_*.xlsx" de "datos/entrada/2024/" (ver
 TARGET_FILES/MAX_FILES para restringir a archivos específicos — p. ej.
 esta corrida fija TARGET_FILES a Parte_3/4/5 para no retocar Parte_1
 (Sonnet 5) ni Parte_2 (Haiku 4.5), ya recuperados), deduplica por
@@ -65,7 +65,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("submit_batches")
 
-INPUT_DIR = Path("input_2024")
+INPUT_DIR = Path("datos/entrada/2024")
 INPUT_GLOB_PATTERN = "Listado_General_2024_*.xlsx"
 TRACKER_FILE = Path("batch_tracker.json")
 CATALOG_FILE = Path("catalogo/gpc_catalogo_oficial.csv")
