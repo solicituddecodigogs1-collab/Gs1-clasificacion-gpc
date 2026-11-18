@@ -22,7 +22,7 @@ function txt(s,px,py,f,col,al,a){x.globalAlpha=a==null?1:a;x.font=f;x.fillStyle=
 function intro(t){ // 0–4 s
   const a=ease(t/1);x.fillStyle=NAVY;x.fillRect(0,0,1280,720);
   for(let i=0;i<60;i++){const w=[3,6,4,8,3,5][i%6],px=140+i*17,h=ease((t-0.2-i*0.012)/0.8)*120;x.fillStyle=OR;x.fillRect(px,330-h,w,h)}
-  txt('33 años en códigos',140,430,'bold 84px Barlow Condensed','#fff','left',ease((t-0.6)/0.8));
+  txt('Más de 30 años en códigos',140,430,'bold 84px Barlow Condensed','#fff','left',ease((t-0.6)/0.8));
   txt('El registro de GS1 Venezuela, 1993–2025',140,480,'400 28px Barlow','#C6D2EE','left',ease((t-1.2)/0.8));
 }
 function race(t,T){ // T = progreso 0..1 sobre los 33 años
