@@ -74,3 +74,5 @@ footer{background:var(--bg);padding:40px 0}footer .wrap{display:flex;gap:26px;al
  .vid video{max-height:none}
  #tip{max-width:210px;font-size:12.5px}
 }
+
+.vfb{margin-top:12px}

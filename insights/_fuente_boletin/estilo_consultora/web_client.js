@@ -13,6 +13,20 @@
     els.forEach((el, i) => { const r = rows[i]; if (r.tip) { el.onmousemove = (e) => showTip(e, r.tip); el.onmouseleave = hideTip; el.onclick = (e) => { showTip(e, r.tip); setTimeout(hideTip, 3000); }; } if (r.click) el.onclick = () => { els.forEach((x) => x.classList.remove('sel')); el.classList.add('sel'); r.click(r); }; });
     requestAnimationFrame(() => requestAnimationFrame(() => $$('i', host).forEach((i) => { i.style.width = i.dataset.w + '%'; })));
   };
+  // ---------- video: se arma como archivo temporal del navegador (los teléfonos no reproducen video incrustado como texto) ----------
+  (function () {
+    const v = $('#vid'), fb = $('#vfb'), raw = $('#vdata').textContent.trim();
+    let url = null;
+    const link = (txt) => { fb.innerHTML = '<a class="btn sm" href="' + (url || '#') + '" download="treinta_anos_en_codigos.mp4">' + txt + '</a>'; };
+    try {
+      const bin = atob(raw.slice(raw.indexOf(',') + 1)), arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      url = URL.createObjectURL(new Blob([arr], { type: 'video/mp4' }));
+      v.src = url;
+      v.addEventListener('error', () => link('El video no se reproduce aquí: descárgalo'));
+      link('Descargar el video (MP4)');
+    } catch (e) { fb.textContent = 'No se pudo cargar el video en este navegador.'; }
+  })();
   // ---------- reveal, contadores, nav ----------
   const countUp = (el) => { const to = parseFloat(el.dataset.count), d = +(el.dataset.dec || 0), pre = el.dataset.pre || '', suf = el.dataset.suf || ''; const t0 = performance.now(); const f = (t) => { const k = Math.min(1, (t - t0) / 1400), e = 1 - Math.pow(1 - k, 3), v = to * e; el.textContent = pre + (d ? dec(v.toFixed(d)) : fN(v)) + suf; if (k < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); };
   const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); $$('[data-count]', e.target).forEach(countUp); if (e.target.dataset.count) countUp(e.target); io.unobserve(e.target); } }), { threshold: 0.15 });
