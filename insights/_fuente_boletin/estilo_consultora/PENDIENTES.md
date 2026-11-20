@@ -23,3 +23,6 @@ El archivo vigente es `boletin_interactivo.html` (se regenera con `node gen_web.
 3. Revisión de marca y legal: uso del logo, cita de Lord Kelvin («adaptación») y «+30 años de historia» frente a los 39 reales.
 4. Alojar como página estática (un solo archivo de unos 3,7 MB) y probar en Safari, Firefox y un teléfono real; aquí solo se probó con Chromium.
 5. Imagen para compartir en redes (no incluida).
+
+## Móvil
+La misma página funciona en teléfono (diseño adaptable): menú desplegable, gráficos anchos que se deslizan hacia los lados, información de las barras al tocar y control de la carrera de sectores en dos líneas. Probado con emulación de iPhone 13 en Chromium; falta probar en teléfonos reales.

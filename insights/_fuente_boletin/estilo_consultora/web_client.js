@@ -10,7 +10,7 @@
     const max = o.max || Math.max(...rows.map((r) => r.v));
     host.innerHTML = '<div class="hb">' + rows.map((r, i) => `<div class="r${r.click ? ' click' : ''}" data-i="${i}"><div class="l">${r.l}</div><div class="tr"><i style="background:${r.c || NAVY}" data-w="${Math.max(1.5, Math.abs(r.v) / max * 100)}"></i></div><div class="v" style="color:${r.c && r.c !== NAVY ? r.c : 'inherit'}">${r.d}</div></div>`).join('') + '</div>';
     const els = $$('.r', host);
-    els.forEach((el, i) => { const r = rows[i]; if (r.tip) { el.onmousemove = (e) => showTip(e, r.tip); el.onmouseleave = hideTip; } if (r.click) el.onclick = () => { els.forEach((x) => x.classList.remove('sel')); el.classList.add('sel'); r.click(r); }; });
+    els.forEach((el, i) => { const r = rows[i]; if (r.tip) { el.onmousemove = (e) => showTip(e, r.tip); el.onmouseleave = hideTip; el.onclick = (e) => { showTip(e, r.tip); setTimeout(hideTip, 3000); }; } if (r.click) el.onclick = () => { els.forEach((x) => x.classList.remove('sel')); el.classList.add('sel'); r.click(r); }; });
     requestAnimationFrame(() => requestAnimationFrame(() => $$('i', host).forEach((i) => { i.style.width = i.dataset.w + '%'; })));
   };
   // ---------- reveal, contadores, nav ----------
@@ -40,8 +40,8 @@
     host.innerHTML = s;
     const ln = $('#' + opt.id + '-ln'), len = ln.getTotalLength(); ln.style.strokeDasharray = len; ln.style.strokeDashoffset = len; ln.getBoundingClientRect(); ln.style.transition = 'stroke-dashoffset 2.2s ease'; const ob = new IntersectionObserver((e) => { if (e[0].isIntersecting) { ln.style.strokeDashoffset = 0; ob.disconnect(); } }, { threshold: .3 }); ob.observe(host);
     const svg = $('svg', host), cx = $('#' + opt.id + '-cx'), hit = $('#' + opt.id + '-hit');
-    hit.onmousemove = (e) => { const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * W; let y = Math.round(S[0][0] + (px - L) / iw * (S[S.length - 1][0] - S[0][0])); y = Math.max(S[0][0], Math.min(S[S.length - 1][0], y)); const row = S.find((d) => d[0] === y); cx.style.display = ''; $('line', cx).setAttribute('x1', x(y)); $('line', cx).setAttribute('x2', x(y)); $('circle', cx).setAttribute('cx', x(y)); $('circle', cx).setAttribute('cy', yy(row[1])); showTip(e, opt.tip(row)); };
-    hit.onmouseleave = () => { cx.style.display = 'none'; hideTip(); };
+    hit.onpointermove = hit.onpointerdown = (e) => { const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * W; let y = Math.round(S[0][0] + (px - L) / iw * (S[S.length - 1][0] - S[0][0])); y = Math.max(S[0][0], Math.min(S[S.length - 1][0], y)); const row = S.find((d) => d[0] === y); cx.style.display = ''; $('line', cx).setAttribute('x1', x(y)); $('line', cx).setAttribute('x2', x(y)); $('circle', cx).setAttribute('cx', x(y)); $('circle', cx).setAttribute('cy', yy(row[1])); showTip(e, opt.tip(row)); };
+    hit.onpointerleave = () => { cx.style.display = 'none'; hideTip(); }; hit.onpointerup = (e) => { if (e.pointerType === 'touch') setTimeout(() => { cx.style.display = 'none'; hideTip(); }, 2500); };
     return { svg, x, yy };
   }
   const empBy = {}; DATA.serie.forEach((r) => { empBy[r[0]] = r; });
@@ -135,4 +135,5 @@
   $$('#acc .it').forEach((it) => { $('button', it).onclick = () => { const o = it.classList.contains('open'); $$('#acc .it').forEach((x) => x.classList.remove('open')); if (!o) it.classList.add('open'); }; });
   let gi = 0; $$('.exl').forEach((e) => { if (/^Gráfico/.test(e.textContent)) e.textContent = 'Gráfico ' + (++gi); });
   setTimeout(() => { $$('.chart svg, #cap svg, #scat svg').forEach((s) => { const t = s.closest('.ex'); s.setAttribute('role', 'img'); s.setAttribute('aria-label', 'Gráfico. ' + (t && $('.ext', t) ? $('.ext', t).textContent : '')); }); }, 0);
+  ['#hist', '#cap', '#con'].forEach((s) => { const h = $(s); if (h) { const t = document.createElement('div'); t.className = 'swipe'; t.textContent = 'Desliza el gráfico hacia los lados para verlo completo →'; h.parentNode.insertBefore(t, h); } });
 })();
