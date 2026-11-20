@@ -76,3 +76,5 @@ footer{background:var(--bg);padding:40px 0}footer .wrap{display:flex;gap:26px;al
 }
 
 .vfb{margin-top:12px}
+
+#film{width:100%;height:auto;display:block;background:#002C6C;cursor:pointer}.fctl{display:flex;align-items:center;gap:14px;background:#001d4a;padding:10px 14px}.fctl input{flex:1;min-width:0;accent-color:var(--or)}.fctl span{color:#C6D2EE;font-size:13px;min-width:82px;text-align:right}
