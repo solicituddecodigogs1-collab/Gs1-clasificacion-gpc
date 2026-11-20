@@ -14,7 +14,7 @@ Estado a la fecha de este respaldo. El archivo vigente es `boletin_interactivo.h
 Capítulos I a VI y video (más de 30 años, 1:15, cita completa al final).
 
 ## Acordado y pendiente de aplicar
-- Título de la sección de video: «La Introducción de los códigos: cómo han ido cambiando los sectores del mercado desde el inicio».
+- (Aplicado en la auditoría editorial) Título de la sección de video: «La Introducción de los códigos: cómo han ido cambiando los sectores del mercado desde el inicio».
 - Capítulos VII a XIII: pasar por el criterio de justificar cada número.
 - Capítulo VII (Productos y marcas): en revisión, a la espera de indicaciones.
 - Portada: pendiente de revisión con el usuario.
