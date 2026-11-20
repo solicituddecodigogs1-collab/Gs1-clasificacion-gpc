@@ -18,11 +18,45 @@
   const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); $$('[data-count]', e.target).forEach(countUp); if (e.target.dataset.count) countUp(e.target); io.unobserve(e.target); } }), { threshold: 0.15 });
   $$('.rv').forEach((e) => io.observe(e)); $$('.hstats b').forEach((b) => { setTimeout(() => countUp(b), 400); });
   const links = $('#nav .links'); const secs = $$('section.chap');
-  secs.forEach((s) => { const a = document.createElement('a'); a.href = '#' + s.id; const RM = { historia: 'I', concentracion: 'II', continuidad: 'III', capitulos: 'IV', carrera: 'V', novedad: 'VI', dependencia: 'VII', viaje: 'VIII', bultos: 'IX', consumo: 'X', oportunidades: 'XI', eslabones: 'XII', cierre: 'XIII' }; a.innerHTML = s.id === 'video' ? 'Video' : (RM[s.id] ? '<b style="color:#F26334;margin-right:5px">' + RM[s.id] + '</b>' : '') + ($('h2', s).textContent.length ? ({ historia: 'Historia', concentracion: 'Concentración', continuidad: 'Continuidad', capitulos: 'Etapas', carrera: 'Sectores', novedad: 'Novedad', dependencia: 'Productos', viaje: 'Viaje', bultos: 'Bultos', consumo: 'Consumo', oportunidades: 'Oportunidades', eslabones: 'Eslabones', cierre: 'Cierre' }[s.id] || s.id) : s.id); links.appendChild(a); });
+  secs.forEach((s) => { const a = document.createElement('a'); a.href = '#' + s.id; const RM0 = { glosario: 'Glosario' }; const RM = { historia: 'I', concentracion: 'II', continuidad: 'III', capitulos: 'IV', carrera: 'V', novedad: 'VI', dependencia: 'VII', viaje: 'VIII', bultos: 'IX', consumo: 'X', oportunidades: 'XI', eslabones: 'XII', cierre: 'XIII' }; a.innerHTML = s.id === 'video' ? 'Video' : RM0[s.id] ? RM0[s.id] : (RM[s.id] ? '<b style="color:#F26334;margin-right:5px">' + RM[s.id] + '</b>' : '') + ($('h2', s).textContent.length ? ({ historia: 'Historia', concentracion: 'Concentración', continuidad: 'Continuidad', capitulos: 'Etapas', carrera: 'Sectores', novedad: 'Novedad', dependencia: 'Productos', viaje: 'Viaje', bultos: 'Bultos', consumo: 'Consumo', oportunidades: 'Oportunidades', eslabones: 'Eslabones', cierre: 'Cierre' }[s.id] || s.id) : s.id); links.appendChild(a); });
   $('#menu').onclick = () => $('#nav').classList.toggle('open'); links.onclick = () => $('#nav').classList.remove('open');
   addEventListener('scroll', () => { const h = document.documentElement; $('#prog').style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%'; let cur = ''; secs.forEach((s) => { if (s.getBoundingClientRect().top < 120) cur = s.id; }); $$('a', links).forEach((a) => a.classList.toggle('on', a.getAttribute('href') === '#' + cur)); }, { passive: true });
   // hero bars
   $('#hbars').innerHTML = DATA.serie.map(([y, v], i) => `<i style="height:${Math.max(6, v / 100000 * 100)}%;animation-delay:${i * 40}ms"></i>`).join('');
+
+  // ---------- términos con explicación (se subrayan con puntos y se explican al pasar el cursor) ----------
+  const TERMS = {"código único": "Contamos cada código una sola vez por año, aunque aparezca repetido en la base de datos.", "codificar": "Registrar un producto en GS1 para que tenga su código de barras.", "codifica": "Registrar un producto en GS1 para que tenga su código de barras.", "codificaron": "Registrar un producto en GS1 para que tenga su código de barras.", "mediana": "El valor del medio: la mitad de las empresas registró esa cantidad de códigos o menos. Si la mediana es 9, la mitad registró 9 o menos.", "etapas": "Períodos de años que agrupamos para comparar: 1993–1999, 2000–2009, 2010–2019 y 2020–2025.", "Brick": "El nivel más detallado del clasificador GPC: por ejemplo «camisetas» o «chocolate».", "tipo de producto": "El nivel más detallado del clasificador GPC (Brick): por ejemplo «camisetas» o «tornillos».", "GTIN-14": "El código de la caja o empaque que contiene varias unidades de un producto.", "bulto": "La caja o empaque que contiene varias unidades de un producto; lleva su propio código (GTIN-14).", "empresa afiliada": "Empresa que forma parte de GS1 Venezuela y puede registrar sus productos.", "sector": "Gran familia de productos según el clasificador internacional GPC: alimentos y bebidas, prendas de vestir, construcción, etc."};
+  (function () {
+    const keys = Object.keys(TERMS).sort((a, b) => b.length - a.length);
+    const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp('(' + keys.map(esc).join('|') + ')', 'i');
+    const safe = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    $$('section.chap').forEach((sec) => {
+      const used = {};
+      $$('.deck, .prose p, .simple p', sec).forEach((el) => {
+        const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), nodes = [];
+        while (w.nextNode()) nodes.push(w.currentNode);
+        nodes.forEach((n) => {
+          let txt = n.nodeValue, html = '', changed = false, m;
+          while ((m = re.exec(txt))) {
+            const k = keys.find((x) => x.toLowerCase() === m[1].toLowerCase());
+            const cut = m.index + m[1].length;
+            if (used[k]) { html += safe(txt.slice(0, cut)); txt = txt.slice(cut); continue; }
+            used[k] = 1; changed = true;
+            html += safe(txt.slice(0, m.index)) + '<span class="t" data-k="' + k + '">' + safe(m[1]) + '</span>';
+            txt = txt.slice(cut);
+          }
+          if (changed) { html += safe(txt); const s = document.createElement('span'); s.innerHTML = html; n.replaceWith(...s.childNodes); }
+        });
+      });
+    });
+    $$('.t').forEach((e) => {
+      const h = () => '<b>' + e.textContent + '</b><br>' + TERMS[e.dataset.k];
+      e.onmousemove = (ev) => showTip(ev, h());
+      e.onmouseleave = hideTip;
+      e.onclick = (ev) => { const r = e.getBoundingClientRect(); showTip({ clientX: r.left, clientY: r.bottom }, h()); setTimeout(hideTip, 3500); };
+    });
+  })();
 
   // ---------- 1 historia ----------
   const BANDS = [['1993–1999', 1993, 1999, 'El arranque'], ['2000–2009', 2000, 2009, 'La consolidación'], ['2010–2019', 2010, 2019, 'La expansión'], ['2020–2025', 2020, 2025, 'El piso y el rebote']];
