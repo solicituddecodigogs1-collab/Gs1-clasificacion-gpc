@@ -5,7 +5,7 @@
   const tip = $('#tip');
   const showTip = (e, h) => { tip.innerHTML = h; tip.style.opacity = 1; const w = tip.offsetWidth; let x = e.clientX + 14, y = e.clientY + 14; if (x + w > innerWidth - 8) x = e.clientX - w - 14; tip.style.left = x + 'px'; tip.style.top = y + 'px'; };
   const hideTip = () => { tip.style.opacity = 0; };
-  const chips = (host, items, cur, cb) => { host.innerHTML = ''; items.forEach(([k, l]) => { const b = document.createElement('button'); b.className = 'chip' + (k === cur ? ' on' : ''); b.setAttribute('aria-pressed', k === cur ? 'true' : 'false'); b.textContent = l; b.onclick = () => { $$('.chip', host).forEach((c) => { c.classList.remove('on'); c.setAttribute('aria-pressed', 'false'); }); b.classList.add('on'); b.setAttribute('aria-pressed', 'true'); cb(k); }; host.appendChild(b); }); };
+  const chips = (host, items, cur, cb) => { host.innerHTML = '<span class="chiplab">Haz clic en una opción para cambiar el gráfico:</span>'; host.classList.add('hint'); items.forEach(([k, l]) => { const b = document.createElement('button'); b.className = 'chip' + (k === cur ? ' on' : ''); b.setAttribute('aria-pressed', k === cur ? 'true' : 'false'); b.textContent = l; b.onclick = () => { host.classList.remove('hint'); $$('.chip', host).forEach((c) => { c.classList.remove('on'); c.setAttribute('aria-pressed', 'false'); }); b.classList.add('on'); b.setAttribute('aria-pressed', 'true'); cb(k); }; host.appendChild(b); }); };
   const hbars = (host, rows, o = {}) => { // rows: {l,v,d,c,tip,click}
     const max = o.max || Math.max(...rows.map((r) => r.v));
     host.innerHTML = '<div class="hb">' + rows.map((r, i) => `<div class="r${r.click ? ' click' : ''}" data-i="${i}"><div class="l">${r.l}</div><div class="tr"><i style="background:${r.c || NAVY}" data-w="${Math.max(1.5, Math.abs(r.v) / max * 100)}"></i></div><div class="v" style="color:${r.c && r.c !== NAVY ? r.c : 'inherit'}">${r.d}</div></div>`).join('') + '</div>';
@@ -51,14 +51,11 @@
   $('#hist-cards').innerHTML = [['2011', 'fue el año en que más códigos se registraron: 99.774', 'or'], ['63.000', 'códigos únicos por año en promedio entre 2010 y 2019', ''], ['41.000', 'códigos únicos por año en promedio entre 2020 y 2022', '']].map(([n, t, c]) => `<div class="card ${c}"><b>${n}</b><span>${t}</span></div>`).join('');
 
   // ---------- 2 concentración ----------
-  const concView = (k) => {
-    if (k === 'etapas') { $('#conc-title').textContent = 'En cada etapa, las 10 empresas con más códigos aportaron entre 23% y 44% de los códigos de la etapa'; $('#conc-sub').textContent = 'Porcentaje de todos los códigos de cada etapa que registraron las 10 empresas con más códigos de esa etapa.'; hbars($('#conc'), DATA.rc.map((r, i) => ({ l: r.n, v: r.top10share, d: pc(r.top10share), c: i === 3 ? OR : NAVY, tip: `<b>${r.n}</b><br>Las 10 empresas con más códigos registraron el ${pc(r.top10share)} de los ${fN(r.total)} códigos de la etapa` })), { max: 50 }); return; }
-    $('#conc-title').textContent = 'En 2025, 46 empresas con 200 códigos o más generaron el 63,9% de los códigos del año; en 2021, 23 empresas generaron el 40,6%';
-    $('#conc-sub').textContent = 'Porcentaje de todos los códigos del año, según el grupo de empresas que los registró. Se comparan 2021 (el año más bajo de la serie reciente) y 2025 (el último año).';
-    const rows = [['2021', [[40.6, MID]], '40,6% · 23 empresas'], ['2025', [[30.1, OR], [33.8, NAVY]], '63,9% · 46 empresas']];
-    $('#conc').innerHTML = '<div class="stk">' + rows.map(([y, segs, lab]) => `<div class="row"><span>${y}</span><div class="bar">${segs.map(([w, c]) => `<i style="background:${c}" data-w="${w}"></i>`).join('')}<em>${lab}</em></div></div>`).join('') + `</div><div class="leg"><span><i style="background:${MID}"></i>2021: 23 empresas con 200 códigos o más</span><span><i style="background:${OR}"></i>2025: tres empresas con más códigos (30,1%)</span><span><i style="background:${NAVY}"></i>2025: otras 43 empresas con 200 códigos o más (33,8%)</span></div>`;
-    requestAnimationFrame(() => requestAnimationFrame(() => $$('#conc .bar i').forEach((i) => { i.style.width = i.dataset.w + '%'; }))); };
-  concView('2025'); chips($('#conc-chips'), [['2025', '2021 vs 2025'], ['etapas', 'Por etapas']], '2025', concView);
+  const concView = () => {
+    $('#conc-title').textContent = 'En cada etapa, las 10 empresas con más códigos aportaron entre 23% y 44% de los códigos de la etapa';
+    $('#conc-sub').textContent = 'Porcentaje de todos los códigos de cada etapa que registraron las 10 empresas con más códigos de esa etapa. Ejemplo: en 2020–2025 se registraron 290.730 códigos y esas 10 empresas aportaron el 22,8%.';
+    hbars($('#conc'), DATA.rc.map((r, i) => ({ l: r.n + ' <small>· ' + fN(r.total) + ' códigos</small>', v: r.top10share, d: pc(r.top10share), c: i === 3 ? OR : NAVY, tip: `<b>${r.n}</b><br>Las 10 empresas con más códigos registraron el ${pc(r.top10share)} de los ${fN(r.total)} códigos de la etapa` })), { max: 50 }); };
+  concView();
   hbars($('#conc2'), [['Prendas de vestir', 234, OR], ['Calzado', 136, OR], ['Construcción', 70, NAVY], ['Alimentos y Bebidas', 41, NAVY]].map(([l, v, c]) => ({ l, v, d: v + ' códigos', c })), { max: 240 });
 
   // ---------- 3 continuidad ----------
@@ -78,7 +75,7 @@
   const raceAt = (y) => { const i = y - 1993, rows = names.map((n) => [n, SY.sectors[n][i]]).sort((a, b) => b[1] - a[1]), max = rows[0][1]; const avail = raceHost.clientWidth - 222 - 90; rows.forEach(([n, v], k) => { const el = $('.r[data-n="' + n + '"]', raceHost); el.style.transform = `translateY(${k * 42}px)`; const w = Math.max(3, v / max * avail); $('.bb', el).style.width = w + 'px'; const bv = $('.bv', el); bv.style.left = (222 + w) + 'px'; bv.textContent = fN(v); el.onmousemove = (e) => showTip(e, `<b>${n}</b><br>${fN(v)} códigos en ${y}<br>${pc(v / SY.total[i] * 100)} del año`); el.onmouseleave = hideTip; }); $('#yrl').textContent = y; $('#yr').value = y; };
   raceAt(2025); let timer = null; const stop = () => { clearInterval(timer); timer = null; $('#play').textContent = '▶ Reproducir'; };
   $('#yr').oninput = (e) => { stop(); raceAt(+e.target.value); };
-  $('#play').onclick = () => { if (timer) { stop(); return; } let y = +$('#yr').value >= 2025 ? 1993 : +$('#yr').value; raceAt(y); $('#play').textContent = '❚❚ Pausa'; timer = setInterval(() => { y++; if (y > 2025) { stop(); return; } raceAt(y); }, 3000); };
+  $('#play').onclick = () => { if (timer) { stop(); return; } let y = +$('#yr').value >= 2025 ? 1993 : +$('#yr').value; raceAt(y); $('#play').textContent = '❚❚ Pausa'; timer = setInterval(() => { y++; if (y > 2025) { stop(); return; } raceAt(y); }, 2000); };
   addEventListener('resize', () => raceAt(+$('#yr').value));
 
   // ---------- 6 novedad ----------
@@ -87,7 +84,7 @@
     $('#nov-title').textContent = k === 'rec' ? 'Veces que los códigos de 2025 superan el promedio anual de 2021–2024' : 'Veces que los códigos de 2025 superan el promedio anual de 1993–2024';
     $('#nov-sub').textContent = (k === 'rec' ? '2021–2024 son los cuatro años anteriores y más cercanos a 2025. ' : '1993–2024 es todo el período anterior a 2025. ') + '×2 significa el doble. Sectores con 300 códigos o más en 2025; verde: 1,5 veces o más; naranja: menos de 1.';
     hbars($('#nov'), rows.map((r) => ({ l: r[0].replace('Artículos de jardinería/', 'Artículos de jardinería'), v: r[idx], d: '×' + dec(r[idx]), c: r[idx] >= 1.5 ? GR : r[idx] < 1 ? OR : NAVY, click: () => novShow({ name: r[0], cod: r[1], x: r[2], h: r[3] }) })), { max: Math.max(...rows.map((r) => r[idx])) }); };
-  novView('rec'); chips($('#nov-chips'), [['rec', 'Frente a 2021–2024'], ['hist', 'Frente a 1993–2024']], 'rec', novView);
+  novView('rec'); chips($('#nov-chips'), [['rec', 'Frente a 2021–2024'], ['hist', 'Frente a 1993–2024']], 'rec', novView); (function () { const m = DATA.nov.find((r) => r[0] === 'Cuidado de mascotas'); if (m) novShow({ name: m[0], cod: m[1], x: m[2], h: m[3] }); })();
 
   // ---------- 7 dependencia ----------
   hbars($('#bricks'), DATA.bricks.map((b, i) => ({ l: b[0].replace('Zapatos – General', 'Zapatos en general').replace('Limpieza/aseo/jabón – Personal', 'Jabón y aseo personal').replace('Pantalones largos/cortos', 'Pantalones largos y cortos').replace(' – Confitería', '').replace('Chocolate y combinaciones de chocolate/caramelo', 'Chocolate y confitería').replace('Camisas/blusas/polos/camisetas', 'Camisas, blusas, polos y camisetas'), v: b[1], d: fN(b[1]), c: i === 0 ? OR : NAVY })));
@@ -131,7 +128,7 @@
   eslView('fab'); chips($('#esl-chips'), [['fab', 'Fabricar y lanzar'], ['ven', 'Vender y surtir'], ['mov', 'Mover y almacenar']], 'fab', eslView);
 
   // ---------- 13 cierre ----------
-  const IDEAS = [['Codificar cada producto y cada presentación.', 'Lo que no se codifica no se mide: cada código es una referencia que se puede comparar, reponer y vender en toda la cadena.'], ['Pensar el lanzamiento desde el formato.', 'En bebidas, el envase individual (37,5%), el refresco y la lata ganan terreno en lo que se registra (capítulo X).'], ['Armar el surtido con variedad y con proveedores alternativos.', 'Alimentos y Bebidas es el sector más variado; en construcción, prendas, plomería y calzado, una sola empresa aporta más del 60% de los códigos (capítulo VII).'], ['Llevar la identificación hasta el bulto y el pallet.', 'El 37,8% de las empresas no registra ningún GTIN-14 (capítulo IX).'], ['Seguir la novedad sector por sector.', 'Plomería y climatización codificó tres veces más productos en 2025 que su promedio de 2021–2024: ahí hay movimiento (capítulo VI).']];
+  const IDEAS = [['Codificar cada producto y cada presentación.', 'Lo que no se codifica no se mide: cada código es una referencia que se puede comparar, reponer y vender en toda la cadena.'], ['Pensar el lanzamiento desde el formato.', 'En bebidas, el envase individual (37,5%), el refresco y la lata ganan terreno en lo que se registra (capítulo X).'], ['Armar el surtido con variedad y con proveedores alternativos.', 'Alimentos y Bebidas es el sector más variado; en construcción, prendas, plomería y calzado, una sola empresa aporta más del 60% de los códigos (capítulo VII).'], ['Llevar la identificación hasta el bulto y el pallet.', 'El 37,8% de las empresas no registra ningún GTIN-14 (capítulo IX).'], ['Seguir la novedad sector por sector.', 'El cuidado de mascotas, una tendencia mundial, codificó ×2,73 su promedio de 2021–2024; otros sectores, como plomería y climatización, también se aceleraron (capítulo VI).']];
   $('#acc').innerHTML = IDEAS.map(([a, b], i) => `<div class="it${i === 0 ? ' open' : ''}"><button><b>${i + 1}</b>${a}<em>+</em></button><div class="bd">${b}</div></div>`).join('');
   $$('#acc .it').forEach((it) => { $('button', it).onclick = () => { const o = it.classList.contains('open'); $$('#acc .it').forEach((x) => x.classList.remove('open')); if (!o) it.classList.add('open'); }; });
   let gi = 0; $$('.exl').forEach((e) => { if (/^Gráfico/.test(e.textContent)) e.textContent = 'Gráfico ' + (++gi); });
