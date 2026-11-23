@@ -134,4 +134,5 @@
   let gi = 0; $$('.exl').forEach((e) => { if (/^Gráfico/.test(e.textContent)) e.textContent = 'Gráfico ' + (++gi); });
   setTimeout(() => { $$('.chart svg, #cap svg, #scat svg').forEach((s) => { const t = s.closest('.ex'); s.setAttribute('role', 'img'); s.setAttribute('aria-label', 'Gráfico. ' + (t && $('.ext', t) ? $('.ext', t).textContent : '')); }); }, 0);
   ['#hist', '#cap', '#con'].forEach((s) => { const h = $(s); if (h) { const t = document.createElement('div'); t.className = 'swipe'; t.textContent = 'Desliza el gráfico hacia los lados para verlo completo →'; h.parentNode.insertBefore(t, h); } });
+  [['#hist', 'Pasa el cursor sobre la línea (o toca, en el móvil) para ver cada año.'], ['.race-ctl', 'Mueve el control o pulsa «Reproducir» para ver cómo cambia el ranking año a año.'], ['#nov', 'Toca un sector de la lista para ver su detalle.'], ['#steps', 'Toca cada eslabón para ver qué estándar de GS1 lo identifica y qué parte se puede medir hoy.']].forEach(([sel, txt]) => { const el = $(sel); if (el) { const h = document.createElement('div'); h.className = 'hint2'; h.textContent = txt; el.parentNode.insertBefore(h, el); } });
 })();

@@ -83,3 +83,5 @@ footer{background:var(--bg);padding:40px 0}footer .wrap{display:flex;gap:26px;al
 .chip{border:2px solid var(--navy);color:var(--navy);box-shadow:0 2px 0 var(--navy);transition:transform .12s,box-shadow .12s,background .15s}.chip:hover{background:#EEF2F9;transform:translateY(-1px)}.chip:active{transform:translateY(2px);box-shadow:none}.chip.on{background:var(--navy);color:#fff;box-shadow:none}
 .chips.hint .chip:not(.on){animation:nudge 1.4s ease 3}@keyframes nudge{0%,100%{transform:none}30%{transform:translateY(-4px)}60%{transform:translateY(0)}}
 .race-ctl .btn{box-shadow:0 2px 0 #b8421a}
+
+.hint2{font-size:13px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:8px;margin:2px 0 10px}.hint2::before{content:'☝';font-size:17px;color:var(--or)}
