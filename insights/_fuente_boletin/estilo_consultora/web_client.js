@@ -52,14 +52,14 @@
 
   // ---------- 2 concentración ----------
   const concView = () => {
-    $('#conc-title').textContent = 'En cada etapa, las 10 empresas con más códigos aportaron entre 23% y 44% de los códigos de la etapa';
-    $('#conc-sub').textContent = 'Porcentaje de todos los códigos de cada etapa que registraron las 10 empresas con más códigos de esa etapa. Ejemplo: en 2020–2025 se registraron 290.730 códigos y esas 10 empresas aportaron el 22,8%.';
+    
+    
     hbars($('#conc'), DATA.rc.map((r, i) => ({ l: r.n + ' <small>· ' + fN(r.total) + ' códigos</small>', v: r.top10share, d: pc(r.top10share), c: i === 3 ? OR : NAVY, tip: `<b>${r.n}</b><br>Las 10 empresas con más códigos registraron el ${pc(r.top10share)} de los ${fN(r.total)} códigos de la etapa` })), { max: 50 }); };
   concView();
   hbars($('#conc2'), [['Prendas de vestir', 234, OR], ['Calzado', 136, OR], ['Construcción', 70, NAVY], ['Alimentos y Bebidas', 41, NAVY]].map(([l, v, c]) => ({ l, v, d: v + ' códigos', c })), { max: 240 });
 
   // ---------- 3 continuidad ----------
-  const contView = (k) => { $('#cont-title').textContent = k === 'ret' ? 'Entre las empresas que codifican por primera vez, el 55% de las de los noventa codificó también al año siguiente; desde 2010, cerca del 30%' : 'De las empresas que codificaron por primera vez entre 2020 y 2024, una de cada cinco (19%) sigue codificando en 2025'; hbars($('#cont'), DATA.fid.map((c) => ({ l: c[0] + ' <small>· ' + fN(c[1]) + ' empresas</small>', v: k === 'ret' ? c[2] : c[3], d: pc(k === 'ret' ? c[2] : c[3]), c: c[0] === '2020–2024' ? OR : NAVY, tip: `<b>${c[0]}</b><br>${fN(c[1])} empresas codificaron por primera vez<br>${pc(c[2])} codificó también al año siguiente<br>${pc(c[3])} sigue codificando en 2025` })), { max: 60 }); };
+  const contView = (k) => { $('#cont-title').textContent = k === 'ret' ? 'De las empresas que codificaron por primera vez en los años noventa, el 55% codificó también al año siguiente; desde 2010, cerca del 30%' : 'De las empresas que codificaron por primera vez entre 2020 y 2024, una de cada cinco (19%) sigue codificando en 2025'; hbars($('#cont'), DATA.fid.map((c) => ({ l: c[0] + ' <small>· ' + fN(c[1]) + ' empresas</small>', v: k === 'ret' ? c[2] : c[3], d: pc(k === 'ret' ? c[2] : c[3]), c: c[0] === '2020–2024' ? OR : NAVY, tip: `<b>${c[0]}</b><br>${fN(c[1])} empresas codificaron por primera vez<br>${pc(c[2])} codificó también al año siguiente<br>${pc(c[3])} sigue codificando en 2025` })), { max: 60 }); };
   contView('ret'); chips($('#cont-chips'), [['ret', 'Codifica al año siguiente'], ['sig', 'Sigue codificando en 2025']], 'ret', contView);
 
   // ---------- 4 etapas ----------
