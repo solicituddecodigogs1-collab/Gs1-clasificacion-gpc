@@ -47,7 +47,7 @@ Paquete_Replicacion_MO/
     ├── submit_batches.py              (pasada 1 — Claude Haiku 5.5)
     ├── submit_batches_rescate.py      (pasada 2 — Claude Sonnet 5.5, rescate de NO_MATCH)
     ├── retrieve_batches.py            (recuperación y fusión de resultados del lote)
-    └── clasificar_nomatch_plantilla_argentina.py (procedimiento complementario de 5 capas,
+    ├── clasificar_nomatch_plantilla_argentina.py (procedimiento complementario de 5 capas,
                                           sección 8 del manual — rescate del NO_MATCH residual.
                                           Ya adaptado: prefijo GS1 779/778 y CUIT en vez de
                                           759/RIF. Las reglas de negocio de la capa 1 son
@@ -55,4 +55,11 @@ Paquete_Replicacion_MO/
                                           correrlo. El original real de GS1 Venezuela, con sus
                                           datos de afiliados, se queda en la rama principal del
                                           repo, no en este paquete)
+    └── clasificar_nomatch_plantilla_bolivia.py (el mismo procedimiento de 5 capas, adaptado a
+                                          Bolivia: prefijo GS1 777 y NIT en vez de 759/RIF. El
+                                          NIT boliviano no tiene un largo fijo confirmado
+                                          públicamente (a diferencia del CUIT argentino) — el
+                                          regex que lo extrae queda deliberadamente flexible,
+                                          ajústalo contra el formato real de tu fuente. Mismas
+                                          reglas de capa 1 como PLACEHOLDERS a reemplazar)
 ```

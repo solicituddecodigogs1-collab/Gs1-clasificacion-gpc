@@ -184,11 +184,22 @@ Después de las pasadas 1 y 2 (secciones 3–4), siempre queda un residual en `N
 ese residual, en vez de intentar una tercera pasada de LLM puro, conviene un método en
 **capas en cascada**, cada una recibiendo solo lo que la anterior no resolvió. Esto fue
 exactamente lo que se usó para rescatar el residual 1993–2007 de este proyecto, con éxito del
-100 % (ver `INFORME_TECNICO.md`, sección 8). El script de referencia, ya adaptado al contexto
-argentino (prefijo GS1 779/778, CUIT en vez de RIF, catálogo CSV incluido en este paquete),
-está en `scripts_referencia/clasificar_nomatch_plantilla_argentina.py` de esta carpeta. Las
-reglas de negocio de la capa 1 (8.1) son placeholders — reemplázalas por las de tu propia MO
-antes de usarlo; ningún dato real de empresas venezolanas viaja en este archivo.
+100 % (ver `INFORME_TECNICO.md`, sección 8). Hay dos scripts de referencia con el mismo
+procedimiento, cada uno ya adaptado al contexto de un país distinto (catálogo CSV incluido en
+este paquete en ambos casos):
+
+- `scripts_referencia/clasificar_nomatch_plantilla_argentina.py` — prefijo GS1 779/778, CUIT
+  (formato fijo de 11 dígitos) en vez de RIF.
+- `scripts_referencia/clasificar_nomatch_plantilla_bolivia.py` — prefijo GS1 777, NIT en vez
+  de RIF. A diferencia del CUIT argentino, el NIT boliviano no tiene un largo de dígitos fijo
+  confirmado públicamente — el script usa un regex deliberadamente flexible para extraerlo y
+  deja la advertencia explícita de ajustarlo contra el formato real de tu propia fuente.
+
+En ambos, las reglas de negocio de la capa 1 (8.1) son placeholders — reemplázalas por las de
+tu propia MO antes de usarlo; ningún dato real de empresas venezolanas viaja en ninguno de los
+dos archivos. Si tu MO es de otro país, parte del que más se parezca al tuyo (el de Argentina
+si tu identificador fiscal tiene un formato de largo fijo bien documentado, el de Bolivia si
+no) y ajusta prefijo GS1 e identificador fiscal de la misma forma.
 
 ### 8.1 Capa 1 — reglas por empresa/afiliado
 
