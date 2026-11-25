@@ -119,7 +119,7 @@ def estimar_costo(n_unicos: int, n_total: int, model: str) -> dict:
         MODEL_SONNET: (1.50, 7.50),
     }
     in_price, out_price = precios.get(model, (0.50, 2.50))
-    avg_in_tokens = 1150  # medido empíricamente (ver Paquete_Replicacion_MO/INFORME_TECNICO.md)
+    avg_in_tokens = 1150  # medido empíricamente (ver Paquete_Replicacion_MO_Plantilla/INFORME_TECNICO.md)
     out_tokens = 12
     total_in = n_unicos * avg_in_tokens
     total_out = n_unicos * out_tokens
